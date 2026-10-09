@@ -1,0 +1,13 @@
+node_modules/
+dist/
+release/
+.env
+.env.*
+!.env.example
+!.env.production.example
+*.log
+.test-postgres/
+
+.local/
+
+tests/artifacts/

@@ -1,0 +1,9 @@
+{$ERP_DOMAIN} {
+ encode gzip
+ reverse_proxy /api/* api:3000
+ header {
+  Strict-Transport-Security "max-age=31536000"
+  X-Content-Type-Options "nosniff"
+ }
+ respond "Shkolla Digjitale ERP" 200
+}

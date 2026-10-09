@@ -1,0 +1,38 @@
+{
+  "name": "digital-school-erp",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -k \"npm run dev -w @erp/api\" \"npm run dev -w @erp/desktop\"",
+    "build": "npm run build -w @erp/shared && npm run build -w @erp/api && npm run build -w @erp/desktop",
+    "db:generate": "npm run db:generate -w @erp/api",
+    "db:migrate": "npm run db:migrate -w @erp/api",
+    "db:seed": "npm run db:seed -w @erp/api",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "test:integration": "node scripts/integration.mjs",
+    "desktop": "npm run desktop -w @erp/desktop",
+    "package:linux": "npm run package:linux -w @erp/desktop",
+    "package:win": "npm run package:win -w @erp/desktop",
+    "test:desktop": "node scripts/test-desktop.mjs",
+    "format": "prettier --write \"apps/**/src/**/*.{ts,tsx,css}\" \"apps/**/electron/*.cjs\" \"scripts/*.mjs\" \"tests/*.mjs\"",
+    "dev:local": "node scripts/dev-local.mjs",
+    "test:erp": "node scripts/test-erp.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "embedded-postgres": "18.4.0-beta.17",
+    "playwright": "^1.64.0",
+    "prettier": "^3.9.9",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.0",
+    "@electron/get": "^5.1.0",
+    "uuid": "^11.1.1"
+  },
+  "license": "UNLICENSED"
+}

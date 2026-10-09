@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  FINANCE
+  INSTRUCTOR
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String     @unique
+  name         String
+  passwordHash String
+  role         Role       @default(INSTRUCTOR)
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  sessions     Session[]
+  audits       AuditLog[]
+  groups       Group[]
+  payments     Payment[]
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  tokenHash String   @unique
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model Student {
+  id          String        @id @default(uuid()) @db.Uuid
+  firstName   String
+  lastName    String
+  birthDate   DateTime      @db.Date
+  parentName  String
+  parentPhone String
+  address     String?
+  notes       String?
+  status      StudentStatus @default(ACTIVE)
+  version     Int           @default(1)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  enrollments Enrollment[]
+  invoices    Invoice[]
+  payments    Payment[]
+
+  @@index([status, lastName, firstName])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entityId  String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+enum ActivityStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  ENDED
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  VOID
+}
+
+enum PaymentMethod {
+  CASH
+  BANK
+}
+
+model Course {
+  id             String         @id @default(uuid()) @db.Uuid
+  name           String
+  description    String         @default("")
+  monthlyPrice   Decimal        @db.Decimal(12, 2)
+  durationMonths Int
+  status         ActivityStatus @default(ACTIVE)
+  version        Int            @default(1)
+  createdAt      DateTime       @default(now())
+  groups         Group[]
+  enrollments    Enrollment[]
+  invoices       Invoice[]
+}
+
+model Group {
+  id              String         @id @default(uuid()) @db.Uuid
+  name            String
+  courseId        String         @db.Uuid
+  course          Course         @relation(fields: [courseId], references: [id])
+  instructorId    String         @db.Uuid
+  instructor      User           @relation(fields: [instructorId], references: [id])
+  days            Int[]
+  startTime       String
+  durationMinutes Int
+  capacity        Int
+  status          ActivityStatus @default(ACTIVE)
+  version         Int            @default(1)
+  createdAt       DateTime       @default(now())
+  enrollments     Enrollment[]
+  invoices        Invoice[]
+}
+
+model Enrollment {
+  id           String           @id @default(uuid()) @db.Uuid
+  studentId    String           @db.Uuid
+  student      Student          @relation(fields: [studentId], references: [id])
+  groupId      String           @db.Uuid
+  group        Group            @relation(fields: [groupId], references: [id])
+  courseId     String           @db.Uuid
+  course       Course           @relation(fields: [courseId], references: [id])
+  startDate    DateTime         @db.Date
+  endDate      DateTime?        @db.Date
+  monthlyPrice Decimal          @db.Decimal(12, 2)
+  discount     Decimal          @default(0) @db.Decimal(12, 2)
+  offer        String           @default("")
+  status       EnrollmentStatus @default(ACTIVE)
+  previousId   String?          @unique @db.Uuid
+  previous     Enrollment?      @relation("Transfer", fields: [previousId], references: [id])
+  next         Enrollment?      @relation("Transfer")
+  version      Int              @default(1)
+  createdAt    DateTime         @default(now())
+  invoices     Invoice[]
+
+  @@index([studentId, courseId, startDate])
+}
+
+model Invoice {
+  id           String              @id @default(uuid()) @db.Uuid
+  number       String              @unique
+  studentId    String              @db.Uuid
+  student      Student             @relation(fields: [studentId], references: [id])
+  enrollmentId String              @db.Uuid
+  enrollment   Enrollment          @relation(fields: [enrollmentId], references: [id])
+  courseId     String              @db.Uuid
+  course       Course              @relation(fields: [courseId], references: [id])
+  groupId      String              @db.Uuid
+  group        Group               @relation(fields: [groupId], references: [id])
+  period       String
+  issuedAt     DateTime            @db.Date
+  dueDate      DateTime            @db.Date
+  subtotal     Decimal             @db.Decimal(12, 2)
+  discount     Decimal             @db.Decimal(12, 2)
+  amount       Decimal             @db.Decimal(12, 2)
+  paidAmount   Decimal             @default(0) @db.Decimal(12, 2)
+  status       InvoiceStatus       @default(UNPAID)
+  studentName  String
+  courseName   String
+  groupName    String
+  voidReason   String?
+  createdAt    DateTime            @default(now())
+  allocations  PaymentAllocation[]
+
+  @@unique([studentId, courseId, period])
+  @@index([period, status])
+}
+
+model Payment {
+  id             String              @id @default(uuid()) @db.Uuid
+  number         String              @unique
+  studentId      String              @db.Uuid
+  student        Student             @relation(fields: [studentId], references: [id])
+  userId         String              @db.Uuid
+  user           User                @relation(fields: [userId], references: [id])
+  amount         Decimal             @db.Decimal(12, 2)
+  method         PaymentMethod
+  paidAt         DateTime            @db.Date
+  notes          String              @default("")
+  idempotencyKey String              @unique @db.Uuid
+  reversedAt     DateTime?
+  reverseReason  String?
+  createdAt      DateTime            @default(now())
+  allocations    PaymentAllocation[]
+}
+
+model PaymentAllocation {
+  id        String  @id @default(uuid()) @db.Uuid
+  paymentId String  @db.Uuid
+  payment   Payment @relation(fields: [paymentId], references: [id])
+  invoiceId String  @db.Uuid
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  amount    Decimal @db.Decimal(12, 2)
+
+  @@unique([paymentId, invoiceId])
+}
+
+model Counter {
+  key   String @id
+  value Int    @default(0)
+}

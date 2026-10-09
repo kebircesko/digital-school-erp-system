@@ -1,0 +1,52 @@
+services:
+ db:
+  image: postgres:17
+  restart: unless-stopped
+  environment:
+   POSTGRES_USER: erp
+   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Vendosni POSTGRES_PASSWORD}
+   POSTGRES_DB: digital_school
+  volumes:
+   - db:/var/lib/postgresql/data
+  healthcheck:
+   test: ["CMD-SHELL", "pg_isready -U erp -d digital_school"]
+   interval: 5s
+   timeout: 5s
+   retries: 20
+ api:
+  build:
+   context: ..
+   dockerfile: deploy/Dockerfile
+  restart: unless-stopped
+  environment:
+   DATABASE_URL: postgresql://erp:${POSTGRES_PASSWORD}@db:5432/digital_school
+   CORS_ORIGINS: app://erp
+   TRUST_PROXY_HOPS: "1"
+   BACKUP_KEY: ${BACKUP_KEY:?Vendosni BACKUP_KEY}
+   BACKUP_DIR: /data/backups
+   AUTO_INVOICES: "true"
+   AUTO_BACKUP: "true"
+  depends_on:
+   db:
+    condition: service_healthy
+  volumes:
+   - backups:/data/backups
+ proxy:
+  image: caddy:2
+  restart: unless-stopped
+  environment:
+   ERP_DOMAIN: ${ERP_DOMAIN:?Vendosni ERP_DOMAIN}
+  ports:
+   - "80:80"
+   - "443:443"
+  volumes:
+   - ./Caddyfile:/etc/caddy/Caddyfile:ro
+   - caddy_data:/data
+   - caddy_config:/config
+  depends_on:
+   - api
+volumes:
+ db:
+ backups:
+ caddy_data:
+ caddy_config:
