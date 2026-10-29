@@ -18,16 +18,16 @@
     "package:linux": "npm run package:linux -w @erp/desktop",
     "package:win": "npm run package:win -w @erp/desktop",
     "test:desktop": "node scripts/test-desktop.mjs",
-    "format": "prettier --write \"apps/**/src/**/*.{ts,tsx,css}\" \"apps/**/electron/*.cjs\" \"scripts/*.mjs\" \"tests/*.mjs\"",
+    "format": "prettier --write .",
     "dev:local": "node scripts/dev-local.mjs",
-    "test:erp": "node scripts/test-erp.mjs"
+    "test:erp": "node scripts/test-erp.mjs",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
     "embedded-postgres": "18.4.0-beta.17",
     "playwright": "^1.64.0",
-    "prettier": "^3.9.9",
-    "typescript": "^5.9.3"
+    "prettier": "^3.9.9"
   },
   "overrides": {
     "deepmerge-ts": "^8.0.0",

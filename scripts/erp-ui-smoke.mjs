@@ -1,6 +1,7 @@
 import { _electron as electron } from "playwright";
 import assert from "node:assert/strict";
-import { mkdir } from "node:fs/promises";
+import { mkdir, stat } from "node:fs/promises";
+import ExcelJS from "exceljs";
 export async function erpDesktopSmoke(credentials) {
   const env = { ...process.env, ELECTRON_DEV: "0" };
   delete env.ELECTRON_RUN_AS_NODE;
@@ -14,6 +15,17 @@ export async function erpDesktopSmoke(credentials) {
     page.setDefaultTimeout(15000);
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
+    async function openPage(name) {
+      const button = page.getByRole("button", { name, exact: true });
+      if (!(await button.isVisible()))
+        await page
+          .locator(".nav-group")
+          .filter({ hasText: name })
+          .locator("summary")
+          .click();
+      await button.click();
+    }
+
     await page.getByText("Konfigurimi i serverit", { exact: true }).click();
     const server = page.getByLabel("Adresa e API-së", { exact: true });
     const currentServer = await server.inputValue();
@@ -41,9 +53,7 @@ export async function erpDesktopSmoke(credentials) {
       .fill(credentials.password);
     await page.getByRole("button", { name: "Kyçu në platformë" }).click();
     await page.getByRole("heading", { name: /Mirë se erdhe/ }).waitFor();
-    await page
-      .getByRole("button", { name: "Përdoruesit", exact: true })
-      .click();
+    await openPage("Përdoruesit");
     await page
       .getByRole("button", { name: "Shto përdorues", exact: true })
       .click();
@@ -58,7 +68,7 @@ export async function erpDesktopSmoke(credentials) {
     await page
       .getByRole("cell", { name: "Instruktor UI", exact: true })
       .waitFor();
-    await page.getByRole("button", { name: "Kurset", exact: true }).click();
+    await openPage("Kurset");
     await page.getByRole("button", { name: "Shto kurs", exact: true }).click();
     modal = page.getByRole("dialog");
     await modal.getByLabel("Emri i kursit").fill("Programim UI");
@@ -68,7 +78,7 @@ export async function erpDesktopSmoke(credentials) {
     await page
       .getByRole("cell", { name: "Programim UI", exact: true })
       .waitFor();
-    await page.getByRole("button", { name: "Grupet", exact: true }).click();
+    await openPage("Grupet");
     await page.getByRole("button", { name: "Shto grup", exact: true }).click();
     modal = page.getByRole("dialog");
     await modal.getByLabel("Emri i grupit").fill("Grupi UI");
@@ -88,7 +98,7 @@ export async function erpDesktopSmoke(credentials) {
       .selectOption({ label: "Instruktor UI" });
     await modal.getByRole("button", { name: "Ruaj", exact: true }).click();
     await page.getByRole("cell", { name: "Grupi UI", exact: true }).waitFor();
-    await page.getByRole("button", { name: "Nxënësit", exact: true }).click();
+    await openPage("Nxënësit");
     await page
       .getByRole("button", { name: "Regjistro nxënës", exact: true })
       .click();
@@ -102,27 +112,22 @@ export async function erpDesktopSmoke(credentials) {
     await modal.getByLabel("Telefoni i prindit").fill("+383 44000000");
     await modal.getByRole("button", { name: "Ruaj nxënësin" }).click();
     await page.getByText("Nxënës ERP UI", { exact: true }).waitFor();
-    await page
-      .getByRole("button", { name: "Regjistrimet", exact: true })
-      .click();
+    await openPage("Regjistrimet");
     await page
       .getByRole("button", { name: "Shto regjistrim", exact: true })
       .click();
     modal = page.getByRole("dialog");
     await modal
-      .getByLabel("Nxënësi", { exact: true })
-      .getByRole("option", { name: "Nxënës ERP UI" })
-      .waitFor({ state: "attached" });
-    await modal
-      .getByLabel("Nxënësi", { exact: true })
-      .selectOption({ label: "Nxënës ERP UI" });
+      .getByLabel("Kërko: Nxënësi", { exact: true })
+      .fill("Nxënës ERP");
+    await modal.getByRole("option", { name: /Nxënës ERP UI/ }).click();
     await modal
       .getByLabel("Grupi", { exact: true })
-      .getByRole("option", { name: "Grupi UI" })
+      .getByRole("option", { name: "Grupi UI · Instruktor UI", exact: true })
       .waitFor({ state: "attached" });
     await modal
       .getByLabel("Grupi", { exact: true })
-      .selectOption({ label: "Grupi UI" });
+      .selectOption({ label: "Grupi UI · Instruktor UI" });
     await modal
       .getByLabel("Data e fillimit")
       .fill(new Date().toISOString().slice(0, 7) + "-01");
@@ -132,52 +137,117 @@ export async function erpDesktopSmoke(credentials) {
     await page
       .getByRole("cell", { name: "Nxënës ERP UI", exact: true })
       .waitFor();
-    await page.getByRole("button", { name: "Faturat", exact: true }).click();
+    await openPage("Faturat");
     await page
-      .getByRole("button", { name: "Gjenero faturat", exact: true })
+      .getByRole("button", { name: "Faturat e muajit", exact: true })
       .click();
     await page
-      .getByRole("dialog")
-      .getByRole("button", { name: "Gjenero", exact: true })
+      .getByRole("heading", { name: "Faturat e muajit", exact: true })
+      .waitFor();
+    await page.getByText("Importo mungesat nga Excel", { exact: true }).click();
+    await mkdir("tests/artifacts", { recursive: true });
+    const attendancePath =
+      process.cwd() + `/tests/artifacts/ui-attendance-${Date.now()}.xlsx`;
+    await app.evaluate(({ dialog }, file) => {
+      dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
+    }, attendancePath);
+    await page
+      .getByRole("button", { name: "Shkarko modelin", exact: true })
+      .click();
+    for (let i = 0; i < 50; i++) {
+      try {
+        if ((await stat(attendancePath)).size > 1000) break;
+      } catch {}
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    const attendanceBook = new ExcelJS.Workbook();
+    await attendanceBook.xlsx.readFile(attendancePath);
+    const attendanceSheet = attendanceBook.worksheets[0];
+    attendanceSheet.getCell("F2").value = 8;
+    attendanceSheet.getCell("G2").value = 2;
+    attendanceSheet.getCell("H2").value = 1;
+    await page.getByLabel("Ngarko Excel të mungesave").setInputFiles({
+      name: "mungesat-ui.xlsx",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      buffer: Buffer.from(await attendanceBook.xlsx.writeBuffer()),
+    });
+    await page
+      .getByRole("button", { name: "Konfirmo importin", exact: true })
+      .click();
+    await page.getByText(/1 rreshta mungesash u ruajtën/).waitFor();
+    await page
+      .locator(".monthly-invoices")
+      .getByRole("button", { name: "Regjistro faturën", exact: true })
+      .click();
+    modal = page.getByRole("dialog", {
+      name: "Regjistro faturën",
+      exact: true,
+    });
+    await modal.getByLabel("Shuma e faturës EUR").waitFor();
+    assert.equal(
+      await modal.getByLabel("Shuma e faturës EUR").inputValue(),
+      "80.00",
+    );
+    await modal.getByText("Mungesat për kontroll", { exact: true }).click();
+    await modal.getByText(/2 mungesa nga 8 orë/).waitFor();
+    await page.screenshot({
+      path: "tests/artifacts/invoice-create.png",
+      fullPage: true,
+    });
+    await modal
+      .getByRole("button", { name: "Ruaj faturën", exact: true })
+      .click();
+    modal = page.getByRole("dialog", { name: "Fatura", exact: true });
+    await modal.getByLabel("Shuma e pagesës EUR").waitFor();
+    await modal.getByLabel("Shuma e pagesës EUR").fill("30.00");
+    await modal
+      .getByRole("button", { name: "Ruaj pagesën", exact: true })
+      .click();
+    await modal
+      .getByText("Pagesa u ruajt. Fatura për printim përmban edhe pagesën.")
+      .waitFor();
+    await modal
+      .locator(".invoice-balance")
+      .getByText("50.00 €", { exact: true })
+      .waitFor();
+    await modal.getByRole("cell", { name: "30.00 €", exact: true }).waitFor();
+    await modal.getByRole("button", { name: "Shiko PDF", exact: true }).click();
+    const pdfPreview = page.getByRole("dialog", {
+      name: "Pamja PDF",
+      exact: true,
+    });
+    await pdfPreview
+      .getByRole("button", { name: "Printo", exact: true })
+      .waitFor();
+    await pdfPreview.locator("canvas").waitFor();
+    await pdfPreview
+      .getByRole("button", { name: "Mbyll PDF-në", exact: true })
+      .click();
+    await page.screenshot({
+      path: "tests/artifacts/invoice-with-payment.png",
+      fullPage: true,
+    });
+    await modal
+      .getByRole("button", { name: "Mbyll faturën", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Lista e faturave", exact: true })
       .click();
     await page
       .getByRole("cell", { name: "Nxënës ERP UI", exact: true })
       .waitFor();
-    await page.getByRole("cell", { name: "80 €", exact: true }).waitFor();
-    const pdfEvent = app.waitForEvent("window");
-    await page
-      .getByRole("button", { name: "PDF / Printo", exact: true })
-      .click();
-    const pdfWindow = await pdfEvent;
-    await pdfWindow.waitForLoadState();
-    assert.ok(pdfWindow.url().endsWith("/dokument.pdf"));
-    await pdfWindow.close();
+    await page.screenshot({
+      path: "tests/artifacts/invoices-simple.png",
+      fullPage: true,
+    });
     await page.getByRole("button", { name: "Pagesat", exact: true }).click();
-    await page
-      .getByRole("button", { name: "Regjistro pagesë", exact: true })
-      .click();
-    modal = page.getByRole("dialog");
-    await modal
-      .getByLabel("Nxënësi", { exact: true })
-      .getByRole("option", { name: "Nxënës ERP UI" })
-      .waitFor({ state: "attached" });
-    await modal
-      .getByLabel("Nxënësi", { exact: true })
-      .selectOption({ label: "Nxënës ERP UI" });
-    const check = modal.getByRole("checkbox");
-    await check.waitFor();
-    await check.check();
-    const allocation = modal.getByLabel(/Shuma për/);
-    await allocation.fill("30.00");
-    await modal
-      .getByRole("button", { name: "Regjistro pagesën", exact: true })
-      .click();
     await page.getByRole("cell", { name: "30 €", exact: true }).waitFor();
-    await page.getByRole("button", { name: "Borxhet", exact: true }).click();
+    await openPage("Borxhet");
     await page.getByRole("cell", { name: "50.00 €", exact: true }).waitFor();
     await mkdir("tests/screenshots", { recursive: true });
     await page.screenshot({ path: "tests/screenshots/erp-debts.png" });
-    await page.getByRole("button", { name: "Raportet", exact: true }).click();
+    await openPage("Raportet");
     await page.getByText("30.00 €", { exact: true }).first().waitFor();
     const excelPath = process.cwd() + "/tests/artifacts/ui-report.xlsx";
     await mkdir("tests/artifacts", { recursive: true });
@@ -187,7 +257,6 @@ export async function erpDesktopSmoke(credentials) {
     await page
       .getByRole("button", { name: "Eksporto Excel", exact: true })
       .click();
-    const { stat } = await import("node:fs/promises");
     let saved = false;
     for (let i = 0; i < 50; i++) {
       try {
@@ -203,23 +272,74 @@ export async function erpDesktopSmoke(credentials) {
       true,
       "Excel export was saved through the desktop dialog.",
     );
-    await page.getByRole("button", { name: "Backup", exact: true }).click();
+    await openPage("Backup");
     await page
       .getByRole("button", { name: "Krijo backup", exact: true })
       .click();
     await page.getByText("Backup-i i enkriptuar u krijua.").waitFor();
-    await page.getByRole("button", { name: "Historiku", exact: true }).click();
+    await openPage("Historiku");
     await page
       .getByRole("cell", { name: "Krijim kopjeje rezervë", exact: true })
       .waitFor();
-    await page
-      .getByRole("button", { name: "Përmbledhja", exact: true })
-      .click();
+    await openPage("Përmbledhja");
     await page.getByText("50.00 €", { exact: true }).waitFor();
     await page.screenshot({
       path: "tests/screenshots/erp-dashboard.png",
       fullPage: true,
     });
+    // Complete payment directly from its invoice, then create next month from the same workspace.
+    await openPage("Faturat");
+    await page.getByRole("button", { name: "Paguaj", exact: true }).click();
+    modal = page.getByRole("dialog", { name: "Fatura", exact: true });
+    await modal.getByLabel("Shuma e pagesës EUR").waitFor();
+    assert.equal(
+      await modal.getByLabel("Shuma e pagesës EUR").inputValue(),
+      "50.00",
+    );
+    await modal
+      .getByRole("button", { name: "Ruaj pagesën", exact: true })
+      .click();
+    await modal
+      .getByText("Pagesa u ruajt. Fatura për printim përmban edhe pagesën.")
+      .waitFor();
+    await modal
+      .locator(".invoice-balance")
+      .getByText("0.00 €", { exact: true })
+      .waitFor();
+    await modal
+      .getByRole("button", { name: "Mbyll faturën", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Faturat e muajit", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Muaji i ardhshëm", exact: true })
+      .click();
+    await page
+      .locator(".monthly-invoices")
+      .getByRole("button", { name: "Regjistro faturën", exact: true })
+      .click();
+    modal = page.getByRole("dialog", {
+      name: "Regjistro faturën",
+      exact: true,
+    });
+    await modal.getByLabel("Shuma e faturës EUR").waitFor();
+    await modal.getByLabel("Shuma e faturës EUR").fill("75.00");
+    await modal
+      .getByLabel("Arsyeja e ndryshimit")
+      .fill("Zbritje sipas mungesave, vendim i adminit");
+    await modal
+      .getByRole("button", { name: "Ruaj faturën", exact: true })
+      .click();
+    modal = page.getByRole("dialog", { name: "Fatura", exact: true });
+    await modal.getByLabel("Shuma e pagesës EUR").waitFor();
+    assert.equal(
+      await modal.getByLabel("Shuma e pagesës EUR").inputValue(),
+      "75.00",
+    );
+    await modal
+      .getByRole("button", { name: "Mbyll faturën", exact: true })
+      .click();
     await page.getByRole("button", { name: "Çkyçu", exact: true }).click();
     await page
       .getByRole("heading", { name: "Kyçuni në hapësirën tuaj" })

@@ -1,0 +1,4426 @@
+{
+  "appliedAt": "2026-10-23T12:24:46.989Z",
+  "backupPath": "/home/kebir/Desktop/digital-school-erp/output/term-pricing/before-2026-10-23T12-24-46-383Z.erp",
+  "groupsUpdated": 19,
+  "enrollmentsUpdated": 236,
+  "enrollmentsMoved": 66,
+  "groupsMerged": 6,
+  "terms": {
+    "A": {
+      "days": [
+        1,
+        3
+      ],
+      "durationMinutes": 80,
+      "monthlyPrice": "40.00",
+      "groups": 7,
+      "students": 139,
+      "enrollments": 139
+    },
+    "B": {
+      "days": [
+        2,
+        4
+      ],
+      "durationMinutes": 80,
+      "monthlyPrice": "40.00",
+      "groups": 6,
+      "students": 66,
+      "enrollments": 66
+    },
+    "C": {
+      "days": [
+        5
+      ],
+      "durationMinutes": 120,
+      "monthlyPrice": "30.00",
+      "groups": 6,
+      "students": 66,
+      "enrollments": 66
+    }
+  },
+  "skipped": [],
+  "plan": {
+    "changes": [
+      {
+        "id": "8d7d755d-a023-458a-88fd-bafa26a3d020",
+        "name": "10:00-11:20A HTML CSS JS",
+        "term": "A",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "6eed990a-d0f4-4152-88fa-1611c1497598",
+            "studentId": "6fbc0884-d0dd-4368-afa8-df1d21b52043",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "7b892866-56aa-411c-8f1c-47db3ed26e59",
+        "name": "TEST · Anglisht · A",
+        "term": "A",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 24
+        },
+        "enrollments": [
+          {
+            "id": "16804c97-a074-4776-8cee-4eea1802ca9e",
+            "studentId": "1f7b1bdd-e6f5-4d83-8ab6-75f7bf803b93",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2453b57f-7e87-4fb8-8a0b-f7bfa8d83850",
+            "studentId": "aac44a22-93c5-454e-8bcd-28c440ab7a02",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2ac39230-bf9f-4ea6-8ed6-adc7fa1b2135",
+            "studentId": "24ce628f-04af-4503-86b7-cafc816dfecb",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "40d19879-41cb-4841-83d1-c843b14d9c29",
+            "studentId": "225468c0-838a-4f4f-8652-7bc05abfa623",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "62ff2164-3947-45aa-819c-897aa8370cda",
+            "studentId": "7847eecd-3cda-4013-8866-adeda646b27c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7112e364-e93c-4cf5-8691-8681c5ec46d4",
+            "studentId": "76538922-34b4-49b3-883d-8b5af2f82c8a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "73aaf412-334d-4187-86fe-dfa33c97ae2b",
+            "studentId": "c9c8a3de-2376-4144-8a0b-78c87185fdc2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "81c090e3-d695-419e-8f71-e1be9ac8ed06",
+            "studentId": "3eac05ce-421a-49d7-8d7b-fb9eb6f6e1d7",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "86e9ffa2-a7ac-4203-85f7-bae074009cbf",
+            "studentId": "fc6e38da-fb53-4e58-8e12-bdf0f03fac2c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d8635ab6-5bab-4a8b-80aa-af570d7d7b89",
+            "studentId": "58fe201d-1281-488b-82a7-a6896ec10b9e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d93a3195-9fba-43ab-8971-197682abae3b",
+            "studentId": "50186264-5447-4742-879d-f330f2d36255",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fde047df-ac9b-49c5-8077-909f143ef412",
+            "studentId": "c487df25-3702-4354-8298-1062f12d1885",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "09558fb0-ca6b-4666-844c-727ac89ed8be",
+            "studentId": "90b69900-5b25-40ea-842c-6cfeaaeeec3c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3695d279-1006-4173-8c00-95b0203edaed",
+            "studentId": "ffcd645f-0761-4681-81ad-842be1afeac2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3c1faeaa-d151-45da-81d3-1fc8467ab674",
+            "studentId": "d6eff161-ff3b-4fa6-8021-9d0c020b77c7",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "498d5c0b-ce83-4760-829f-2a5dc9fa090c",
+            "studentId": "68e099ee-9077-43dc-83e6-69ba58265ab2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5065139b-0687-4859-8193-76f161584f34",
+            "studentId": "389429a8-1ee0-46f5-8cd0-f5b42165d8b4",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "59b3db83-197a-4188-851d-eef778e3a51c",
+            "studentId": "715752e5-aebb-47c8-8934-2e049c8ad81c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7c593b79-37b4-4d57-8ea5-134be9b467da",
+            "studentId": "5f3dca28-b07d-44ac-8667-d9a9bb40dca4",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "832ee175-52ce-466e-84ba-55d6fb13fe4d",
+            "studentId": "5da917a5-0312-4eeb-8196-dc78994b5549",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e0ef4599-18bb-488a-8b28-fea16df53f2b",
+            "studentId": "dca16533-6997-4abb-8957-19aaa5f8f9e9",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ed10dbb3-04e3-41db-81e4-3c81f6dfd0bf",
+            "studentId": "dfaa50b0-4696-4d63-869d-6f957b95bbd0",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f5e9c3bf-c827-4a4a-8d8a-305402e07c69",
+            "studentId": "cae42647-b640-41e8-8615-dbaa7c9de18a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ea5ccdfa-48c1-4431-86ef-79628645b3b6",
+        "name": "TEST · Anglisht · B",
+        "term": "B",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            2,
+            4
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "10ed64f6-59f3-4541-85bf-0f3a458c43dc",
+            "studentId": "1bb30604-1d8c-425d-8712-2d3e816beb54",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "338bcc06-f3d8-4e66-83b1-620e32e496ac",
+            "studentId": "9c7cfcdb-0420-4c14-868f-b7d283371985",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3b46c742-73ed-47c8-86bf-860faf94550a",
+            "studentId": "b001f44d-0c5b-40d8-8d8e-742963d374fe",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "4c806a76-3922-47c6-8bec-c609fdf9681a",
+            "studentId": "277b2bba-d49e-436f-8aaf-86255b81fc12",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "628ea503-5696-4c89-8be4-5e87c618f93d",
+            "studentId": "b457fea8-4436-4a97-895c-cc68c0d3868a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ac15b547-b2da-48ca-8454-f2a8103d5b93",
+            "studentId": "d5616e55-6846-4036-834e-c147ab03b196",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "c9f15981-2efc-4fcf-8169-c5f60974c64b",
+            "studentId": "9e93b390-4784-4888-8186-67636ca5f2eb",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "dfddb3cb-45ea-40fe-89b3-e82a05620b78",
+            "studentId": "6faf37a9-976d-4af6-8e07-76cd30e52790",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e9c2f21c-bca4-4227-80fe-72c3f81a00c9",
+            "studentId": "2970e106-4f87-41cc-8930-d2cc7c9ebf40",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f944e231-4248-49fb-88f5-920bcc5c8f0f",
+            "studentId": "dcb7a6d9-ce6d-4634-88e6-a7eb4ae6127f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fe10a2df-978d-42b8-8bd2-5f17baa5732c",
+            "studentId": "c6b3ce94-3366-4d90-84fb-ea427a07da91",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ff5f2cb8-0695-4793-8eda-332cf059adf1",
+        "name": "TEST · Anglisht · C",
+        "term": "C",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            5
+          ],
+          "durationMinutes": 120,
+          "monthlyPrice": "30.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "1ca8fd9c-ab75-433e-89da-09685b0d58c8",
+            "studentId": "bfe68307-0e3c-4b4f-862d-d6ad81a261d6",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3cbce748-2d25-4314-8cbd-f1d20ecdc6f1",
+            "studentId": "a1551a01-8956-46cc-8e29-f6caef2bd5f2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3f2ff452-72f6-46ae-8eb3-a5e88b1b0655",
+            "studentId": "f978b401-f22a-4c7f-8851-a38b9fd0d32b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5da573e4-6e67-4f0b-850a-74e168a06b4e",
+            "studentId": "c3ba9d43-9e6a-4b5f-8e2e-01bcd588e4a4",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "64f7da51-e9cd-4355-8901-a5e71a49a502",
+            "studentId": "d87204c5-911c-4f36-85fb-c927e119a244",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "66e910a4-cf16-42be-846d-1d37595d96b7",
+            "studentId": "feb86e0c-6d53-462c-8b6e-9dac58873c30",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6b596938-e7db-4483-8af3-1d18f3e67d7b",
+            "studentId": "b576437d-1014-4df9-8016-ab1c2a9fd855",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7215d557-6415-415f-82a9-b3efcbe36dde",
+            "studentId": "822de9c9-85c3-4dcb-883d-65c78185c6fa",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ae072579-ebc0-4f25-8965-380e60c3552b",
+            "studentId": "220a4288-8fa9-4c6c-8a0e-8b89f2ce833d",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d1f55cfd-b276-4aaf-826f-0b8df66ecba2",
+            "studentId": "ed0f7942-6141-4db5-86df-bda251967384",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e117d0f9-71e7-40a3-893d-ac65196006d2",
+            "studentId": "68bc9655-58e7-4292-8226-da72a12c2254",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "40",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "500d60d7-cca3-4c2a-820f-5e1f33759b3d",
+        "name": "TEST · Dizajn · A",
+        "term": "A",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 24
+        },
+        "enrollments": [
+          {
+            "id": "223da739-fd7e-460b-804a-9e4098925645",
+            "studentId": "7ecc8337-2e6d-46d5-8e2d-47f5110739ca",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3326a3ff-0126-4870-86fe-77d27c1d819a",
+            "studentId": "f60d82c3-41b9-44b7-8f43-503c32766e04",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "34c8969f-b72c-4295-807d-a0135e500a25",
+            "studentId": "58ea4bc6-343c-40c7-86b5-fa92f5373eda",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "48f9217a-2f2c-4726-8112-8435659218c4",
+            "studentId": "0ed5e448-5d6e-435d-84ea-ed10f34d805f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "63fe8a99-5e6f-41cc-8c05-c15af786fa9d",
+            "studentId": "b62f4eb4-2f4f-41db-8dd0-320ce1402927",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "66a3c51a-11b6-4836-8ab0-7a2e2006f0f7",
+            "studentId": "7680b6a2-8247-4328-8402-9cc3032d4f5c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6dbaec0c-a7a9-4771-8fcc-fbdb74609f6a",
+            "studentId": "4fed1930-1199-4ac0-8aef-f12254795c64",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "bfc865f4-e8d2-43fa-8acc-1e97cccac20a",
+            "studentId": "29fc134f-0416-4209-8db9-1a26c9162e8a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ce8ba387-27cd-43d3-8c9e-d4212ff78263",
+            "studentId": "8e4db6cb-6788-44d0-8379-e33f96060f24",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d6667ac8-b334-4613-8863-6aa829db1cad",
+            "studentId": "722a3bd5-bdd0-4b6c-877b-8fed04b0f002",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ecac7f55-df62-441e-8cea-c196b5ac69ae",
+            "studentId": "4c34e353-15b1-4b08-8873-65c95bc2c9b2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f9811621-7c0b-40d9-8f9c-e690a1108369",
+            "studentId": "8c546011-7894-4ce6-8538-bf3be5cf8153",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "319ef76a-3c9c-4207-8d0f-fecfed0bce6c",
+            "studentId": "d53b53be-2d91-4163-8fc6-40f2782c9787",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "62e89991-bd7c-469f-8dde-db4caa5061c8",
+            "studentId": "e9262ef9-2167-44cd-8cec-3783cfa61fd5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6e22c7b0-156f-44ef-89e9-980db5e0453e",
+            "studentId": "f7a9fc48-2b4e-4e9f-813f-e71f48e95b92",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7211c283-978c-4b33-8e3d-c79fbda49744",
+            "studentId": "a0872676-5418-4a4f-868a-038b16cc4311",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7f5f0d71-a9a1-427e-8bd7-a3570f89a76e",
+            "studentId": "e98f3d5f-bdf1-4954-8b27-98d14be84062",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "888d6c1c-8ccf-4b79-8a88-085881b385d9",
+            "studentId": "a0265c9f-8ff3-47a4-8ea6-7e2ad120d79e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "c111756b-0b11-43d9-85bb-3c7f157413c5",
+            "studentId": "85bf062a-359d-4e7a-88c4-75bb43aa955d",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e8617c3e-a0bd-40c1-851a-192db8a7c10d",
+            "studentId": "a9b61b73-444f-4c20-834f-4e4d09756a57",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f00f0527-f893-4323-8da6-35f042374404",
+            "studentId": "d33726c6-3a54-47d9-8505-1de465b3edf0",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f2769615-4503-49e4-875d-b0d2ade5e6a7",
+            "studentId": "875be3d2-987c-44cf-88bd-8f6806ee7e0e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f6b08243-702c-4251-8669-fb9aace013cb",
+            "studentId": "456f9416-9853-4286-80bc-9c7fc516229b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "4ca58c6d-e8bb-43bd-8d89-dbbd8ea919ee",
+        "name": "TEST · Dizajn · B",
+        "term": "B",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            2,
+            4
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "18ab364c-a29d-4a45-87e0-6b048b4ce501",
+            "studentId": "71953979-0454-4b35-8428-9754f034af1b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2e989c67-f31b-45db-8e7d-b4e9e0475924",
+            "studentId": "5f6ce6c1-c78c-4e6e-8a94-98604d171aa8",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "59891623-5586-4488-8b42-debe29c90c37",
+            "studentId": "c34e6894-f0f7-4b19-812b-95af34ffb3e1",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "8d1bb7da-5ca2-47ea-8756-aa3e95b448b3",
+            "studentId": "099a3f02-37ef-458e-876d-555e3f66b215",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "905a5211-7847-4544-8f1f-2a5aa2da2e42",
+            "studentId": "dc9700cc-ced9-4142-8eba-fcfbaf3ffc51",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "a3022768-354a-4de4-8bc5-f8a2faa0795a",
+            "studentId": "31f3dd12-30aa-41f8-8326-f615142f14d0",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ad20a2dc-34a4-4f3f-8e7e-07df9999d3f2",
+            "studentId": "7a493251-c32c-41d9-8433-f8cf3c411e9b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "c3739ce7-76e2-477b-8152-b5bc540c04ba",
+            "studentId": "2d36cef1-8c8a-4881-8e2b-9207436be3fc",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "c662bf24-3420-46eb-823b-d5792f7ba1f9",
+            "studentId": "3858ff42-1796-4597-8d33-7faba9e05e98",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "df2d3d99-93da-42ce-8fbe-261e627e975f",
+            "studentId": "2566c5ae-6ed3-4b0b-8b50-c3d68168e86b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ef3d0aec-63ae-418f-8aae-33656ecd76cb",
+            "studentId": "3d27a47e-79b1-49b6-80d0-b409cea1eafe",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "7f752e5b-dd0d-4af0-8e5c-88f5d5c31deb",
+        "name": "TEST · Dizajn · C",
+        "term": "C",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            5
+          ],
+          "durationMinutes": 120,
+          "monthlyPrice": "30.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "0ab6a53f-6f9a-47f1-82a7-979072a88533",
+            "studentId": "b1bdb1fb-a918-4dfc-8f06-94ada3c6dd5c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "187dacbd-798d-46a6-8ea0-b1ab08d17c77",
+            "studentId": "bbe0180e-b75c-4bd0-868b-ce337c1f2fc2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "320c9084-27bb-49ca-8dba-a64cd068588e",
+            "studentId": "a99be3b2-39ab-4f1c-80ab-f2628cec3188",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "384f90b7-282d-4adf-8c0f-ab11b456762d",
+            "studentId": "8af9c4b6-e89a-46ca-8d2d-46de7ac1f871",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "44332647-7d0b-461c-888c-30d8c37bc9a6",
+            "studentId": "af8b5d96-fb60-4a6e-81f0-2c487e29f80b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "522123b9-ed02-4ed1-81d4-54cef8b7c86a",
+            "studentId": "d0880441-371a-4afa-888d-bd70a7befbff",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "563080cd-a371-4e97-8fd4-8ef3703b5c57",
+            "studentId": "e6bcc4e6-70de-4b07-857c-8a04a13106c5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "71337b09-5a79-4195-89ca-a9c155a277ad",
+            "studentId": "bb0adc45-d9c9-40b6-89d4-524329d661ab",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "a2c16608-7eb1-4536-892a-541f3b8f47fd",
+            "studentId": "b656ba96-d901-4a6f-852a-131a5170113f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "eacd7e4d-a479-4314-8570-781f545f2601",
+            "studentId": "e0cd3693-a4c8-49b4-860c-dec01112e9f3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fb997f53-76e4-430a-85d4-839380d7cb9a",
+            "studentId": "dd157196-ea45-449c-8ebc-3d8d18ee41e8",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "55",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "2a5230a8-5d10-460c-8356-8d79c0225ac9",
+        "name": "TEST · Python · A",
+        "term": "A",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 24
+        },
+        "enrollments": [
+          {
+            "id": "1c78b3ae-582b-4af8-885d-56990cfb3321",
+            "studentId": "65753db4-224e-497f-8edc-10032efdf579",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "1fd949bb-4938-46f3-8893-f50bc6c8dc2f",
+            "studentId": "13f02637-add0-443a-8208-e6cbef6e6af5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "26762828-0c70-461d-8ff4-e502f1c90e2b",
+            "studentId": "37a7642e-d72f-40ed-86f3-f667c6360463",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2b0a6e52-c25e-4ec7-8e50-bb5e3bc80f8a",
+            "studentId": "4b157710-8913-4908-842d-34f6859fc210",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "365bf2f7-73f0-4f51-80ce-81ebae30756c",
+            "studentId": "85c4deae-a95d-455c-89ba-10cc5255597b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "38fcbebf-4ae0-4642-8de6-62e9943d1c8a",
+            "studentId": "11676d43-805d-4452-8a04-d42a521397fc",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6050c1a1-ab61-436b-81ee-4732a6d11214",
+            "studentId": "e7950726-fdf7-4e3f-82a5-62400e17c946",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6e2dde5a-e47a-441f-899e-19a923c50738",
+            "studentId": "8a33f20a-daef-46ca-8a04-93991d78ebf1",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "721ce017-8bcf-44e6-8a4e-cbbda469c014",
+            "studentId": "1c364a24-8b98-4419-8b3b-ac9735871772",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "92c0358a-52ed-404d-88fc-34e7bcc85320",
+            "studentId": "b1343600-01fa-4070-8afe-e41e1abfee4a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b0e73660-1ed7-4c58-8ddf-f3e0768945f5",
+            "studentId": "579e0b97-76aa-4aec-81cd-e7b504d233c2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b967aa7d-b751-41a8-8e61-39ca6a1def57",
+            "studentId": "acef29e0-259e-4e40-80b6-d590c6c16e55",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "1a3dbf0f-a80d-4d1b-891f-d68f3c7a37c9",
+            "studentId": "b7269e12-5746-41da-85c1-a4060f2b1249",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "26b324b6-5d18-46fb-8ce0-400c738472e2",
+            "studentId": "26afb1bb-d69e-4911-8841-ba2350b20bec",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "33cc8b59-16cb-4132-8a6d-ac7f9d6a9f49",
+            "studentId": "725c651e-0330-4050-89e2-5f23796243ed",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6afa48cc-1a7e-4e56-8943-0341a3c640a2",
+            "studentId": "5fbd332d-4ae1-40a1-8779-0a5315a7c396",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6b961995-d1a6-4f1e-89df-b08cfba7d04e",
+            "studentId": "651dc4c2-6a9b-4f99-83ef-9dffd4c2c98b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6cd35d24-b6a7-485d-8f96-e253eb508f4f",
+            "studentId": "aea07f46-04fd-4d0d-8a4e-73acc6e7fece",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7cc639ec-4583-4e03-8500-1c6e4a3dd6e3",
+            "studentId": "c87f9549-20b4-4c3e-87ed-b0881e81f600",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "8be2b1de-dbc7-488f-826d-f4fe39b6d4ed",
+            "studentId": "a0f1da7b-1002-4125-8e17-9490fb69c016",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "90729631-dacc-494e-81ff-8932a09f217b",
+            "studentId": "858b204c-bc85-4efa-8e67-6a74469f8dcd",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b7ee14a9-d748-4cb0-84bd-1880e951f8a8",
+            "studentId": "e76fc4f9-6e06-4f65-8d1c-b5486d56a520",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d928bb28-0363-4a6f-8cfd-94b1ebadfb3e",
+            "studentId": "79a8c77d-b9f5-41eb-835b-d79239575dab",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "38d9c7c5-12d6-43f2-8667-9e243d8c029d",
+        "name": "TEST · Python · B",
+        "term": "B",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            2,
+            4
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "02cd6ecc-a5c3-425c-8b65-9af2e751893e",
+            "studentId": "b4756185-ddf7-47d4-8596-bcc015f0605a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "10d5ae99-eceb-46a5-8548-d690d40727df",
+            "studentId": "ecf3fcd5-6284-437b-8e6f-e9b0a9948726",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "24a8d5ca-0412-4b62-8f5b-6a23e4b97836",
+            "studentId": "d160e206-0112-4b22-8e56-2859ebb9b460",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2eba7eca-c65e-4f1a-8d8b-90343627a2f3",
+            "studentId": "e298a473-de9c-4b6d-8ab8-fa5b45db352b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6e7fe6d6-3fcb-4c0d-813e-9e6902a80521",
+            "studentId": "003fcb52-51a8-468e-80bb-2612f971ac16",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7be56a2a-4fa6-4475-8d23-d4cedbfe988c",
+            "studentId": "eb07b035-8074-4c0c-8b46-7d756c2cf36f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "86930bdb-c450-4eaa-8201-9b7ae5445c28",
+            "studentId": "104a4416-6b14-4787-8292-e749075352de",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "aaf6a399-3f61-4495-8b92-279b1ce5d15f",
+            "studentId": "32a23fd0-8fb4-4b48-8b0e-fe8845771b1e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "bcd94b08-7503-4a48-8f15-fac565e26ec9",
+            "studentId": "5a0922cf-b3e2-455a-8eb0-fc498cc65522",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "cb406361-c742-44c0-88a9-7c79b2c2ca5c",
+            "studentId": "8bac8ba7-cf1c-4b76-8b6d-5126da9203f3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d2105517-d47d-4d99-87ff-6f5cd8089b7d",
+            "studentId": "a6fe4894-ffd0-4541-8dac-588368169d93",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "b8ee42f3-5f78-4fa5-8a81-67adcffc1fd0",
+        "name": "TEST · Python · C",
+        "term": "C",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            5
+          ],
+          "durationMinutes": 120,
+          "monthlyPrice": "30.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "0b9cd4e7-fc43-4d0d-8f6e-720fdd10bf4b",
+            "studentId": "50358c43-7e8c-42d5-8745-632aeda459d1",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "134bfa58-69e5-4d4f-8a03-a9845ecef62e",
+            "studentId": "b2b20ef8-1a6f-46d2-8221-fe584294ab18",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "1c9117b0-bab8-4135-8479-4ab9fbb95271",
+            "studentId": "0a75bd1f-9e1c-4fda-8944-0d044e1f7bef",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2f518c57-14f0-4c1c-816e-7727d57ec263",
+            "studentId": "91cc1756-0ab4-4313-8d5d-234a451f3f81",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "41c1a73f-00b7-4398-8a0f-6d5c88da6039",
+            "studentId": "e6ae7231-8b32-4d24-8f69-872433b2dea9",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "8108b039-3eff-4dbc-84f6-98a8a86520a0",
+            "studentId": "b38edfca-eb0e-4ff0-8bb7-6f403cb5a6fc",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "896ad73c-2ae0-4900-80db-46729b54b502",
+            "studentId": "089e0e2d-2390-4699-8685-dafd807d5ed5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "a340d856-c3fc-434c-8e85-298c18b18645",
+            "studentId": "e6bd7487-8b29-4bf3-8c2e-09671a5bfe3e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b7f87f77-949f-464a-8739-8f61b0f87942",
+            "studentId": "13a10169-fc48-44df-82e7-ab4e6502dfbb",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b82f6d76-1796-467d-87c2-1acfa21defcf",
+            "studentId": "10fdb42e-cce7-4285-84ee-7f079ba50d1e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d5f66cff-bea0-4cdc-83ca-b1717edfeb93",
+            "studentId": "dc4fa8af-a21e-4237-8740-5f48c19c5488",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "60",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "35d12b49-e02d-4cce-8e07-048797d621ad",
+        "name": "TEST · Robotikë · A",
+        "term": "A",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 24
+        },
+        "enrollments": [
+          {
+            "id": "069ec1fa-45a9-4c0b-8669-6f5d542bf09e",
+            "studentId": "5ab98abf-a8f9-4bde-819c-7ee4e21985be",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "08cc0e14-aaac-4531-8573-c9bbe75c2a34",
+            "studentId": "b26b0632-cdda-4f45-8836-d6cdb7892f21",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "0944386e-3b1b-487a-8326-229a6dc26296",
+            "studentId": "faedd2ae-2b72-414a-8db1-4f4cb9a621f8",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "1a3e7cb4-e4c5-47cd-8ed8-729a958e84b9",
+            "studentId": "bade7dd1-b183-474d-86ab-1f86fe3d1485",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2cdfbdbb-3924-4f05-8736-42bc6f394ab2",
+            "studentId": "79a4c202-a153-4866-8c8b-7a9655aedcc9",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "41996040-7cbc-43d7-8397-7593dca875ca",
+            "studentId": "6b8e3fdc-b81a-49d5-8e7e-0e09d05a6d4f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "545c6b8d-6ef6-4f0a-8228-43dc85a179fa",
+            "studentId": "bd2c090e-827e-4da9-861d-9181c90a81d2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "acc2e351-ccbd-43ce-8593-de9e2c48210d",
+            "studentId": "8bc59130-569e-4454-8bf3-17d636f99a8a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b24d9e2a-9220-47ac-8922-c149692f0148",
+            "studentId": "9a092309-ae1e-4d35-8d70-f1fcbcbf38f3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ba2e22c2-21b9-4dc5-8a5d-69e04687933a",
+            "studentId": "1df13ef2-1298-465f-82c4-bc76abea9ecc",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fb78f704-7663-4898-83c6-f47032980dac",
+            "studentId": "abf8131d-f542-4b56-8412-07e4e339d155",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "febda7f2-6396-4911-8089-bdfee55859d0",
+            "studentId": "d209aa90-3718-4eda-8b3d-4fc69e657164",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "1411318f-3b43-49ae-8783-200effc26492",
+            "studentId": "484de208-fd60-4f23-857a-7dee2ed4486c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "52f080e4-6e59-4ba4-8107-90996e9dfb3f",
+            "studentId": "4385e112-b7ef-41c9-87b5-f7158fe0d9f6",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "61c5745c-05bb-4b04-8294-059a68e61f33",
+            "studentId": "019395c5-c607-4f19-8d1a-a39406a81c4a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "66896353-11e0-42cb-816f-2ef124a1ea84",
+            "studentId": "e6525eb2-8eed-4e23-851e-029ca2193f1f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "696f215f-c696-4479-8bb9-e47f54ce2dcb",
+            "studentId": "11a0ed1e-b57d-4792-8cfc-aa3272b8aa93",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7ab84da4-acf4-40fe-8bde-fecd42967514",
+            "studentId": "8035e36b-6023-475b-8997-2bf10caf3f1b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "98d7b16c-e182-48e8-8dbf-daa00773e73b",
+            "studentId": "82c5ae63-0f17-49e3-8213-4e962f6c4c80",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "9a036b33-4b24-4cd9-8446-26966b76f99e",
+            "studentId": "85a0b957-7343-4bfa-88dc-64d20ef03a08",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b113809e-88e7-4871-8f79-a0697b93fc85",
+            "studentId": "f1f14d73-ca9b-4952-876c-48b78e3e54ee",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d7d058a1-bebf-475c-8982-da5be308d3d2",
+            "studentId": "27f709bf-1b0a-4d79-8981-0f2855227135",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e40d3cca-bc0c-4b51-84ce-3402912462ee",
+            "studentId": "a2c81947-fd3f-4793-8d10-5d6864aaf81f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "872a0a07-7e51-4a04-8691-aedc43fd51bf",
+        "name": "TEST · Robotikë · B",
+        "term": "B",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            2,
+            4
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "1c89f3d9-885d-4676-84d6-319458cd9368",
+            "studentId": "35ce2deb-0862-4e16-8aea-04d0a7a644e3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "310b2dec-951b-44bc-8a58-c358e4343a7b",
+            "studentId": "456ee9fa-030f-4b6f-8d23-c37bcee2d03c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "32b39d53-36ff-4063-8f6d-dcc2bfd42d27",
+            "studentId": "36c3a294-acf5-45b7-8030-1b418600083c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "34049796-7534-42ba-87d0-5af9ee0a968f",
+            "studentId": "e947f787-078e-4ee4-83cd-75420d7e3147",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6da5fe22-9139-4c46-8440-ca39e4b0074e",
+            "studentId": "e3fb4a08-44bc-4b19-83b5-1bed54da0a9c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6f4c1dd4-0bb9-4b87-820d-6ddc41fdb44c",
+            "studentId": "af822dbc-74ae-4e1a-848a-eba3e1c75b9e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "9e87f44f-f827-4c8d-8b2f-23685edbe8db",
+            "studentId": "abd3ad80-1ea2-4f9e-88b2-38adc16604d6",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "a846d70b-cdfc-43c0-807b-d20a80b3d57d",
+            "studentId": "6405f42d-89ce-443b-8562-e6b83747332c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "bc77773e-2d16-4184-887d-f5c7c2f732ee",
+            "studentId": "da479b41-1a40-4e34-8cc1-2484e995c05a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fd64d5b4-01b5-4713-8938-cc4e84edb165",
+            "studentId": "e9297218-235f-4839-873e-932e6b47cb7b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ffea78ad-bbc2-4827-8c83-046acfbfe80a",
+            "studentId": "850ba33c-8ae9-4f25-8dbc-a3f9a0eee81a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "e4b34769-6b60-40bc-8305-eecedc26bd02",
+        "name": "TEST · Robotikë · C",
+        "term": "C",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            5
+          ],
+          "durationMinutes": 120,
+          "monthlyPrice": "30.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "3955fbf8-bd92-4f0f-8efb-243c68e7ded2",
+            "studentId": "848474af-25b2-4dee-8cad-d06d2ee67218",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5f071687-d74d-41fb-8e3f-da888f7109ce",
+            "studentId": "a95aa994-7c56-46a8-8d4e-ed04b2bcb17e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6f9daaf2-24dd-4f56-819a-c9ef81dca5d7",
+            "studentId": "d1d6eac2-a571-4914-8e27-fac2fe8e6337",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "75b80893-f22c-4e08-8f91-f5949a4517dc",
+            "studentId": "eb554328-45a7-47ca-83ae-9c980493e086",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "766def63-2bf8-4580-89fc-b6202d7625d8",
+            "studentId": "96bceebe-6eb9-4a12-847f-5db2ae7219e4",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "9d4dd43b-7084-4a96-8718-078e62eacf8a",
+            "studentId": "2e21574a-d3c6-47f8-87b5-ab901858d3db",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b4663421-2cc3-4412-8b70-8003680203a0",
+            "studentId": "faf2fddc-f24d-42d9-8518-5d7f92a43e4a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ce63d4ef-8795-479a-8fe2-effc3fbae237",
+            "studentId": "6481c665-bee8-4faf-8285-7c740ad7f224",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "df734c14-f9cd-4363-80c3-233f378b21e5",
+            "studentId": "4fc423db-334b-4251-8d79-9fbdef35c753",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f62f2607-adad-4d3e-8ab9-9d0b332512ed",
+            "studentId": "b1f2a3cd-e085-4f6f-8e60-59f2585205f6",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fd810b5e-9b10-49c0-862b-20671e4f43a3",
+            "studentId": "5b75864a-0dd1-432f-8825-682b1ba7254f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "70",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "a7d194cb-88a1-4f3b-8957-7d5d96cc0692",
+        "name": "TEST · Scratch · A",
+        "term": "A",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 24
+        },
+        "enrollments": [
+          {
+            "id": "08f86a4b-82cd-405f-842f-caf3c91d90da",
+            "studentId": "32668c74-3cb2-44ce-86f6-912cee89bcd7",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "16b15820-fc25-4152-842b-e6ed0c7246fa",
+            "studentId": "fa2d7b85-e768-4a60-8493-185aa0849e58",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "47aac74e-bb98-4cf0-806c-48c35e8e29ce",
+            "studentId": "db113dde-0d27-4329-832d-a12de23a04cb",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5311098e-986f-4c6a-82e0-b4773cd482ca",
+            "studentId": "8e998de6-2ef1-4757-8f39-944ec34abe3e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5917b0bd-2195-49e9-8eb4-de1d02c6cb1b",
+            "studentId": "c7fd9ba2-a8a9-40ec-8de0-7d98acddee5d",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5d093f47-1aa9-44ce-8c90-ceb6bf221dc0",
+            "studentId": "2049975f-fdbc-461d-8951-704b16743b67",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5ef1199a-4197-4ad0-8cf5-8fd0eea64c15",
+            "studentId": "ccea2d33-d5cd-4cdb-8ccf-1d9174166e5c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "814fb4f5-c104-452c-8faf-3ebc1711e69b",
+            "studentId": "ff3a666f-9603-4fce-85a0-bec7ed742422",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "a1b8737a-85d1-4076-8efd-3c7349e44acd",
+            "studentId": "b5cc2e9f-497e-4028-8944-5048270e2fa3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "cb088390-2beb-4de8-8c8f-c1c1a9258bf5",
+            "studentId": "ea458668-6c80-45cb-84e7-b8d3b6ff0012",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d640c6b3-560a-42f0-84ac-3752a8d9b3a7",
+            "studentId": "674f7571-d6fd-41c6-84d1-a312fb522c60",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "edae91c4-c664-4fa2-8ece-222254a1426b",
+            "studentId": "dc1772e7-c6da-466a-8606-c501a012c6ae",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "16bc8635-0524-4e04-87bf-5efa0500df4e",
+            "studentId": "1b7f2501-dfba-4cd8-8be2-93b290ae59da",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2d50f61b-b35d-4b5c-8689-885c49836b69",
+            "studentId": "68d1ecda-17de-4943-8bfd-7e11276e41e0",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3bf77f41-1024-4715-84c3-7f53a5cf4bd7",
+            "studentId": "5f6f2b9e-a94d-48f3-8d60-aa69b949c8a3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "416b2e66-10eb-4184-8255-f759c32aea65",
+            "studentId": "d2203238-fd9b-44e0-816c-45d360982dbe",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "4830b642-d63a-4770-87f9-5004e40508af",
+            "studentId": "06b55718-f48e-49d0-8988-f06ef6ab5e46",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "4f892bf2-c280-41c3-80a1-3aa74b6ac9e6",
+            "studentId": "e6107f31-96b4-4765-8426-5da0444b41a5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5a122430-2c57-43a3-85f1-c4494ee7e3a1",
+            "studentId": "fff83d7e-73b4-45ca-85c6-343145fcff0b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5f3c8a74-1754-45ec-8b33-2da4e90bd879",
+            "studentId": "47382959-df72-4ed4-8296-fa19348799e3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "77a2c8ed-3810-4e7e-836f-32a6e99db1bb",
+            "studentId": "530d1e2a-c429-445a-86de-1a3c74d8bb3f",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "aa66088a-c88d-4459-8cf5-fd404aeb17af",
+            "studentId": "dd71646b-fad5-475c-835d-b68cb9d439fa",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "cea1d3e6-3a19-48c3-8b14-b0f8b00b1b2b",
+            "studentId": "1432a65f-7309-47db-8d9b-71dfc03c5b6e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "9cafe265-4248-4152-81e2-992e0eb9f8f2",
+        "name": "TEST · Scratch · B",
+        "term": "B",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            2,
+            4
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "1a94dee3-45d5-4671-86d3-a4446051b277",
+            "studentId": "efe29d8e-e0e7-4ebb-8c08-f87c36bf5c54",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "23224767-6cad-4d1e-8f0f-059956949e2d",
+            "studentId": "9af52a7e-c00f-4843-8ed8-39e5c4e00282",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3516af95-e94e-4202-8d89-19d49df99881",
+            "studentId": "78b77778-6bd0-4599-83a0-653d4fefac2a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "432465fb-8340-48d0-88e3-92e72e8df2d0",
+            "studentId": "1ca51fd8-fe7e-47b4-871d-c54a8ea059f3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "53b0b0e2-afa5-4654-896c-8e00f84361b2",
+            "studentId": "c1cb9630-4cda-4094-899b-f78664f2e856",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "939160ed-42a6-4a48-894b-18c8e95aaf8e",
+            "studentId": "8419b830-8733-4da2-8e89-749d5c430183",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "a9dbbc13-2c25-4186-88ac-5051137c0f5b",
+            "studentId": "9abbedc1-4b65-4521-819d-d807078350fd",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "ae177b79-6e28-437e-8e65-ba57c4af9681",
+            "studentId": "0109e0bc-e30b-4d9e-8cc7-4d8c969efd91",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "bb702d53-72c7-4707-829e-dc33cbfb5ccf",
+            "studentId": "cc096095-f766-4cd7-8e82-5e4486fd7ae5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d244044e-347c-4355-8ae2-35ef04445f6b",
+            "studentId": "00494f6f-7645-4f7c-8963-27b89f2ddbe1",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e9e29f25-d30f-4060-8dac-66f8acead9e5",
+            "studentId": "8c7e2e95-9cac-4321-8e8a-15eb641a6a31",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "10863ad6-72c2-49ba-862b-d3936aecab87",
+        "name": "TEST · Scratch · C",
+        "term": "C",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            5
+          ],
+          "durationMinutes": 120,
+          "monthlyPrice": "30.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "072ad6d7-0572-4d55-82f9-600438963ff3",
+            "studentId": "58f8fa55-0d30-42d7-8f3c-38da5c1661cb",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "1d4bcf2b-b8d7-4cbc-8bf8-aab583f43409",
+            "studentId": "4543d182-9829-4349-8bd6-8a2f978a6bab",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "4f26857d-620e-432f-8c4d-37a1a662ad8a",
+            "studentId": "45b24298-a186-48ee-8a4c-58f64cae98ff",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "56d0e655-a4df-4aac-8d2a-c6bb1f0fbac1",
+            "studentId": "ac068c93-93b7-4fe5-8019-3b15da5d05a5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "5df11662-f569-4f47-841c-c8e71d93fc16",
+            "studentId": "0bc6bd86-bdfc-45ae-86ea-634f8f445f3d",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "a9634ac8-1bb4-4ae5-8068-0de709bef5b4",
+            "studentId": "d7c9d0cc-365d-4db7-89c6-f94f0841e75a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b4b3596c-5144-4f2f-8a0c-5481b2edac7f",
+            "studentId": "d792d549-bac8-48cd-8da5-0aa64c13eee7",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b6af0280-aba8-4a72-8735-24d30aa39585",
+            "studentId": "681eb89c-04e7-482a-855a-f8f88cdf5ceb",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b9485284-aca4-44ac-824a-1cdc188e12dd",
+            "studentId": "704d0fac-40df-46e5-8797-5ae47225c70a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e633367b-84bd-4561-8e6e-d766294d5bd0",
+            "studentId": "0a888cf7-cc3a-4b2b-8f77-c37416f7dde1",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e9f8eb09-9bee-4449-86d3-da2746171aef",
+            "studentId": "709cc5fa-29fd-4e62-874b-e1b23dc881cd",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "45",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ce0afcba-76ce-4306-88ea-88732415ae32",
+        "name": "TEST · Web · A",
+        "term": "A",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 24
+        },
+        "enrollments": [
+          {
+            "id": "3272a27a-b565-4efb-8707-3799c6126ddc",
+            "studentId": "4ec6164c-2e63-44b4-83a4-d3dec4a99ffa",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "46a6033d-0d5a-4135-838e-eaccc589e1f1",
+            "studentId": "f4ae4e1b-ca59-442b-8d3e-988577e9ff24",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "47c30795-cafb-4ca2-875e-5d2f619e0aff",
+            "studentId": "ea8247a8-b449-43d8-8aa7-57daba41c201",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6aabf204-026d-4d0a-8552-19d561abc557",
+            "studentId": "84db8685-e6ad-4991-8584-11e26c0e12bd",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6fdb9a09-7694-4e47-80ac-f2c919d673e5",
+            "studentId": "069a6868-57ae-4b45-8803-1b02d0088f0b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7feba0a7-742b-43bf-8273-c3656da581b1",
+            "studentId": "7503c803-2a52-42f1-8f1f-3424c42ab843",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "9a58aba0-8f2b-4ba7-8931-f9b13c408a6a",
+            "studentId": "c5db881f-6b07-492e-82dd-15eab6209ef6",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "c2f5e24e-30bb-472a-8ee3-5e3cda6c4e39",
+            "studentId": "dc76eee8-aa91-45b5-8082-755506e890a1",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e9997c24-650e-473b-87e1-5a9db2096573",
+            "studentId": "025e7022-2ba3-48a7-88e6-9333542a0b7b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f0536be5-e4d0-45f1-8cfe-efd949b656a1",
+            "studentId": "5fa07968-4ad2-463f-8bb3-b444856fc0c2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fba8f434-23c7-4f12-8fce-6dd27e935acd",
+            "studentId": "cdfc7a03-24b5-4968-848d-5937d989e5d9",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fc58a93b-a46c-41e6-8855-366d02bc613e",
+            "studentId": "eab7e834-ab7c-4491-825e-7e4c402372f8",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "509d2800-72a8-40f3-86c9-9dcefbf113f1",
+            "studentId": "be0c1014-81b0-4eb8-885e-f15ff9a13bf6",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "64684fa6-01fc-45cc-814f-342e583c10dd",
+            "studentId": "d9cc1992-5f6b-4bb2-8ec7-048370ad07bb",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "79a69976-149e-4328-8295-e56ac1f2c50a",
+            "studentId": "8397eed8-2f2e-4e1f-8a4a-eb814f3462d9",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "7b7d4a9f-3fa4-4d7c-8581-5d8c511c88a5",
+            "studentId": "cb433ba2-ad99-4238-8d94-5b04fd5b0693",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "8d3b3503-6b91-4401-809f-6f76ed965fcf",
+            "studentId": "54c9e914-c7ce-4840-8abb-0e8e45bee0a2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "bee5d1a3-b0c6-4322-8ff2-f17ecdc39c84",
+            "studentId": "ed0618d9-a2f0-4240-87bd-8213d9fc2078",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "c36710c2-aa1b-4e97-823d-73272cc91104",
+            "studentId": "76949324-c661-4f83-8d46-734053e11a49",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d197d30c-e123-4bc5-8631-08972ae4af84",
+            "studentId": "6507d3f4-4b34-4f6a-8541-6d2f53ec0c42",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d827d976-181d-4cfd-8e72-c29f9dbfc90f",
+            "studentId": "f3f4c253-30d3-4e15-8ac9-43542e4a4dc5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e0cc3e76-36db-447e-8429-2b243ad36341",
+            "studentId": "a7759bfe-f9d9-4ec3-8f34-c3176392ee15",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "f26fb986-df20-4694-8d64-80a13b5c800b",
+            "studentId": "4c31e7b0-b1f3-493f-8f34-f67107c83466",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "2ac81de2-99c6-4e4f-8d33-583c2f993978",
+        "name": "TEST · Web · B",
+        "term": "B",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            2,
+            4
+          ],
+          "durationMinutes": 80,
+          "monthlyPrice": "40.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "10f2f391-a1e0-48f5-8d77-01762054c777",
+            "studentId": "16074d57-871b-4ffd-89dc-b78a4003f91b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "332f4a33-3509-4a28-804c-8d992e6610d5",
+            "studentId": "0b9e5417-0499-4eba-877a-acb11fa43504",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "47e4e3a7-b326-421c-8d3a-05ca82490f09",
+            "studentId": "27c4a0b2-c280-462c-8b98-60fd235663ef",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "6fdf0801-e299-4fb4-8a0a-32a8f98a684b",
+            "studentId": "933e2c95-db22-4d9e-85ef-8de75fea355e",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "840815f2-4749-49be-8d51-f55fa627df86",
+            "studentId": "10d04d83-87de-4706-82bf-d08d1d8245d9",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "869933d4-eb2b-41ef-8e43-fb3abd171b70",
+            "studentId": "f3697d18-2967-4928-86ca-33fe4a45932c",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "98f4e4bc-71c9-4b38-83b6-ca7b4ddb9a67",
+            "studentId": "155b92b7-2d20-429c-8e22-1c7dbfb23df5",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "cc17b364-8acc-4577-8a80-7f8a23b5172f",
+            "studentId": "8d6d1dd7-0c09-47c6-8f5e-8d58700191d7",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "d401a736-cff7-4f3d-88fe-bbc5be5d43a4",
+            "studentId": "4a8a0dfd-ee7f-4f37-8e75-cd1c36c002ee",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "e25c13f0-9f6b-46b4-8d93-18bd94703c80",
+            "studentId": "9ada3b7b-607e-4563-861e-91b4dbb434b8",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "fe09dccc-ec2e-42a3-8a14-cffb6c8c22eb",
+            "studentId": "2138d1b2-28fe-471e-8532-fa65ec701f1a",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "5"
+            },
+            "after": {
+              "monthlyPrice": "40.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      },
+      {
+        "id": "66202c43-0b12-42ac-87ab-ec9e8397f327",
+        "name": "TEST · Web · C",
+        "term": "C",
+        "version": 1,
+        "before": {
+          "days": [
+            1,
+            3
+          ],
+          "durationMinutes": 90,
+          "capacity": 15
+        },
+        "after": {
+          "days": [
+            5
+          ],
+          "durationMinutes": 120,
+          "monthlyPrice": "30.00",
+          "capacity": 15
+        },
+        "enrollments": [
+          {
+            "id": "0340626a-20dc-44dc-8729-adbf566c7276",
+            "studentId": "2a343c87-27a8-42b8-841a-f44ba7a8bb12",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "08e31c99-de92-4d74-8764-505baf88f46b",
+            "studentId": "ed101c41-1d99-47cf-8c20-4d05cedda364",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "157469dc-299f-46d6-879d-0c17166f96b3",
+            "studentId": "2ae159fd-d248-4fe0-83d2-da9687390cb3",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "2a0251a2-69e3-42e9-872c-9e0735a1e233",
+            "studentId": "a8a88121-db33-4981-819a-f052f34d46d4",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "3864e470-515f-42bf-857e-cb2cb4f1886e",
+            "studentId": "ff0a4a64-1cd3-444a-897f-ad85d998dedc",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "52eeefce-24de-4cc1-8e0e-a04e34a4d30a",
+            "studentId": "9d842ca2-8075-4079-8032-db24fa36d7a2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "10"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "541b4217-bf73-41c5-8af2-21be269bc79f",
+            "studentId": "918d2511-f421-43f4-8596-b2a121ac4a7b",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "73b80f55-5d77-4f66-86bf-f1ccf9ff53ac",
+            "studentId": "c18095df-5789-453d-8f51-1c4325f0023d",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "9d2d668a-7504-472c-836a-956f1cc4bf7b",
+            "studentId": "0bd68480-5bba-4d8f-8db7-7aa5472917a0",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b15f949d-17f8-48a7-8d5d-431a52d58a1d",
+            "studentId": "0866e48d-d063-4ade-8817-c232bdf09103",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          },
+          {
+            "id": "b6de4bba-0fc2-4565-8427-5e9f191eae68",
+            "studentId": "bed0038c-d993-4fb7-8f20-e2d290bb6bf2",
+            "version": 1,
+            "before": {
+              "monthlyPrice": "65",
+              "discount": "0"
+            },
+            "after": {
+              "monthlyPrice": "30.00",
+              "discount": "0.00"
+            }
+          }
+        ]
+      }
+    ],
+    "merges": [
+      {
+        "id": "7f1175cb-e5ef-4088-8e81-9113ef9a2698",
+        "name": "TEST · Anglisht · D",
+        "version": 1,
+        "targetId": "7b892866-56aa-411c-8f1c-47db3ed26e59",
+        "targetName": "TEST · Anglisht · A",
+        "enrollments": [
+          {
+            "id": "09558fb0-ca6b-4666-844c-727ac89ed8be",
+            "version": 1,
+            "studentId": "90b69900-5b25-40ea-842c-6cfeaaeeec3c"
+          },
+          {
+            "id": "3695d279-1006-4173-8c00-95b0203edaed",
+            "version": 1,
+            "studentId": "ffcd645f-0761-4681-81ad-842be1afeac2"
+          },
+          {
+            "id": "3c1faeaa-d151-45da-81d3-1fc8467ab674",
+            "version": 1,
+            "studentId": "d6eff161-ff3b-4fa6-8021-9d0c020b77c7"
+          },
+          {
+            "id": "498d5c0b-ce83-4760-829f-2a5dc9fa090c",
+            "version": 1,
+            "studentId": "68e099ee-9077-43dc-83e6-69ba58265ab2"
+          },
+          {
+            "id": "5065139b-0687-4859-8193-76f161584f34",
+            "version": 1,
+            "studentId": "389429a8-1ee0-46f5-8cd0-f5b42165d8b4"
+          },
+          {
+            "id": "59b3db83-197a-4188-851d-eef778e3a51c",
+            "version": 1,
+            "studentId": "715752e5-aebb-47c8-8934-2e049c8ad81c"
+          },
+          {
+            "id": "7c593b79-37b4-4d57-8ea5-134be9b467da",
+            "version": 1,
+            "studentId": "5f3dca28-b07d-44ac-8667-d9a9bb40dca4"
+          },
+          {
+            "id": "832ee175-52ce-466e-84ba-55d6fb13fe4d",
+            "version": 1,
+            "studentId": "5da917a5-0312-4eeb-8196-dc78994b5549"
+          },
+          {
+            "id": "e0ef4599-18bb-488a-8b28-fea16df53f2b",
+            "version": 1,
+            "studentId": "dca16533-6997-4abb-8957-19aaa5f8f9e9"
+          },
+          {
+            "id": "ed10dbb3-04e3-41db-81e4-3c81f6dfd0bf",
+            "version": 1,
+            "studentId": "dfaa50b0-4696-4d63-869d-6f957b95bbd0"
+          },
+          {
+            "id": "f5e9c3bf-c827-4a4a-8d8a-305402e07c69",
+            "version": 1,
+            "studentId": "cae42647-b640-41e8-8615-dbaa7c9de18a"
+          }
+        ]
+      },
+      {
+        "id": "06e9cfb4-bb9f-466d-8adb-49bc06c3536f",
+        "name": "TEST · Dizajn · D",
+        "version": 1,
+        "targetId": "500d60d7-cca3-4c2a-820f-5e1f33759b3d",
+        "targetName": "TEST · Dizajn · A",
+        "enrollments": [
+          {
+            "id": "319ef76a-3c9c-4207-8d0f-fecfed0bce6c",
+            "version": 1,
+            "studentId": "d53b53be-2d91-4163-8fc6-40f2782c9787"
+          },
+          {
+            "id": "62e89991-bd7c-469f-8dde-db4caa5061c8",
+            "version": 1,
+            "studentId": "e9262ef9-2167-44cd-8cec-3783cfa61fd5"
+          },
+          {
+            "id": "6e22c7b0-156f-44ef-89e9-980db5e0453e",
+            "version": 1,
+            "studentId": "f7a9fc48-2b4e-4e9f-813f-e71f48e95b92"
+          },
+          {
+            "id": "7211c283-978c-4b33-8e3d-c79fbda49744",
+            "version": 1,
+            "studentId": "a0872676-5418-4a4f-868a-038b16cc4311"
+          },
+          {
+            "id": "7f5f0d71-a9a1-427e-8bd7-a3570f89a76e",
+            "version": 1,
+            "studentId": "e98f3d5f-bdf1-4954-8b27-98d14be84062"
+          },
+          {
+            "id": "888d6c1c-8ccf-4b79-8a88-085881b385d9",
+            "version": 1,
+            "studentId": "a0265c9f-8ff3-47a4-8ea6-7e2ad120d79e"
+          },
+          {
+            "id": "c111756b-0b11-43d9-85bb-3c7f157413c5",
+            "version": 1,
+            "studentId": "85bf062a-359d-4e7a-88c4-75bb43aa955d"
+          },
+          {
+            "id": "e8617c3e-a0bd-40c1-851a-192db8a7c10d",
+            "version": 1,
+            "studentId": "a9b61b73-444f-4c20-834f-4e4d09756a57"
+          },
+          {
+            "id": "f00f0527-f893-4323-8da6-35f042374404",
+            "version": 1,
+            "studentId": "d33726c6-3a54-47d9-8505-1de465b3edf0"
+          },
+          {
+            "id": "f2769615-4503-49e4-875d-b0d2ade5e6a7",
+            "version": 1,
+            "studentId": "875be3d2-987c-44cf-88bd-8f6806ee7e0e"
+          },
+          {
+            "id": "f6b08243-702c-4251-8669-fb9aace013cb",
+            "version": 1,
+            "studentId": "456f9416-9853-4286-80bc-9c7fc516229b"
+          }
+        ]
+      },
+      {
+        "id": "8b859144-f716-4b48-8926-4ff20d5c3986",
+        "name": "TEST · Python · D",
+        "version": 1,
+        "targetId": "2a5230a8-5d10-460c-8356-8d79c0225ac9",
+        "targetName": "TEST · Python · A",
+        "enrollments": [
+          {
+            "id": "1a3dbf0f-a80d-4d1b-891f-d68f3c7a37c9",
+            "version": 1,
+            "studentId": "b7269e12-5746-41da-85c1-a4060f2b1249"
+          },
+          {
+            "id": "26b324b6-5d18-46fb-8ce0-400c738472e2",
+            "version": 1,
+            "studentId": "26afb1bb-d69e-4911-8841-ba2350b20bec"
+          },
+          {
+            "id": "33cc8b59-16cb-4132-8a6d-ac7f9d6a9f49",
+            "version": 1,
+            "studentId": "725c651e-0330-4050-89e2-5f23796243ed"
+          },
+          {
+            "id": "6afa48cc-1a7e-4e56-8943-0341a3c640a2",
+            "version": 1,
+            "studentId": "5fbd332d-4ae1-40a1-8779-0a5315a7c396"
+          },
+          {
+            "id": "6b961995-d1a6-4f1e-89df-b08cfba7d04e",
+            "version": 1,
+            "studentId": "651dc4c2-6a9b-4f99-83ef-9dffd4c2c98b"
+          },
+          {
+            "id": "6cd35d24-b6a7-485d-8f96-e253eb508f4f",
+            "version": 1,
+            "studentId": "aea07f46-04fd-4d0d-8a4e-73acc6e7fece"
+          },
+          {
+            "id": "7cc639ec-4583-4e03-8500-1c6e4a3dd6e3",
+            "version": 1,
+            "studentId": "c87f9549-20b4-4c3e-87ed-b0881e81f600"
+          },
+          {
+            "id": "8be2b1de-dbc7-488f-826d-f4fe39b6d4ed",
+            "version": 1,
+            "studentId": "a0f1da7b-1002-4125-8e17-9490fb69c016"
+          },
+          {
+            "id": "90729631-dacc-494e-81ff-8932a09f217b",
+            "version": 1,
+            "studentId": "858b204c-bc85-4efa-8e67-6a74469f8dcd"
+          },
+          {
+            "id": "b7ee14a9-d748-4cb0-84bd-1880e951f8a8",
+            "version": 1,
+            "studentId": "e76fc4f9-6e06-4f65-8d1c-b5486d56a520"
+          },
+          {
+            "id": "d928bb28-0363-4a6f-8cfd-94b1ebadfb3e",
+            "version": 1,
+            "studentId": "79a8c77d-b9f5-41eb-835b-d79239575dab"
+          }
+        ]
+      },
+      {
+        "id": "04cb28e1-a3ca-4118-83c4-8e9d8ba13308",
+        "name": "TEST · Robotikë · D",
+        "version": 1,
+        "targetId": "35d12b49-e02d-4cce-8e07-048797d621ad",
+        "targetName": "TEST · Robotikë · A",
+        "enrollments": [
+          {
+            "id": "1411318f-3b43-49ae-8783-200effc26492",
+            "version": 1,
+            "studentId": "484de208-fd60-4f23-857a-7dee2ed4486c"
+          },
+          {
+            "id": "52f080e4-6e59-4ba4-8107-90996e9dfb3f",
+            "version": 1,
+            "studentId": "4385e112-b7ef-41c9-87b5-f7158fe0d9f6"
+          },
+          {
+            "id": "61c5745c-05bb-4b04-8294-059a68e61f33",
+            "version": 1,
+            "studentId": "019395c5-c607-4f19-8d1a-a39406a81c4a"
+          },
+          {
+            "id": "66896353-11e0-42cb-816f-2ef124a1ea84",
+            "version": 1,
+            "studentId": "e6525eb2-8eed-4e23-851e-029ca2193f1f"
+          },
+          {
+            "id": "696f215f-c696-4479-8bb9-e47f54ce2dcb",
+            "version": 1,
+            "studentId": "11a0ed1e-b57d-4792-8cfc-aa3272b8aa93"
+          },
+          {
+            "id": "7ab84da4-acf4-40fe-8bde-fecd42967514",
+            "version": 1,
+            "studentId": "8035e36b-6023-475b-8997-2bf10caf3f1b"
+          },
+          {
+            "id": "98d7b16c-e182-48e8-8dbf-daa00773e73b",
+            "version": 1,
+            "studentId": "82c5ae63-0f17-49e3-8213-4e962f6c4c80"
+          },
+          {
+            "id": "9a036b33-4b24-4cd9-8446-26966b76f99e",
+            "version": 1,
+            "studentId": "85a0b957-7343-4bfa-88dc-64d20ef03a08"
+          },
+          {
+            "id": "b113809e-88e7-4871-8f79-a0697b93fc85",
+            "version": 1,
+            "studentId": "f1f14d73-ca9b-4952-876c-48b78e3e54ee"
+          },
+          {
+            "id": "d7d058a1-bebf-475c-8982-da5be308d3d2",
+            "version": 1,
+            "studentId": "27f709bf-1b0a-4d79-8981-0f2855227135"
+          },
+          {
+            "id": "e40d3cca-bc0c-4b51-84ce-3402912462ee",
+            "version": 1,
+            "studentId": "a2c81947-fd3f-4793-8d10-5d6864aaf81f"
+          }
+        ]
+      },
+      {
+        "id": "a5840719-d6e1-400d-81ae-043eeb04a23f",
+        "name": "TEST · Scratch · D",
+        "version": 1,
+        "targetId": "a7d194cb-88a1-4f3b-8957-7d5d96cc0692",
+        "targetName": "TEST · Scratch · A",
+        "enrollments": [
+          {
+            "id": "16bc8635-0524-4e04-87bf-5efa0500df4e",
+            "version": 1,
+            "studentId": "1b7f2501-dfba-4cd8-8be2-93b290ae59da"
+          },
+          {
+            "id": "2d50f61b-b35d-4b5c-8689-885c49836b69",
+            "version": 1,
+            "studentId": "68d1ecda-17de-4943-8bfd-7e11276e41e0"
+          },
+          {
+            "id": "3bf77f41-1024-4715-84c3-7f53a5cf4bd7",
+            "version": 1,
+            "studentId": "5f6f2b9e-a94d-48f3-8d60-aa69b949c8a3"
+          },
+          {
+            "id": "416b2e66-10eb-4184-8255-f759c32aea65",
+            "version": 1,
+            "studentId": "d2203238-fd9b-44e0-816c-45d360982dbe"
+          },
+          {
+            "id": "4830b642-d63a-4770-87f9-5004e40508af",
+            "version": 1,
+            "studentId": "06b55718-f48e-49d0-8988-f06ef6ab5e46"
+          },
+          {
+            "id": "4f892bf2-c280-41c3-80a1-3aa74b6ac9e6",
+            "version": 1,
+            "studentId": "e6107f31-96b4-4765-8426-5da0444b41a5"
+          },
+          {
+            "id": "5a122430-2c57-43a3-85f1-c4494ee7e3a1",
+            "version": 1,
+            "studentId": "fff83d7e-73b4-45ca-85c6-343145fcff0b"
+          },
+          {
+            "id": "5f3c8a74-1754-45ec-8b33-2da4e90bd879",
+            "version": 1,
+            "studentId": "47382959-df72-4ed4-8296-fa19348799e3"
+          },
+          {
+            "id": "77a2c8ed-3810-4e7e-836f-32a6e99db1bb",
+            "version": 1,
+            "studentId": "530d1e2a-c429-445a-86de-1a3c74d8bb3f"
+          },
+          {
+            "id": "aa66088a-c88d-4459-8cf5-fd404aeb17af",
+            "version": 1,
+            "studentId": "dd71646b-fad5-475c-835d-b68cb9d439fa"
+          },
+          {
+            "id": "cea1d3e6-3a19-48c3-8b14-b0f8b00b1b2b",
+            "version": 1,
+            "studentId": "1432a65f-7309-47db-8d9b-71dfc03c5b6e"
+          }
+        ]
+      },
+      {
+        "id": "0568af5a-197a-407c-8868-d0699f55f89c",
+        "name": "TEST · Web · D",
+        "version": 1,
+        "targetId": "ce0afcba-76ce-4306-88ea-88732415ae32",
+        "targetName": "TEST · Web · A",
+        "enrollments": [
+          {
+            "id": "509d2800-72a8-40f3-86c9-9dcefbf113f1",
+            "version": 1,
+            "studentId": "be0c1014-81b0-4eb8-885e-f15ff9a13bf6"
+          },
+          {
+            "id": "64684fa6-01fc-45cc-814f-342e583c10dd",
+            "version": 1,
+            "studentId": "d9cc1992-5f6b-4bb2-8ec7-048370ad07bb"
+          },
+          {
+            "id": "79a69976-149e-4328-8295-e56ac1f2c50a",
+            "version": 1,
+            "studentId": "8397eed8-2f2e-4e1f-8a4a-eb814f3462d9"
+          },
+          {
+            "id": "7b7d4a9f-3fa4-4d7c-8581-5d8c511c88a5",
+            "version": 1,
+            "studentId": "cb433ba2-ad99-4238-8d94-5b04fd5b0693"
+          },
+          {
+            "id": "8d3b3503-6b91-4401-809f-6f76ed965fcf",
+            "version": 1,
+            "studentId": "54c9e914-c7ce-4840-8abb-0e8e45bee0a2"
+          },
+          {
+            "id": "bee5d1a3-b0c6-4322-8ff2-f17ecdc39c84",
+            "version": 1,
+            "studentId": "ed0618d9-a2f0-4240-87bd-8213d9fc2078"
+          },
+          {
+            "id": "c36710c2-aa1b-4e97-823d-73272cc91104",
+            "version": 1,
+            "studentId": "76949324-c661-4f83-8d46-734053e11a49"
+          },
+          {
+            "id": "d197d30c-e123-4bc5-8631-08972ae4af84",
+            "version": 1,
+            "studentId": "6507d3f4-4b34-4f6a-8541-6d2f53ec0c42"
+          },
+          {
+            "id": "d827d976-181d-4cfd-8e72-c29f9dbfc90f",
+            "version": 1,
+            "studentId": "f3f4c253-30d3-4e15-8ac9-43542e4a4dc5"
+          },
+          {
+            "id": "e0cc3e76-36db-447e-8429-2b243ad36341",
+            "version": 1,
+            "studentId": "a7759bfe-f9d9-4ec3-8f34-c3176392ee15"
+          },
+          {
+            "id": "f26fb986-df20-4694-8d64-80a13b5c800b",
+            "version": 1,
+            "studentId": "4c31e7b0-b1f3-493f-8f34-f67107c83466"
+          }
+        ]
+      }
+    ],
+    "skipped": []
+  }
+}

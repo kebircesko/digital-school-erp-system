@@ -1,0 +1,233 @@
+{
+  "rawPath": "/home/kebir/Desktop/digital-school-erp/output/prezantimi/rehearsal/raw/page@b46aa81db710caa4e4b653a416154bb7.webm",
+  "duration": 26.168400807999998,
+  "cues": [
+    {
+      "from": 0.00028466699999989944,
+      "to": 0.2664149600000001,
+      "text": "Shkolla Digjitale ERP: një platformë për ta bërë punën e administratorit më të thjeshtë."
+    },
+    {
+      "from": 0.2664444060000005,
+      "to": 0.45778616799999966,
+      "text": "Ndërfaqja është ndërtuar me React dhe Vite; Electron e sjell projektin në desktop."
+    },
+    {
+      "from": 0.45793380800000066,
+      "to": 0.6400301890000001,
+      "text": "Roli i përdoruesit përcakton qasjen. Historiku ruan gjurmën e veprimeve administrative."
+    },
+    {
+      "from": 0.6400512590000007,
+      "to": 2.5738757450000005,
+      "text": "Përdoruesi kyçet me llogarinë e tij. Në demonstrim përdorim rolin e administratorit."
+    },
+    {
+      "from": 2.5738987659999992,
+      "to": 3.253145969,
+      "text": "Përmbledhja tregon nxënësit, kurset, grupet dhe gjendjen e faturave në një vend."
+    },
+    {
+      "from": 3.253162429000001,
+      "to": 3.97218652,
+      "text": "Klikimi mbi numrin e nxënësve aktivë hap menjëherë listën e filtruar."
+    },
+    {
+      "from": 3.972211355,
+      "to": 4.812584505,
+      "text": "Nga çdo faqe kërkojmë nxënësin sipas emrit, prindit ose telefonit; profili hapet pa ndërruar faqe."
+    },
+    {
+      "from": 4.812622688,
+      "to": 5.392562336,
+      "text": "Profili bashkon kontaktet, regjistrimet, faturat dhe historikun e pagesave të nxënësit."
+    },
+    {
+      "from": 5.864886755000001,
+      "to": 9.610670299999997,
+      "text": "Me «Veprim i ri» hapim regjistrimin direkt. Plotësojmë të dhënat dhe kontaktin e prindit."
+    },
+    {
+      "from": 9.6106918,
+      "to": 11.945440096999999,
+      "text": "Pas ruajtjes hapet profili. E regjistrojmë nxënësin në grup pa e kërkuar përsëri."
+    },
+    {
+      "from": 11.945489496999999,
+      "to": 12.097060154,
+      "text": "Kontrollojmë grupin, datën e fillimit dhe çmimin individual përpara se ta ruajmë regjistrimin."
+    },
+    {
+      "from": 12.555105275999999,
+      "to": 12.706488951999999,
+      "text": "Regjistrimi ruhet te profili. Të dhënat mbeten të lidhura me kursin dhe grupin përkatës."
+    },
+    {
+      "from": 13.273059138,
+      "to": 14.225702772,
+      "text": "Kurset mbajnë çmimet dhe kohëzgjatjen; grupet lidhin kursin me instruktorin dhe orarin."
+    },
+    {
+      "from": 14.225719682,
+      "to": 14.776595188,
+      "text": "Klikimi mbi emrin e grupit hap vetëm regjistrimet e atij grupi, pa vendosur filtra me dorë."
+    },
+    {
+      "from": 14.776613235000001,
+      "to": 16.95297819,
+      "text": "Te «Faturat e muajit» kontrollojmë regjistrimet, vijueshmërinë dhe shumat para aprovimit."
+    },
+    {
+      "from": 16.952995841,
+      "to": 18.764461964,
+      "text": "Për një faturë të re zgjedhim nxënësin dhe muajin; sistemi propozon shumën e regjistrimit."
+    },
+    {
+      "from": 18.764476601,
+      "to": 19.496721627,
+      "text": "Pasi ruajmë faturën, mund ta shikojmë, ta printojmë ose ta paguajmë në të njëjtën dritare."
+    },
+    {
+      "from": 19.496732534,
+      "to": 20.689338301,
+      "text": "Shuma plotësohet nga mbetja. Kontrollojmë datën, vijueshmërinë dhe mënyrën e pagesës."
+    },
+    {
+      "from": 20.689420951,
+      "to": 21.751850637,
+      "text": "Pas ruajtjes, fatura shënohet e paguar dhe pagesa shfaqet në historikun e saj."
+    },
+    {
+      "from": 22.255206653,
+      "to": 23.141095834,
+      "text": "Te borxhet shohim detyrimet e mbetura. Çdo numër fature hap detajet dhe pagesën direkte."
+    },
+    {
+      "from": 23.141104226,
+      "to": 24.058956876,
+      "text": "Raportet filtrohen sipas datës, kursit, grupit dhe metodës. Rezultatet eksportohen në Excel ose PDF."
+    },
+    {
+      "from": 24.058969458,
+      "to": 24.959585077,
+      "text": "Historiku regjistron veprimet. Administratori mund të kontrollojë kush e ka kryer një ndryshim."
+    },
+    {
+      "from": 24.959599018000002,
+      "to": 25.537266382000002,
+      "text": "Kërko, hap profilin dhe kryej veprimin. Qëllimi është më pak kalime mes faqeve dhe më pak punë e përsëritur."
+    },
+    {
+      "from": 25.537280643,
+      "to": 25.824142911000003,
+      "text": "Shkolla Digjitale ERP: nga regjistrimi te pagesa, një rrjedhë më e qartë për administratorin."
+    }
+  ],
+  "chapters": [
+    {
+      "from": 0.00028466699999989944,
+      "to": 0.2664304510000002,
+      "title": "01 · Projekti"
+    },
+    {
+      "from": 0.2664444060000005,
+      "to": 0.45779058899999925,
+      "title": "02 · Zhvillimi"
+    },
+    {
+      "from": 0.6400512590000007,
+      "to": 2.573885399,
+      "title": "03 · Kyçja"
+    },
+    {
+      "from": 2.5738987659999992,
+      "to": 3.2531520659999997,
+      "title": "04 · Përmbledhja"
+    },
+    {
+      "from": 3.253162429000001,
+      "to": 3.972196769000001,
+      "title": "05 · Numrat hapin listën"
+    },
+    {
+      "from": 3.972211355,
+      "to": 4.812599122000001,
+      "title": "06 · Kërkimi i shpejtë"
+    },
+    {
+      "from": 4.812622688,
+      "to": 5.3925704770000005,
+      "title": "07 · Profili i nxënësit"
+    },
+    {
+      "from": 5.864886755000001,
+      "to": 9.610679500999998,
+      "title": "08 · Regjistro nxënës"
+    },
+    {
+      "from": 9.6106918,
+      "to": 11.945452114,
+      "title": "09 · Regjistrimi në grup"
+    },
+    {
+      "from": 13.273059138,
+      "to": 14.225710931999998,
+      "title": "10 · Kurset dhe grupet"
+    },
+    {
+      "from": 14.225719682,
+      "to": 14.776602447999998,
+      "title": "11 · Lidhje direkte"
+    },
+    {
+      "from": 14.776613235000001,
+      "to": 16.952984034999997,
+      "title": "12 · Faturat e muajit"
+    },
+    {
+      "from": 16.952995841,
+      "to": 18.764466486999996,
+      "title": "13 · Krijo faturën"
+    },
+    {
+      "from": 18.764476601,
+      "to": 19.496724543,
+      "title": "14 · Fatura dhe pagesa"
+    },
+    {
+      "from": 19.496732534,
+      "to": 20.689349136,
+      "title": "15 · Regjistro pagesën"
+    },
+    {
+      "from": 20.689420951,
+      "to": 21.751853194,
+      "title": "16 · Gjendja përditësohet"
+    },
+    {
+      "from": 22.255206653,
+      "to": 23.141097888,
+      "title": "17 · Borxhet"
+    },
+    {
+      "from": 23.141104226,
+      "to": 24.058960958,
+      "title": "18 · Raportet"
+    },
+    {
+      "from": 24.058969458,
+      "to": 24.959589141000002,
+      "title": "19 · Gjurmueshmëria"
+    },
+    {
+      "from": 24.959599018000002,
+      "to": 25.537270487,
+      "title": "20 · Puna e përditshme"
+    },
+    {
+      "from": 25.537280643,
+      "to": 25.824147005,
+      "title": "21 · Përfundimi"
+    }
+  ]
+}

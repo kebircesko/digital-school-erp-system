@@ -1,0 +1,95 @@
+1
+00:00:00,000 --> 00:00:00,266
+Shkolla Digjitale ERP: një platformë për ta bërë punën e administratorit më të thjeshtë.
+
+2
+00:00:00,266 --> 00:00:00,458
+Ndërfaqja është ndërtuar me React dhe Vite; Electron e sjell projektin në desktop.
+
+3
+00:00:00,458 --> 00:00:00,640
+Roli i përdoruesit përcakton qasjen. Historiku ruan gjurmën e veprimeve administrative.
+
+4
+00:00:00,640 --> 00:00:02,574
+Përdoruesi kyçet me llogarinë e tij. Në demonstrim përdorim rolin e administratorit.
+
+5
+00:00:02,574 --> 00:00:03,253
+Përmbledhja tregon nxënësit, kurset, grupet dhe gjendjen e faturave në një vend.
+
+6
+00:00:03,253 --> 00:00:03,972
+Klikimi mbi numrin e nxënësve aktivë hap menjëherë listën e filtruar.
+
+7
+00:00:03,972 --> 00:00:04,813
+Nga çdo faqe kërkojmë nxënësin sipas emrit, prindit ose telefonit; profili hapet pa ndërruar faqe.
+
+8
+00:00:04,813 --> 00:00:05,393
+Profili bashkon kontaktet, regjistrimet, faturat dhe historikun e pagesave të nxënësit.
+
+9
+00:00:05,865 --> 00:00:09,611
+Me «Veprim i ri» hapim regjistrimin direkt. Plotësojmë të dhënat dhe kontaktin e prindit.
+
+10
+00:00:09,611 --> 00:00:11,945
+Pas ruajtjes hapet profili. E regjistrojmë nxënësin në grup pa e kërkuar përsëri.
+
+11
+00:00:11,945 --> 00:00:12,097
+Kontrollojmë grupin, datën e fillimit dhe çmimin individual përpara se ta ruajmë regjistrimin.
+
+12
+00:00:12,555 --> 00:00:12,706
+Regjistrimi ruhet te profili. Të dhënat mbeten të lidhura me kursin dhe grupin përkatës.
+
+13
+00:00:13,273 --> 00:00:14,226
+Kurset mbajnë çmimet dhe kohëzgjatjen; grupet lidhin kursin me instruktorin dhe orarin.
+
+14
+00:00:14,226 --> 00:00:14,777
+Klikimi mbi emrin e grupit hap vetëm regjistrimet e atij grupi, pa vendosur filtra me dorë.
+
+15
+00:00:14,777 --> 00:00:16,953
+Te «Faturat e muajit» kontrollojmë regjistrimet, vijueshmërinë dhe shumat para aprovimit.
+
+16
+00:00:16,953 --> 00:00:18,764
+Për një faturë të re zgjedhim nxënësin dhe muajin; sistemi propozon shumën e regjistrimit.
+
+17
+00:00:18,764 --> 00:00:19,497
+Pasi ruajmë faturën, mund ta shikojmë, ta printojmë ose ta paguajmë në të njëjtën dritare.
+
+18
+00:00:19,497 --> 00:00:20,689
+Shuma plotësohet nga mbetja. Kontrollojmë datën, vijueshmërinë dhe mënyrën e pagesës.
+
+19
+00:00:20,689 --> 00:00:21,752
+Pas ruajtjes, fatura shënohet e paguar dhe pagesa shfaqet në historikun e saj.
+
+20
+00:00:22,255 --> 00:00:23,141
+Te borxhet shohim detyrimet e mbetura. Çdo numër fature hap detajet dhe pagesën direkte.
+
+21
+00:00:23,141 --> 00:00:24,059
+Raportet filtrohen sipas datës, kursit, grupit dhe metodës. Rezultatet eksportohen në Excel ose PDF.
+
+22
+00:00:24,059 --> 00:00:24,960
+Historiku regjistron veprimet. Administratori mund të kontrollojë kush e ka kryer një ndryshim.
+
+23
+00:00:24,960 --> 00:00:25,537
+Kërko, hap profilin dhe kryej veprimin. Qëllimi është më pak kalime mes faqeve dhe më pak punë e përsëritur.
+
+24
+00:00:25,537 --> 00:00:25,824
+Shkolla Digjitale ERP: nga regjistrimi te pagesa, një rrjedhë më e qartë për administratorin.

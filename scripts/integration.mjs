@@ -88,7 +88,7 @@ try {
       BACKUP_KEY: backupKey,
       BACKUP_DIR: join(dir, "backups"),
       HOST: "127.0.0.1",
-      CORS_ORIGINS: "http://localhost:5173,app://erp",
+      CORS_ORIGINS: "http://localhost:5174,http://127.0.0.1:5189,app://erp",
     },
   });
   server.stdout.on("data", (b) => (logs += b));
@@ -279,6 +279,18 @@ try {
       });
       passed++;
     }
+  }
+  if (process.env.BILLING_TEST === "1") {
+    const { billingChecks } = await import("./billing-checks.mjs");
+    passed += await billingChecks({
+      request,
+      admin,
+      finance,
+      instructor,
+      db,
+      base,
+      loginPassword,
+    });
   }
   const summary = `${passed} integration checks passed against real PostgreSQL.\n`;
   console.log(summary);

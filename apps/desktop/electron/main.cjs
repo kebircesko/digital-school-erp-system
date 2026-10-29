@@ -40,12 +40,12 @@ function createWindow() {
   win.webContents.on("will-navigate", (event, url) => {
     if (
       !url.startsWith("app://erp/") &&
-      !(!app.isPackaged && url.startsWith("http://localhost:5173/"))
+      !(!app.isPackaged && url.startsWith("http://localhost:5174/"))
     )
       event.preventDefault();
   });
   if (!app.isPackaged && process.env.ELECTRON_DEV === "1")
-    win.loadURL("http://localhost:5173");
+    win.loadURL("http://localhost:5174");
   else win.loadURL("app://erp/index.html");
 }
 app.whenReady().then(() => {
@@ -53,7 +53,7 @@ app.whenReady().then(() => {
     const origin = event.senderFrame?.url;
     if (!(
       origin?.startsWith("app://erp/") ||
-      (!app.isPackaged && origin?.startsWith("http://localhost:5173/"))
+      (!app.isPackaged && origin?.startsWith("http://localhost:5174/"))
     ))
       throw new Error("Qasja u refuzua.");
     if (
@@ -84,7 +84,7 @@ app.whenReady().then(() => {
     const origin = event.senderFrame?.url;
     if (!(
       origin?.startsWith("app://erp/") ||
-      (!app.isPackaged && origin?.startsWith("http://localhost:5173/"))
+      (!app.isPackaged && origin?.startsWith("http://localhost:5174/"))
     ))
       throw new Error("Qasja u refuzua.");
     const bytes = Buffer.from(data);
@@ -107,6 +107,12 @@ app.whenReady().then(() => {
         contextIsolation: true,
         nodeIntegration: false,
       },
+    });
+    viewer.webContents.on("before-input-event", (event, input) => {
+      if (input.type === "keyDown" && input.key === "Escape") {
+        event.preventDefault();
+        viewer.close();
+      }
     });
     viewer.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
     viewer.webContents.on("will-navigate", (event) => event.preventDefault());
@@ -135,7 +141,7 @@ app.whenReady().then(() => {
       responseHeaders: {
         ...details.responseHeaders,
         "Content-Security-Policy": [
-          "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https: http://127.0.0.1:* http://localhost:*; object-src 'none'; base-uri 'self'; frame-src 'none'",
+          "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https: http://127.0.0.1:* http://localhost:*; object-src 'none'; base-uri 'self'; frame-src 'none'; worker-src 'self' blob:; font-src 'self' data: blob:",
         ],
       },
     });

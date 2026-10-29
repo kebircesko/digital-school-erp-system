@@ -1,0 +1,108 @@
+;FFMETADATA1
+title=Shkolla Digjitale ERP — prezantimi dhe përdorimi
+comment=Ndërfaqe reale, API reale dhe të dhëna sintetike. Titra shqip të integruar në figurë.
+[CHAPTER]
+TIMEBASE=1/1000
+START=0
+END=8030
+title=01 · Projekti
+[CHAPTER]
+TIMEBASE=1/1000
+START=8030
+END=14046
+title=02 · Zhvillimi
+[CHAPTER]
+TIMEBASE=1/1000
+START=20052
+END=30822
+title=03 · Kyçja
+[CHAPTER]
+TIMEBASE=1/1000
+START=30822
+END=39259
+title=04 · Përmbledhja
+[CHAPTER]
+TIMEBASE=1/1000
+START=39259
+END=46759
+title=05 · Numrat hapin listën
+[CHAPTER]
+TIMEBASE=1/1000
+START=46759
+END=53719
+title=06 · Kërkimi i shpejtë
+[CHAPTER]
+TIMEBASE=1/1000
+START=53719
+END=62181
+title=07 · Profili i nxënësit
+[CHAPTER]
+TIMEBASE=1/1000
+START=64945
+END=86278
+title=08 · Regjistro nxënës
+[CHAPTER]
+TIMEBASE=1/1000
+START=86278
+END=101668
+title=09 · Regjistrimi në grup
+[CHAPTER]
+TIMEBASE=1/1000
+START=117006
+END=125833
+title=10 · Kurset dhe grupet
+[CHAPTER]
+TIMEBASE=1/1000
+START=125833
+END=133301
+title=11 · Lidhje direkte
+[CHAPTER]
+TIMEBASE=1/1000
+START=133301
+END=144466
+title=12 · Faturat e muajit
+[CHAPTER]
+TIMEBASE=1/1000
+START=144466
+END=157113
+title=13 · Krijo faturën
+[CHAPTER]
+TIMEBASE=1/1000
+START=157113
+END=165999
+title=14 · Fatura dhe pagesa
+[CHAPTER]
+TIMEBASE=1/1000
+START=165999
+END=175765
+title=15 · Regjistro pagesën
+[CHAPTER]
+TIMEBASE=1/1000
+START=175765
+END=185621
+title=16 · Gjendja përditësohet
+[CHAPTER]
+TIMEBASE=1/1000
+START=188435
+END=198325
+title=17 · Borxhet
+[CHAPTER]
+TIMEBASE=1/1000
+START=198325
+END=208146
+title=18 · Raportet
+[CHAPTER]
+TIMEBASE=1/1000
+START=208146
+END=216994
+title=19 · Gjurmueshmëria
+[CHAPTER]
+TIMEBASE=1/1000
+START=216994
+END=225431
+title=20 · Puna e përditshme
+[CHAPTER]
+TIMEBASE=1/1000
+START=225431
+END=234447
+title=21 · Përfundimi

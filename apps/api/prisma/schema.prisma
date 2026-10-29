@@ -60,6 +60,8 @@ model Student {
   invoices    Invoice[]
   payments    Payment[]
 
+  attendance MonthlyAttendance[]
+
   @@index([status, lastName, firstName])
 }
 
@@ -97,17 +99,18 @@ enum PaymentMethod {
 }
 
 model Course {
-  id             String         @id @default(uuid()) @db.Uuid
+  id             String              @id @default(uuid()) @db.Uuid
   name           String
-  description    String         @default("")
-  monthlyPrice   Decimal        @db.Decimal(12, 2)
+  description    String              @default("")
+  monthlyPrice   Decimal             @db.Decimal(12, 2)
   durationMonths Int
-  status         ActivityStatus @default(ACTIVE)
-  version        Int            @default(1)
-  createdAt      DateTime       @default(now())
+  status         ActivityStatus      @default(ACTIVE)
+  version        Int                 @default(1)
+  createdAt      DateTime            @default(now())
   groups         Group[]
   enrollments    Enrollment[]
   invoices       Invoice[]
+  attendance     MonthlyAttendance[]
 }
 
 model Group {
@@ -153,33 +156,53 @@ model Enrollment {
 }
 
 model Invoice {
-  id           String              @id @default(uuid()) @db.Uuid
-  number       String              @unique
-  studentId    String              @db.Uuid
-  student      Student             @relation(fields: [studentId], references: [id])
-  enrollmentId String              @db.Uuid
-  enrollment   Enrollment          @relation(fields: [enrollmentId], references: [id])
-  courseId     String              @db.Uuid
-  course       Course              @relation(fields: [courseId], references: [id])
-  groupId      String              @db.Uuid
-  group        Group               @relation(fields: [groupId], references: [id])
-  period       String
-  issuedAt     DateTime            @db.Date
-  dueDate      DateTime            @db.Date
-  subtotal     Decimal             @db.Decimal(12, 2)
-  discount     Decimal             @db.Decimal(12, 2)
-  amount       Decimal             @db.Decimal(12, 2)
-  paidAmount   Decimal             @default(0) @db.Decimal(12, 2)
-  status       InvoiceStatus       @default(UNPAID)
-  studentName  String
-  courseName   String
-  groupName    String
-  voidReason   String?
-  createdAt    DateTime            @default(now())
-  allocations  PaymentAllocation[]
+  id                 String              @id @default(uuid()) @db.Uuid
+  number             String              @unique
+  studentId          String              @db.Uuid
+  student            Student             @relation(fields: [studentId], references: [id])
+  enrollmentId       String              @db.Uuid
+  enrollment         Enrollment          @relation(fields: [enrollmentId], references: [id])
+  courseId           String              @db.Uuid
+  course             Course              @relation(fields: [courseId], references: [id])
+  groupId            String              @db.Uuid
+  group              Group               @relation(fields: [groupId], references: [id])
+  period             String
+  issuedAt           DateTime            @db.Date
+  dueDate            DateTime            @db.Date
+  subtotal           Decimal             @db.Decimal(12, 2)
+  discount           Decimal             @db.Decimal(12, 2)
+  amount             Decimal             @db.Decimal(12, 2)
+  paidAmount         Decimal             @default(0) @db.Decimal(12, 2)
+  status             InvoiceStatus       @default(UNPAID)
+  studentName        String
+  courseName         String
+  groupName          String
+  voidReason         String?
+  approvalNotes      String              @default("")
+  attendanceSnapshot Json?
+  createdAt          DateTime            @default(now())
+  allocations        PaymentAllocation[]
 
   @@unique([studentId, courseId, period])
   @@index([period, status])
+}
+
+model MonthlyAttendance {
+  id              String   @id @default(uuid()) @db.Uuid
+  studentId       String   @db.Uuid
+  student         Student  @relation(fields: [studentId], references: [id])
+  courseId        String   @db.Uuid
+  course          Course   @relation(fields: [courseId], references: [id])
+  period          String
+  totalLessons    Int
+  absences        Int
+  excusedAbsences Int      @default(0)
+  sourceCounts    Json?
+  sourceFile      String
+  updatedAt       DateTime @updatedAt
+
+  @@unique([studentId, courseId, period])
+  @@index([period])
 }
 
 model Payment {

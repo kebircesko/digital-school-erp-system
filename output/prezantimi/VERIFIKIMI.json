@@ -1,0 +1,12 @@
+{
+  "resolution": "1920×1080",
+  "codec": "H.264 / yuv420p",
+  "fps": 30,
+  "durationSeconds": 235.133333,
+  "sizeBytes": 4961204,
+  "subtitles": "24 Albanian captions burned into video; separate SRT included",
+  "chapters": 21,
+  "visualReview": "8 representative frames reviewed",
+  "source": "Real application and API, isolated temporary PostgreSQL database, synthetic data",
+  "audio": "No narration"
+}

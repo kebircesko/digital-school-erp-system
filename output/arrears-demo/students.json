@@ -1,0 +1,128 @@
+{
+  "created": true,
+  "batch": "DEMO-ARREARS-10-V1",
+  "count": 10,
+  "students": [
+    {
+      "id": "4d7696f3-654e-43c2-8e3b-5a8f1e5d3e2b",
+      "name": "Arben Demo3Muaj",
+      "expectedMonths": 3,
+      "unpaidMonths": [
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "120.00"
+    },
+    {
+      "id": "af9f7588-5b07-4884-80d1-4bc02ee91f6f",
+      "name": "Elira Demo3Muaj",
+      "expectedMonths": 3,
+      "unpaidMonths": [
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "120.00"
+    },
+    {
+      "id": "ef2c341a-cba5-4823-8cc1-96291da7dd9c",
+      "name": "Dardan Demo3Muaj",
+      "expectedMonths": 3,
+      "unpaidMonths": [
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "120.00"
+    },
+    {
+      "id": "43d80a57-e32b-49cd-8b44-e6108cd27a31",
+      "name": "Hana Demo3Muaj",
+      "expectedMonths": 3,
+      "unpaidMonths": [
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "120.00"
+    },
+    {
+      "id": "6cb7085c-9006-48e5-8dfd-f199759a5afd",
+      "name": "Luan Demo3Muaj",
+      "expectedMonths": 3,
+      "unpaidMonths": [
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "120.00"
+    },
+    {
+      "id": "b43be69d-1503-4d8c-800a-7aab14c65fb5",
+      "name": "Arta Demo5Muaj",
+      "expectedMonths": 5,
+      "unpaidMonths": [
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "200.00"
+    },
+    {
+      "id": "ee297616-401f-4fa6-89d3-e9dec61e800f",
+      "name": "Besa Demo5Muaj",
+      "expectedMonths": 5,
+      "unpaidMonths": [
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "200.00"
+    },
+    {
+      "id": "8b224188-5314-4198-8fe3-55d02d8ae22f",
+      "name": "Drin Demo5Muaj",
+      "expectedMonths": 5,
+      "unpaidMonths": [
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "200.00"
+    },
+    {
+      "id": "54c15c71-8e8e-4689-8763-758c20e081c5",
+      "name": "Era Demo5Muaj",
+      "expectedMonths": 5,
+      "unpaidMonths": [
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "200.00"
+    },
+    {
+      "id": "3772497f-cff4-4d09-8246-2e6806a22ac4",
+      "name": "Yll Demo5Muaj",
+      "expectedMonths": 5,
+      "unpaidMonths": [
+        "2026-06",
+        "2026-07",
+        "2026-08",
+        "2026-09",
+        "2026-10"
+      ],
+      "debt": "200.00"
+    }
+  ],
+  "backupPath": "/home/kebir/Desktop/digital-school-erp/.local/backups/before-DEMO-ARREARS-10-V1-1793270537361.erpbackup"
+}

@@ -60,7 +60,7 @@ async function main() {
   } else {
     await writeFile(
       envPath,
-      `DATABASE_URL=${url}\nHOST=127.0.0.1\nPORT=3000\nCORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,app://erp\nADMIN_EMAIL=admin@shkolla.local\nADMIN_PASSWORD=${randomBytes(18).toString("base64url")}\nADMIN_NAME=Administrator\n`,
+      `DATABASE_URL=${url}\nHOST=127.0.0.1\nPORT=3000\nCORS_ORIGINS=http://localhost:5174,http://127.0.0.1:5174,app://erp\nADMIN_EMAIL=admin@shkolla.local\nADMIN_PASSWORD=${randomBytes(18).toString("base64url")}\nADMIN_NAME=Administrator\n`,
       { mode: 0o600 },
     );
   }
@@ -141,7 +141,7 @@ async function main() {
           fetch("http://127.0.0.1:3000/api/auth/me", {
             signal: AbortSignal.timeout(2000),
           }),
-          fetch("http://127.0.0.1:5173", { signal: AbortSignal.timeout(2000) }),
+          fetch("http://127.0.0.1:5174", { signal: AbortSignal.timeout(2000) }),
         ]);
         if (
           api.status === 401 &&
@@ -171,13 +171,13 @@ async function main() {
           if (migrated) {
             if (
               keyAdded &&
-              (await exists(resolve(root, "apps/api/dist/main.js")))
+              (await exists(resolve(root, "apps/api/src/main.js")))
             ) {
               const now = new Date();
-              await utimes(resolve(root, "apps/api/dist/main.js"), now, now);
+              await utimes(resolve(root, "apps/api/src/main.js"), now, now);
             }
             console.log(
-              "API-ja dhe ndërfaqja janë aktive. Hapni http://localhost:5173 ose aplikacionin Electron.",
+              "API-ja dhe ndërfaqja janë aktive. Hapni http://localhost:5174 ose aplikacionin Electron.",
             );
             return;
           }
@@ -221,20 +221,20 @@ async function main() {
       "\nDatabaza lokale është gati. Llogaria fillestare: ADMIN_EMAIL dhe ADMIN_PASSWORD në apps/api/.env.",
     );
     console.log(
-      "Ndërfaqja: http://localhost:5173 · Electron: ELECTRON_DEV=1 npm run desktop\n",
+      "Ndërfaqja: http://localhost:5174 · Electron: ELECTRON_DEV=1 npm run desktop\n",
     );
     let frontendRunning = false;
     try {
-      const response = await fetch("http://127.0.0.1:5173", {
+      const response = await fetch("http://127.0.0.1:5174", {
         signal: AbortSignal.timeout(2000),
       });
       frontendRunning = (await response.text()).includes(
         "<title>Shkolla Digjitale",
       );
       if (!frontendRunning)
-        throw new Error("Porta 5173 përdoret nga një aplikacion tjetër.");
+        throw new Error("Porta 5174 përdoret nga një aplikacion tjetër.");
     } catch (error) {
-      if (error.message === "Porta 5173 përdoret nga një aplikacion tjetër.")
+      if (error.message === "Porta 5174 përdoret nga një aplikacion tjetër.")
         throw error;
     }
     let apiRunning = false;

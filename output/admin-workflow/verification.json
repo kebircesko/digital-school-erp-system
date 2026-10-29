@@ -1,0 +1,10 @@
+{
+  "passed": 31,
+  "database": "temporary PostgreSQL",
+  "roles": [
+    "ADMIN",
+    "FINANCE",
+    "INSTRUCTOR"
+  ],
+  "assertions": "Full registration, validation, automatic group details, partial/full payments, task panel, session view memory, scroll and role access"
+}
