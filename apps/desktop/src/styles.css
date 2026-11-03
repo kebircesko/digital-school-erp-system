@@ -683,6 +683,20 @@ td {
   align-items: center;
   gap: 11px;
 }
+.student-table .student-groups {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.student-table .student-groups > div {
+  width: 140px;
+}
+.student-table .student-groups .secondary {
+  display: block;
+  margin-top: 6px;
+  padding: 5px 8px;
+  font-size: inherit;
+  white-space: normal;
+}
 .name-cell strong {
   font-weight: 600;
 }

@@ -318,6 +318,7 @@ export default function Finance({ kind, user, openReview }) {
   }, [kind]);
   useEffect(() => {
     const controller = new AbortController();
+    setData(null);
     const timer = setTimeout(() => {
       const params = new URLSearchParams({
         page: String(page),
@@ -614,6 +615,12 @@ export default function Finance({ kind, user, openReview }) {
         {data && !data.items.length && (
           <div className="empty">
             {t("Nuk ka regjistrime për këto filtra.")}
+          </div>
+        )}
+        {kind === "invoices" && period && data && (
+          <div className="payment-total" role="status">
+            {t("Totali i borxhit për {0}", [monthLabel(period)])}
+            <strong>{money(data.totalBalance)}</strong>
           </div>
         )}
         <div className="pagination">

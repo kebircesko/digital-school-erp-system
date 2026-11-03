@@ -21,6 +21,7 @@ const sourceFiles = [
   "electron/main.cjs",
   "electron/preload.cjs",
   "node_modules/@erp/shared/src/translate.cjs",
+  "node_modules/@erp/shared/src/translate.mjs",
   "node_modules/@erp/shared/src/en.json",
 ];
 const clientFiles = asar

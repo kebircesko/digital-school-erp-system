@@ -1,4 +1,4 @@
-import translation from "@erp/shared/src/translate.cjs";
+import * as translation from "@erp/shared/src/translate.mjs";
 const { translate, translateMessage, supportedLanguage } = translation;
 export const languageKey = "erp-language";
 let language = "sq";

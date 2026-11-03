@@ -660,6 +660,7 @@ export function NewInvoiceDialog({
                     <label className="spaced">
                       {t("Arsyeja e ndryshimit")}
                       <textarea
+                        aria-label={t("Arsyeja e ndryshimit")}
                         required
                         maxLength={500}
                         value={notes}

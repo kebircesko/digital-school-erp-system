@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: "./",
-  optimizeDeps: { include: ["@erp/shared/src/translate.cjs"] },
+  optimizeDeps: { exclude: ["@erp/shared/src/translate.mjs"] },
   build: {
     commonjsOptions: { include: [/node_modules/, /packages\/shared\//] },
   },

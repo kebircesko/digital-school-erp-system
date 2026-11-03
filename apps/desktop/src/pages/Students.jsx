@@ -2,6 +2,8 @@ import { t, tm } from "../services/i18n.js";
 import StudentHistory from "../components/StudentHistory";
 import StudentModal from "../components/StudentModal";
 import StudentLink from "../components/StudentLink";
+import { ResourceEditor } from "./ResourcePage";
+import { getResources } from "./resources";
 import { useDialog } from "../hooks/useDialog";
 import { useSchoolUpdates } from "../hooks/useSchoolUpdates";
 import { useState, useEffect } from "react";
@@ -31,6 +33,7 @@ export default function StudentsPage({
     [sort, setSort] = useState("newest"),
     [page, setPage] = useState(1),
     [editing, setEditing] = useState(null),
+    [enrolling, setEnrolling] = useState(null),
     [history, setHistory] = useState(null),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
@@ -163,6 +166,7 @@ export default function StudentsPage({
                 <th>{t("Datëlindja")}</th>
                 <th>{t("Prindi / Kujdestari")}</th>
                 <th>{t("Telefoni")}</th>
+                <th>{t("Grupi")}</th>
                 <th>{t("Statusi")}</th>
                 <th>{t("Veprime")}</th>
               </tr>
@@ -186,6 +190,27 @@ export default function StudentsPage({
                   <td>{date(s.birthDate)}</td>
                   <td>{s.parentName}</td>
                   <td>{s.parentPhone}</td>
+                  <td className="student-groups">
+                    {s.enrollments?.length ? (
+                      s.enrollments.map((e) => (
+                        <div key={e.id} title={e.group.name}>
+                          {e.group.name}
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        <span>{t("Pa grup")}</span>
+                        {canWrite && (
+                          <button
+                            className="secondary"
+                            onClick={() => setEnrolling(s)}
+                          >
+                            {t("Regjistro në grup")}
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </td>
                   <td>
                     <Badge status={s.status} />
                   </td>
@@ -270,6 +295,22 @@ export default function StudentsPage({
           id={history.id}
           name={`${history.firstName} ${history.lastName}`}
           close={() => setHistory(null)}
+        />
+      )}
+      {enrolling && (
+        <ResourceEditor
+          config={getResources().enrollments}
+          row="new"
+          initialValues={{ studentId: enrolling.id }}
+          initialLabels={{
+            studentId: `${enrolling.firstName} ${enrolling.lastName}`,
+          }}
+          close={() => setEnrolling(null)}
+          saved={() => {
+            setEnrolling(null);
+            setNotice(t("Të dhënat u ruajtën me sukses."));
+            window.dispatchEvent(new Event("student-updated"));
+          }}
         />
       )}
       {editing && (

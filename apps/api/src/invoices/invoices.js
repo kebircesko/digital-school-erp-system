@@ -127,7 +127,7 @@ let InvoicesController = class InvoicesController {
   }
   async list(q) {
     const where = invoiceWhere(q);
-    const [total, items] = await this.db.$transaction([
+    const [total, items, sums] = await this.db.$transaction([
       this.db.invoice.count({ where }),
       this.db.invoice.findMany({
         where,
@@ -140,21 +140,30 @@ let InvoicesController = class InvoicesController {
           },
         },
       }),
+      this.db.invoice.aggregate({
+        where: { AND: [where, { status: { not: "VOID" } }] },
+        _sum: { amount: true, paidAmount: true },
+      }),
     ]);
-    return (0, query_1.pagination)(
-      total,
-      q,
-      items.map((i) => ({
-        ...i,
-        lastPaidAt:
-          i.allocations
-            .filter((a) => !a.payment.reversedAt)
-            .map((a) => a.payment.paidAt)
-            .sort((a, b) => b - a)[0] ?? null,
-        allocations: undefined,
-        balance: i.amount.minus(i.paidAmount).toFixed(2),
-      })),
-    );
+    return {
+      ...(0, query_1.pagination)(
+        total,
+        q,
+        items.map((i) => ({
+          ...i,
+          lastPaidAt:
+            i.allocations
+              .filter((a) => !a.payment.reversedAt)
+              .map((a) => a.payment.paidAt)
+              .sort((a, b) => b - a)[0] ?? null,
+          allocations: undefined,
+          balance: i.amount.minus(i.paidAmount).toFixed(2),
+        })),
+      ),
+      totalBalance: new client_1.Prisma.Decimal(sums._sum.amount ?? 0)
+        .minus(sums._sum.paidAmount ?? 0)
+        .toFixed(2),
+    };
   }
   generate(dto, req) {
     throw new common_1.BadRequestException(

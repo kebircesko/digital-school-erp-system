@@ -280,11 +280,9 @@ try {
     await page.getByLabel("Zbritja për Ana Test").inputValue(),
     "10.00",
   );
-  const anaRow = page
-    .locator(".batch-invoice-table tbody tr")
-    .filter({
-      has: page.getByRole("button", { name: "Ana Test", exact: true }),
-    });
+  const anaRow = page.locator(".batch-invoice-table tbody tr").filter({
+    has: page.getByRole("button", { name: "Ana Test", exact: true }),
+  });
   await anaRow
     .getByRole("button", { name: "Ruaj çmimin për këtë muaj", exact: true })
     .click();
@@ -319,6 +317,29 @@ try {
     await page.getByLabel("Arsyeja për Ana Test").inputValue(),
     /vendim i adminit/,
   );
+  await page.getByLabel("Detajet për Ana Test", { exact: true }).click();
+  await anaRow
+    .getByRole("button", { name: "Regjistro veçmas", exact: true })
+    .click();
+  const single = page.getByRole("dialog", {
+    name: "Regjistro faturën",
+    exact: true,
+  });
+  await single.getByLabel("Shuma e faturës EUR", { exact: true }).waitFor();
+  assert.equal(
+    await single
+      .getByLabel("Shuma e faturës EUR", { exact: true })
+      .inputValue(),
+    "50.00",
+  );
+  assert.match(
+    await single
+      .getByLabel("Arsyeja e ndryshimit", { exact: true })
+      .inputValue(),
+    /vendim i adminit/,
+  );
+  await page.keyboard.press("Escape");
+  await single.waitFor({ state: "hidden" });
   await page.getByLabel("Zgjidh të gjithë në këtë faqe").check();
   await page.screenshot({
     path: "output/batch-invoices/review.png",

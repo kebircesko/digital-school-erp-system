@@ -257,6 +257,13 @@ let StudentsController = class StudentsController {
         this.db.student.count({ where }),
         this.db.student.findMany({
           where,
+          include: {
+            enrollments: {
+              where: { status: "ACTIVE" },
+              select: { id: true, group: { select: { id: true, name: true } } },
+              orderBy: { createdAt: "asc" },
+            },
+          },
           orderBy:
             query.sort === "newest"
               ? [{ createdAt: "desc" }, { id: "asc" }]

@@ -135,6 +135,15 @@ paraprak, grupin, instruktorin dhe çmimin; vendos vetë **Zbritjen (€)** dhe
 arsyen për ndryshimin e shumës. Nuk ka zbritje automatike nga mungesat. “Pa të
 dhëna” nuk do të thotë zero mungesa.
 
+Te **Ndrysho çmimin**, administratori mund ta shkruajë direkt **Çmimin për këtë
+muaj (€)**, p.sh. 30 € nga çmimi bazë 40 €. Zbritja përditësohet bashkë me
+çmimin. Shkruani arsyen dhe klikoni **Ruaj çmimin për këtë muaj**. Çmimi ruhet
+në databazë për atë nxënës, kurs dhe muaj, mbetet pas rifreskimit dhe përdoret
+si propozim kur regjistrohet fatura, bashkë ose veçmas. Ruajtja e çmimit nuk
+krijon faturë. Çmimi bazë dhe muajt e tjerë nuk ndryshojnë. Për muajin vijues,
+zgjidhni së pari **Përgatit muajin e ardhshëm**. Ndryshimi regjistrohet në
+historik; financat dhe instruktorët nuk mund ta ruajnë këtë çmim.
+
 Zgjidhni nxënësit me kutitë ✓ ose **Zgjidh të gjithë në këtë faqe** (vetëm faqja
 e dukshme). Klikoni **Regjistro faturat e zgjedhura**, kontrolloni listën,
 totalin dhe afatet dhe shtypni **Konfirmo regjistrimin**. ESC para konfirmimit
