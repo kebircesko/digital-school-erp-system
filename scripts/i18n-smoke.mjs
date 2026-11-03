@@ -303,7 +303,7 @@ try {
     .click();
   await page.getByLabel("Select Arbër Gashi", { exact: true }).waitFor();
   await page
-    .getByLabel("Change discount for Arbër Gashi", { exact: true })
+    .getByLabel("Change price for Arbër Gashi", { exact: true })
     .click();
   await page.getByLabel("Discount for Arbër Gashi", { exact: true }).fill("5");
   await page

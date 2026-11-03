@@ -771,5 +771,16 @@
   "ID-ja është e pavlefshme.": "Validation failed (uuid is expected)",
   "Nuk u gjet.": "Not Found",
   "Qasje e paautorizuar.": "Unauthorized",
-  "Qasja është e ndaluar.": "Forbidden"
+  "Qasja është e ndaluar.": "Forbidden",
+  "Ndrysho çmimin për {0}": "Change price for {0}",
+  "Ndrysho çmimin": "Change price",
+  "Çmimi për këtë muaj (€)": "Price for this month (€)",
+  "Çmimi për {0}": "Price for {0}",
+  "Vlen vetëm për {0}. Fatura regjistrohet më vonë.": "Applies only to {0}. The invoice is recorded later.",
+  "Ruaj çmimin për këtë muaj": "Save price for this month",
+  "Çmimi u ruajt për {0}": "Price saved for {0}",
+  "Ndryshim çmimi për muajin": "Monthly price change",
+  "Të dhënat ose çmimi kanë ndryshuar. Rifreskoni listën dhe kontrolloni sërish.": "The data or price has changed. Refresh the list and review again.",
+  "I ruajtur: {0} € për {1}": "Saved: {0} € for {1}",
+  "Ndryshime të paruajtura": "Unsaved changes"
 }

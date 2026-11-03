@@ -261,6 +261,7 @@ export default function BillingReview({ user, initialPeriod }) {
   const draftCache = useRef({});
   const [period, setPeriod] = useState(initialPeriod || calendarMonth()),
     [data, setData] = useState(null),
+    [batchBusy, setBatchBusy] = useState(false),
     [page, setPage] = useState(1),
     [search, setSearch] = useState(""),
     [query, setQuery] = useState(""),
@@ -318,7 +319,7 @@ export default function BillingReview({ user, initialPeriod }) {
             {t("Zgjidh muajin → kontrollo zbritjet → konfirmo faturat bashkë.")}
           </p>
         </div>
-        <button className="secondary" onClick={reload}>
+        <button className="secondary" disabled={batchBusy} onClick={reload}>
           <RefreshCw size={16} />
           {t("Rifresko")}
         </button>
@@ -363,6 +364,7 @@ export default function BillingReview({ user, initialPeriod }) {
             {t("Muaji")}
             <input
               aria-label={t("Muaji i faturës për aprovim")}
+              disabled={batchBusy}
               type="month"
               required
               value={period}
@@ -377,6 +379,7 @@ export default function BillingReview({ user, initialPeriod }) {
           </label>
           <button
             className="secondary"
+            disabled={batchBusy}
             onClick={() => {
               setPeriod(calendarMonth());
               setPage(1);
@@ -386,6 +389,7 @@ export default function BillingReview({ user, initialPeriod }) {
           </button>
           <button
             className="secondary"
+            disabled={batchBusy}
             onClick={() => {
               setPeriod(calendarMonth(1));
               setPage(1);
@@ -403,6 +407,7 @@ export default function BillingReview({ user, initialPeriod }) {
             placeholder={t("Kërko nxënës, kurs ose grup…")}
             value={search}
             maxLength={100}
+            disabled={batchBusy}
             onChange={(e) => setSearch(e.target.value)}
           />
           <div
@@ -419,6 +424,7 @@ export default function BillingReview({ user, initialPeriod }) {
                 key={key}
                 className="secondary"
                 aria-pressed={status === value}
+                disabled={batchBusy}
                 onClick={() => {
                   setStatus(value);
                   setPage(1);
@@ -436,9 +442,24 @@ export default function BillingReview({ user, initialPeriod }) {
               period={period}
               draftCache={draftCache}
               rows={data.items}
+              priceSaved={(updated) =>
+                setData((previous) =>
+                  previous
+                    ? {
+                        ...previous,
+                        items: previous.items.map((row) =>
+                          row.enrollmentId === updated.enrollmentId
+                            ? updated
+                            : row,
+                        ),
+                      }
+                    : previous,
+                )
+              }
               openSingle={setCandidate}
               activeChanged={(value) => {
                 batchActive.current = value;
+                setBatchBusy(value);
               }}
               finished={(results) => {
                 const count = results.filter((r) => r.ok).length;
@@ -453,6 +474,7 @@ export default function BillingReview({ user, initialPeriod }) {
                   ]),
                 );
                 batchActive.current = false;
+                setBatchBusy(false);
                 reload();
               }}
             />
@@ -545,11 +567,14 @@ export default function BillingReview({ user, initialPeriod }) {
             {data?.page ?? page} / {data?.pages ?? 1}
           </span>
           <div>
-            <button disabled={page <= 1} onClick={() => setPage((v) => v - 1)}>
+            <button
+              disabled={batchBusy || page <= 1}
+              onClick={() => setPage((v) => v - 1)}
+            >
               <ChevronLeft size={18} />
             </button>
             <button
-              disabled={!data || page >= data.pages}
+              disabled={batchBusy || !data || page >= data.pages}
               onClick={() => setPage((v) => v + 1)}
             >
               <ChevronRight size={18} />

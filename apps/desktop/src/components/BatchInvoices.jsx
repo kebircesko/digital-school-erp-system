@@ -155,12 +155,14 @@ export default function BatchInvoices({
   rows,
   openSingle,
   activeChanged,
+  priceSaved,
   finished,
 }) {
   const [selected, setSelected] = useState([]);
   const [drafts, setDrafts] = useState(() => draftCache.current[period] ?? {});
   const [error, setError] = useState("");
   const [confirm, setConfirm] = useState(null);
+  const [saving, setSaving] = useState(null);
   const selectedRows = rows.filter((r) => selected.includes(r.enrollmentId));
   const selectedTotal = selectedRows.reduce(
     (sum, row) => sum + cents(row.monthlyPrice) - cents(draft(row).discount),
@@ -171,57 +173,100 @@ export default function BatchInvoices({
   function draft(row) {
     return (
       drafts[row.enrollmentId] ?? {
+        amount: row.suggestedAmount,
         discount: (
           (cents(row.monthlyPrice) - cents(row.suggestedAmount)) /
           100
         ).toFixed(2),
-        notes: "",
+        notes: row.suggestedNotes ?? "",
       }
     );
   }
   function change(row, field, value) {
     setError("");
+    const edit = { ...draft(row), [field]: value };
+    if (field === "amount")
+      edit.discount = Number.isSafeInteger(cents(value))
+        ? ((cents(row.monthlyPrice) - cents(value)) / 100).toFixed(2)
+        : "";
+    if (field === "discount")
+      edit.amount = Number.isSafeInteger(cents(value))
+        ? ((cents(row.monthlyPrice) - cents(value)) / 100).toFixed(2)
+        : "";
     const next = {
       ...drafts,
-      [row.enrollmentId]: {
-        ...draft(row),
-        [field]: value,
-      },
+      [row.enrollmentId]: edit,
     };
     draftCache.current[period] = next;
     setDrafts(next);
   }
+  function validate(row) {
+    const edit = draft(row),
+      discount = cents(edit.discount),
+      price = cents(row.monthlyPrice);
+    if (!Number.isSafeInteger(discount) || discount < 0 || discount > price) {
+      setError(
+        t(
+          "{0}: zbritja duhet të jetë nga 0 deri në {1} €, me deri dy shifra pas pikës.",
+          [row.studentName, row.monthlyPrice],
+        ),
+      );
+      return null;
+    }
+    const amount = ((price - discount) / 100).toFixed(2);
+    if (
+      amount !== (row.defaultAmount ?? row.suggestedAmount) &&
+      !edit.notes.trim()
+    ) {
+      setError(
+        t("{0}: shkruani arsyen e zbritjes ose ndryshimit të shumës.", [
+          row.studentName,
+        ]),
+      );
+      return null;
+    }
+    return {
+      ...row,
+      amount,
+      notes: edit.notes.trim(),
+    };
+  }
+  async function savePrice(row) {
+    if (saving) return;
+    setError("");
+    const value = validate(row);
+    if (!value) return;
+    setSaving(row.enrollmentId);
+    activeChanged(true);
+    try {
+      const updated = await api("/invoice-review/price", {
+        method: "POST",
+        body: JSON.stringify({
+          enrollmentId: row.enrollmentId,
+          period: row.period,
+          amount: value.amount,
+          notes: value.notes,
+          reviewToken: row.reviewToken,
+        }),
+      });
+      const next = { ...drafts };
+      delete next[row.enrollmentId];
+      draftCache.current[period] = next;
+      setDrafts(next);
+      priceSaved(updated);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setSaving(null);
+      activeChanged(false);
+    }
+  }
   function prepare() {
     setError("");
-    const batch = [];
-    for (const row of rows.filter((r) => selected.includes(r.enrollmentId))) {
-      const edit = draft(row),
-        discount = cents(edit.discount),
-        price = cents(row.monthlyPrice);
-      if (!Number.isSafeInteger(discount) || discount < 0 || discount > price) {
-        setError(
-          t(
-            "{0}: zbritja duhet të jetë nga 0 deri në {1} €, me deri dy shifra pas pikës.",
-            [row.studentName, row.monthlyPrice],
-          ),
-        );
-        return;
-      }
-      const amount = ((price - discount) / 100).toFixed(2);
-      if (amount !== row.suggestedAmount && !edit.notes.trim()) {
-        setError(
-          t("{0}: shkruani arsyen e zbritjes ose ndryshimit të shumës.", [
-            row.studentName,
-          ]),
-        );
-        return;
-      }
-      batch.push({
-        ...row,
-        amount,
-        notes: edit.notes.trim(),
-      });
-    }
+    const batch = rows
+      .filter((r) => selected.includes(r.enrollmentId))
+      .map(validate);
+    if (batch.some((row) => !row)) return;
     if (!batch.length) return;
     setConfirm(batch);
     activeChanged(true);
@@ -255,7 +300,7 @@ export default function BatchInvoices({
         </span>
         <button
           className="primary"
-          disabled={!selectedRows.length}
+          disabled={!selectedRows.length || Boolean(saving)}
           onClick={prepare}
         >
           {t("Regjistro faturat e zgjedhura")}
@@ -359,11 +404,11 @@ export default function BatchInvoices({
                     )}
                     <details className="batch-row-details">
                       <summary
-                        aria-label={t("Ndrysho zbritjen për {0}", [
+                        aria-label={t("Ndrysho çmimin për {0}", [
                           row.studentName,
                         ])}
                       >
-                        {t("Ndrysho zbritjen")}
+                        {t("Ndrysho çmimin")}
                       </summary>
                       <div className="batch-base-price">
                         {t("Çmimi mujor ")}
@@ -371,10 +416,23 @@ export default function BatchInvoices({
                       </div>
                       <div className="batch-price-editor">
                         <label>
+                          {t("Çmimi për këtë muaj (€)")}
+                          <input
+                            aria-label={t("Çmimi për {0}", [row.studentName])}
+                            inputMode="decimal"
+                            value={edit.amount}
+                            disabled={Boolean(saving)}
+                            onChange={(e) =>
+                              change(row, "amount", e.target.value)
+                            }
+                          />
+                        </label>
+                        <label>
                           {t("Zbritja (€)")}
                           <input
                             aria-label={t("Zbritja për {0}", [row.studentName])}
                             inputMode="decimal"
+                            disabled={Boolean(saving)}
                             value={edit.discount}
                             onChange={(e) =>
                               change(row, "discount", e.target.value)
@@ -395,12 +453,39 @@ export default function BatchInvoices({
                         <input
                           aria-label={t("Arsyeja për {0}", [row.studentName])}
                           maxLength={500}
+                          disabled={Boolean(saving)}
                           value={edit.notes}
                           placeholder={t("P.sh. zbritje për mungesat")}
                           onChange={(e) => change(row, "notes", e.target.value)}
                         />
                       </label>
+                      <p className="batch-price-scope">
+                        {t("Vlen vetëm për {0}. Fatura regjistrohet më vonë.", [
+                          monthLabel(row.period),
+                        ])}
+                      </p>
+                      <button
+                        className="secondary batch-save-price"
+                        disabled={Boolean(saving)}
+                        onClick={() => savePrice(row)}
+                      >
+                        {saving === row.enrollmentId
+                          ? t("Duke ruajtur…")
+                          : t("Ruaj çmimin për këtë muaj")}
+                      </button>
                     </details>
+                    {row.priceDraft && (
+                      <small className="batch-price-saved" role="status">
+                        {t("I ruajtur: {0} € për {1}", [
+                          row.priceDraft.amount,
+                          monthLabel(row.period),
+                        ])}
+                      </small>
+                    )}
+                    {(amount !== cents(row.suggestedAmount) ||
+                      edit.notes !== (row.suggestedNotes ?? "")) && (
+                      <small>{t("Ndryshime të paruajtura")}</small>
+                    )}
                   </td>
                   <td className="batch-action-cell">
                     <details className="batch-row-details">

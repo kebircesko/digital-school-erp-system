@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { monthlyPriceChecks } from "./monthly-price-checks.mjs";
 import { randomUUID, randomBytes } from "node:crypto";
 import { writeFile, mkdir } from "node:fs/promises";
 import { PrismaClient, Prisma } from "@prisma/client";
@@ -760,6 +761,15 @@ export async function erpChecks({
   // Existing invoices from before attendance tracking have SQL NULL snapshots.
   await db.$executeRaw`UPDATE "Invoice" SET "attendanceSnapshot" = NULL WHERE "id" = ${freeInvoice.id}::uuid`;
   extra++;
+  extra += await monthlyPriceChecks({
+    request,
+    admin,
+    finance,
+    instructorToken,
+    instructorUser,
+    db,
+    nextMonth,
+  });
   const invoiceCount = await db.invoice.count();
   const backup = await request("/backups", "POST", {}, admin, 201);
   const backupRes = await fetch(base + "/backups/" + backup.name, {
@@ -772,6 +782,7 @@ export async function erpChecks({
     process.env.ERP_TEST_BACKUP_KEY,
   );
   assert.equal(saved.records.invoice.length, invoiceCount);
+  assert.equal(saved.records.invoicePriceDraft.length, 1);
   assert.throws(() =>
     snapshotTools.decrypt(encrypted, randomBytes(32).toString("hex")),
   );
@@ -801,6 +812,7 @@ export async function erpChecks({
     assert.equal(migration.status, 0, migration.stderr);
     await snapshotTools.restore(restored, saved);
     assert.equal(await restored.invoice.count(), invoiceCount);
+    assert.equal(await restored.invoicePriceDraft.count(), 1);
     assert.equal(await restored.payment.count(), saved.records.payment.length);
     assert.equal(await restored.monthlyAttendance.count(), 1);
     assert.equal(

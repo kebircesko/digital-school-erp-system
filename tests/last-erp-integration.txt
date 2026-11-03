@@ -1,1 +1,1 @@
-192 integration checks passed against real PostgreSQL.
+182 integration checks passed against real PostgreSQL.

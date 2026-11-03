@@ -2,6 +2,9 @@ import { t, tm, getLocale } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import { api, download } from "../services/api";
 const actions = {
+  get INVOICE_PRICE_UPDATE() {
+    return t("Ndryshim çmimi për muajin");
+  },
   get LOGIN() {
     return t("Kyçje");
   },

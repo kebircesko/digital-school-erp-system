@@ -466,7 +466,7 @@ export function NewInvoiceDialog({
     [rows, setRows] = useState(candidate ? [candidate] : []),
     [enrollmentId, setEnrollmentId] = useState(candidate?.enrollmentId ?? ""),
     [amount, setAmount] = useState(candidate?.suggestedAmount ?? ""),
-    [notes, setNotes] = useState(""),
+    [notes, setNotes] = useState(candidate?.suggestedNotes ?? ""),
     [busy, setBusy] = useState(false),
     [loading, setLoading] = useState(false),
     [error, setError] = useState("");
@@ -493,7 +493,7 @@ export function NewInvoiceDialog({
           data.items[0];
         setEnrollmentId(row?.enrollmentId ?? "");
         setAmount(row?.suggestedAmount ?? "");
-        setNotes("");
+        setNotes(row?.suggestedNotes ?? "");
       })
       .catch((e) => {
         if (!controller.signal.aborted) {
@@ -623,7 +623,10 @@ export function NewInvoiceDialog({
                           rows.find((r) => r.enrollmentId === e.target.value)
                             ?.suggestedAmount ?? "",
                         );
-                        setNotes("");
+                        setNotes(
+                          rows.find((r) => r.enrollmentId === e.target.value)
+                            ?.suggestedNotes ?? "",
+                        );
                       }}
                     >
                       {rows.map((r) => (
@@ -651,7 +654,9 @@ export function NewInvoiceDialog({
                       />
                     </label>
                   </div>
-                  {Number(amount) !== Number(row.suggestedAmount) && (
+                  {(Number(amount) !==
+                    Number(row.defaultAmount ?? row.suggestedAmount) ||
+                    Boolean(notes)) && (
                     <label className="spaced">
                       {t("Arsyeja e ndryshimit")}
                       <textarea

@@ -14,6 +14,7 @@ exports.tables = [
   "course",
   "group",
   "enrollment",
+  "invoicePriceDraft",
   "invoice",
   "monthlyAttendance",
   "payment",
@@ -73,6 +74,12 @@ function decrypt(data, key) {
       maxOutputLength: 512 * 1024 * 1024,
     }).toString(),
   );
+  if (
+    result.format === 1 &&
+    result.records &&
+    result.records.invoicePriceDraft === undefined
+  )
+    result.records.invoicePriceDraft = [];
   // Older backups predate attendance tracking.
   if (
     result.format === 1 &&

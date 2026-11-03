@@ -36,6 +36,8 @@ try {
   const requests = [],
     created = new Set(),
     errors = [];
+  const prices = new Map(),
+    lastRows = new Map();
   let rejectSecond = true;
   page.on("pageerror", (e) => {
     errors.push(e.message);
@@ -77,12 +79,15 @@ try {
           studentName: name,
           period,
           monthlyPrice: "60.00",
-          suggestedAmount: "60.00",
+          defaultAmount: "60.00",
+          suggestedAmount: prices.get(`${period}:e${i}`)?.amount ?? "60.00",
+          suggestedNotes: prices.get(`${period}:e${i}`)?.notes ?? "",
+          priceDraft: prices.get(`${period}:e${i}`) ?? null,
           groupName: "TEST · Dizajn · C",
           courseName: "JavaScript – Basic [TEST]",
           instructorName: "Driton Morina [TEST]",
           dueDate: `${period}-29`,
-          reviewToken: "fixture-token",
+          reviewToken: `fixture-token-${prices.get(`${period}:e${i}`)?.version ?? 0}`,
           attendance: {
             current: null,
             previous: {
@@ -94,6 +99,7 @@ try {
           },
         }))
         .filter((r) => !created.has(r.enrollmentId));
+      rows.forEach((row) => lastRows.set(`${period}:${row.enrollmentId}`, row));
       const search = url.searchParams.get("search")?.toLowerCase();
       if (search)
         rows = rows.filter((r) =>
@@ -110,6 +116,26 @@ try {
       if (["missing", "regular"].includes(url.searchParams.get("status")))
         rows = [];
       body = { items: rows, total: rows.length, page: 1, pages: 1, summary };
+    }
+    if (path === "/invoice-review/price") {
+      const dto = route.request().postDataJSON(),
+        key = `${dto.period}:${dto.enrollmentId}`;
+      const previous = lastRows.get(key);
+      assert.equal(dto.reviewToken, previous.reviewToken);
+      const draft = {
+        amount: dto.amount,
+        notes: dto.notes,
+        version: (prices.get(key)?.version ?? 0) + 1,
+      };
+      prices.set(key, draft);
+      body = {
+        ...previous,
+        suggestedAmount: dto.amount,
+        suggestedNotes: dto.notes,
+        priceDraft: draft,
+        reviewToken: `fixture-token-${draft.version}`,
+      };
+      lastRows.set(key, body);
     }
     if (path === "/students/s0")
       body = {
@@ -192,9 +218,7 @@ try {
     path: "output/batch-invoices/compact.png",
     fullPage: true,
   });
-  await page
-    .getByLabel("Ndrysho zbritjen për Ana Test", { exact: true })
-    .click();
+  await page.getByLabel("Ndrysho çmimin për Ana Test", { exact: true }).click();
   await page.getByLabel("Zbritja për Ana Test", { exact: true }).waitFor();
   await page.getByRole("button", { name: "Ana Test", exact: true }).click();
   const profile = page.getByRole("dialog", {
@@ -251,6 +275,33 @@ try {
   await page
     .getByLabel("Arsyeja për Ana Test")
     .fill("Zbritje për mungesat, vendim i adminit");
+  await page.getByLabel("Çmimi për Ana Test", { exact: true }).fill("50");
+  assert.equal(
+    await page.getByLabel("Zbritja për Ana Test").inputValue(),
+    "10.00",
+  );
+  const anaRow = page
+    .locator(".batch-invoice-table tbody tr")
+    .filter({
+      has: page.getByRole("button", { name: "Ana Test", exact: true }),
+    });
+  await anaRow
+    .getByRole("button", { name: "Ruaj çmimin për këtë muaj", exact: true })
+    .click();
+  await anaRow.getByText(/I ruajtur: 50.00 € për/).waitFor();
+  assert.equal(
+    requests.length,
+    0,
+    "Saving a monthly price does not issue an invoice",
+  );
+  await page.getByRole("button", { name: "Rifresko", exact: true }).click();
+  await page.getByLabel("Zgjidh Ana Test", { exact: true }).waitFor();
+  await page.getByLabel("Ndrysho çmimin për Ana Test", { exact: true }).click();
+  assert.equal(
+    await page.getByLabel("Çmimi për Ana Test", { exact: true }).inputValue(),
+    "50.00",
+    "Saved price survives refresh",
+  );
   await search.fill("Besa");
   await page.getByLabel("Zgjidh Besa Test", { exact: true }).waitFor();
   await page
@@ -258,12 +309,10 @@ try {
     .waitFor();
   await search.fill("");
   await page.getByLabel("Zgjidh Ana Test", { exact: true }).waitFor();
-  await page
-    .getByLabel("Ndrysho zbritjen për Ana Test", { exact: true })
-    .click();
+  await page.getByLabel("Ndrysho çmimin për Ana Test", { exact: true }).click();
   assert.equal(
     await page.getByLabel("Zbritja për Ana Test").inputValue(),
-    "10",
+    "10.00",
     "Discount survives searching and returning",
   );
   assert.match(

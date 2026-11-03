@@ -69,7 +69,7 @@ async function pendingFor(db, period) {
   });
   if (!enrollments.length) return [];
   const studentIds = [...new Set(enrollments.map((e) => e.studentId))];
-  const [invoices, attendance] = await Promise.all([
+  const [invoices, attendance, prices] = await Promise.all([
     db.invoice.findMany({
       where: {
         studentId: { in: studentIds },
@@ -82,7 +82,11 @@ async function pendingFor(db, period) {
         period: { in: [period, previousPeriod] },
       },
     }),
+    db.invoicePriceDraft.findMany({
+      where: { enrollmentId: { in: enrollments.map((e) => e.id) }, period },
+    }),
   ]);
+  const priceMap = new Map(prices.map((p) => [p.enrollmentId, p]));
   const invoiceMap = new Map(
     invoices.map((i) => [`${i.studentId}:${i.courseId}:${i.period}`, i]),
   );
@@ -111,6 +115,7 @@ async function pendingFor(db, period) {
       previous: previousAttendance,
     };
     const dueDate = registrationDeadline(period, e.startDate);
+    const savedPrice = priceMap.get(e.id);
     const reviewToken = createHash("sha256")
       .update(
         JSON.stringify({
@@ -120,6 +125,13 @@ async function pendingFor(db, period) {
           price: e.monthlyPrice.toFixed(2),
           discount: e.discount.toFixed(2),
           snapshot,
+          savedPrice: savedPrice
+            ? [
+                savedPrice.version,
+                savedPrice.amount.toFixed(2),
+                savedPrice.notes,
+              ]
+            : null,
           previous: previous
             ? [previous.id, previous.status, previous.paidAmount.toFixed(2)]
             : null,
@@ -137,7 +149,19 @@ async function pendingFor(db, period) {
       period,
       dueDate,
       monthlyPrice: e.monthlyPrice.toFixed(2),
-      suggestedAmount: e.monthlyPrice.minus(e.discount).toFixed(2),
+      defaultAmount: e.monthlyPrice.minus(e.discount).toFixed(2),
+      suggestedAmount: (
+        savedPrice?.amount ?? e.monthlyPrice.minus(e.discount)
+      ).toFixed(2),
+      suggestedNotes: savedPrice?.notes ?? "",
+      priceDraft: savedPrice
+        ? {
+            amount: savedPrice.amount.toFixed(2),
+            notes: savedPrice.notes,
+            version: savedPrice.version,
+            updatedAt: savedPrice.updatedAt.toISOString(),
+          }
+        : null,
       previousPeriod,
       previousStatus: previous?.status ?? "NONE",
       previousPaid,
@@ -248,7 +272,10 @@ class InvoiceReviewController {
         throw new BadRequestException(
           "Shuma nuk mund të tejkalojë çmimin mujor.",
         );
-      if (!amount.eq(pending.suggestedAmount) && !dto.notes.trim())
+      const notes =
+        dto.notes.trim() ||
+        (amount.eq(pending.suggestedAmount) ? pending.suggestedNotes : "");
+      if (!amount.eq(pending.defaultAmount) && !notes)
         throw new BadRequestException(
           "Shkruani arsyen e ndryshimit të shumës.",
         );
@@ -272,7 +299,7 @@ class InvoiceReviewController {
           studentName: pending.studentName,
           courseName: pending.courseName,
           groupName: pending.groupName,
-          approvalNotes: dto.notes.trim(),
+          approvalNotes: notes,
           attendanceSnapshot: pending.attendance,
         },
       });
@@ -280,7 +307,66 @@ class InvoiceReviewController {
       return invoice;
     });
   }
+  async savePrice(dto, req) {
+    const amount = money(dto.amount);
+    checkPeriod(dto.period);
+    return atomic(this.db, async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(612040)`;
+      const pending = (await pendingFor(tx, dto.period)).find(
+        (r) => r.enrollmentId === dto.enrollmentId,
+      );
+      if (!pending || pending.reviewToken !== dto.reviewToken)
+        throw new ConflictException(
+          "Të dhënat ose çmimi kanë ndryshuar. Rifreskoni listën dhe kontrolloni sërish.",
+        );
+      if (amount.gt(pending.monthlyPrice))
+        throw new BadRequestException(
+          "Shuma nuk mund të tejkalojë çmimin mujor.",
+        );
+      if (!amount.eq(pending.defaultAmount) && !dto.notes.trim())
+        throw new BadRequestException(
+          "Shkruani arsyen e ndryshimit të shumës.",
+        );
+      const saved = await tx.invoicePriceDraft.upsert({
+        where: {
+          enrollmentId_period: {
+            enrollmentId: dto.enrollmentId,
+            period: dto.period,
+          },
+        },
+        create: {
+          enrollmentId: dto.enrollmentId,
+          period: dto.period,
+          amount,
+          notes: dto.notes.trim(),
+          updatedById: req.user.id,
+        },
+        update: {
+          amount,
+          notes: dto.notes.trim(),
+          updatedById: req.user.id,
+          version: { increment: 1 },
+        },
+      });
+      await audit(tx, req.user.id, "INVOICE_PRICE_UPDATE", saved.id);
+      return (await pendingFor(tx, dto.period)).find(
+        (r) => r.enrollmentId === dto.enrollmentId,
+      );
+    });
+  }
 }
+__decorate(
+  [
+    Post("price"),
+    Roles("ADMIN"),
+    __param(0, Body()),
+    __param(1, Req()),
+    __metadata("design:paramtypes", [ApproveInvoice, Object]),
+  ],
+  InvoiceReviewController.prototype,
+  "savePrice",
+  null,
+);
 __decorate(
   [
     Get("pending"),

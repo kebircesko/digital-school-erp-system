@@ -34,6 +34,7 @@ function controller(period) {
         })),
     },
     invoice: { findMany: async () => [] },
+    invoicePriceDraft: { findMany: async () => [] },
     monthlyAttendance: {
       findMany: async () => [
         attendance(0, period, 2),
