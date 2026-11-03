@@ -1,4 +1,6 @@
 "use strict";
+
+const { t } = require("../common/i18n");
 const PDFDocument = require("pdfkit");
 const { resolve } = require("node:path");
 const formatDate = (value) =>
@@ -8,7 +10,11 @@ const formatDate = (value) =>
 
 // A separate invoice layout keeps reports and receipts independent of the invoice design.
 async function invoicePdf(invoice) {
-  const doc = new PDFDocument({ size: "A4", margin: 36, bufferPages: true });
+  const doc = new PDFDocument({
+    size: "A4",
+    margin: 36,
+    bufferPages: true,
+  });
   const chunks = [];
   const finished = new Promise((resolve, reject) => {
     doc.on("data", (chunk) => chunks.push(chunk));
@@ -40,7 +46,11 @@ async function invoicePdf(invoice) {
       .font(bold ? "Bold" : "Regular")
       .fontSize(size)
       .fillColor(color)
-      .text(String(value), x, y, { width: w, align, lineGap: 2 });
+      .text(String(value), x, y, {
+        width: w,
+        align,
+        lineGap: 2,
+      });
   }
   function line(x, y, end, color = "#222222", weight = 0.5) {
     doc
@@ -94,30 +104,30 @@ async function invoicePdf(invoice) {
   }
   bulb();
   text(
-    process.env.SCHOOL_NAME || "SHKOLLA DIGJITALE PRIZREN",
+    process.env.SCHOOL_NAME || t("SHKOLLA DIGJITALE PRIZREN"),
     85,
     44,
     320,
     14,
     true,
   );
-  text("FATURË", 436, 44, 123, 24, true, "right", "#666666");
+  text(t("FATURË"), 436, 44, 123, 24, true, "right", "#666666");
   text(
-    `Nr. Fiskal: ${process.env.SCHOOL_FISCAL_NUMBER || "-"}`,
+    t("Nr. Fiskal: {0}", [process.env.SCHOOL_FISCAL_NUMBER || "-"]),
     86,
     70,
     300,
     9,
   );
   text(
-    `Nr. i Biznesit: ${process.env.SCHOOL_BUSINESS_NUMBER || "-"}`,
+    t("Nr. i Biznesit: {0}", [process.env.SCHOOL_BUSINESS_NUMBER || "-"]),
     86,
     87,
     300,
     9,
   );
   text(
-    `Nr. i TVSH-së: ${process.env.SCHOOL_VAT_NUMBER || "-"}`,
+    t("Nr. i TVSH-së: {0}", [process.env.SCHOOL_VAT_NUMBER || "-"]),
     86,
     104,
     300,
@@ -125,35 +135,38 @@ async function invoicePdf(invoice) {
   );
   line(left, 132, right, "#888888", 1.6);
   line(left, 136, right, "#888888", 0.6);
-  text("Blerësi", left + 10, 152, 270, 9);
+  text(t("Blerësi"), left + 10, 152, 270, 9);
   text(invoice.studentName, left + 10, 170, 280, 11, true);
   doc.font("Bold").fontSize(11);
   const buyerY =
     170 +
     Math.max(
       14,
-      doc.heightOfString(invoice.studentName, { width: 280, lineGap: 2 }),
+      doc.heightOfString(invoice.studentName, {
+        width: 280,
+        lineGap: 2,
+      }),
     ) +
     8;
-  text("Nr. i TVSH-së: -", left + 10, buyerY, 270, 8);
-  text("Nr. Fiskal: -", left + 10, buyerY + 16, 270, 8);
-  text("Nr. i Biznesit: -", left + 10, buyerY + 32, 270, 8);
+  text(t("Nr. i TVSH-së: -"), left + 10, buyerY, 270, 8);
+  text(t("Nr. Fiskal: -"), left + 10, buyerY + 16, 270, 8);
+  text(t("Nr. i Biznesit: -"), left + 10, buyerY + 32, 270, 8);
   const address =
-    invoice.student?.address || process.env.SCHOOL_CITY || "Prizren, Kosovë";
-  text(`Adresa: ${address}`, left + 10, buyerY + 48, 280, 8);
+    invoice.student?.address || process.env.SCHOOL_CITY || t("Prizren, Kosovë");
+  text(t("Adresa: {0}", [address]), left + 10, buyerY + 48, 280, 8);
   const buyerBottom = doc.y;
   const allocations = (invoice.allocations || [])
     .filter((a) => !a.payment.reversedAt)
     .sort((a, b) => new Date(a.payment.paidAt) - new Date(b.payment.paidAt));
   const latest = allocations.at(-1)?.payment.paidAt;
   const metadata = [
-    ["NR. I FATURËS:", invoice.number],
-    ["DATA E FATURËS:", formatDate(invoice.issuedAt)],
+    [t("NR. I FATURËS:"), invoice.number],
+    [t("DATA E FATURËS:"), formatDate(invoice.issuedAt)],
     [
-      latest ? "DATA E PAGESËS:" : "AFATI I PAGESËS:",
+      latest ? t("DATA E PAGESËS:") : t("AFATI I PAGESËS:"),
       formatDate(latest || invoice.dueDate),
     ],
-    ["VALUTA:", "EUR"],
+    [t("VALUTA:"), "EUR"],
   ];
   metadata.forEach(([label, value], index) => {
     text(label, 363, 157 + index * 21, 103, 8);
@@ -162,15 +175,15 @@ async function invoicePdf(invoice) {
   const tableY = Math.max(283, buyerBottom + 20, doc.y + 16),
     colWidths = [18, 190, 36, 38, 46, 45, 40, 48, 62];
   const headers = [
-    "Nr",
-    "Përshkrimi",
-    "Grupi i\nTVSH-së",
-    "Sasia",
-    "Njësia",
-    "Çmimi",
-    "Zbritje",
-    "Çmimi me\nzbritje",
-    "Total",
+    t("Nr"),
+    t("Përshkrimi"),
+    t("Grupi i\nTVSH-së"),
+    t("Sasia"),
+    t("Njësia"),
+    t("Çmimi"),
+    t("Zbritje"),
+    t("Çmimi me\nzbritje"),
+    t("Total"),
   ];
   let x = left;
   for (let c = 0; c < headers.length; c++) {
@@ -195,7 +208,10 @@ async function invoicePdf(invoice) {
   doc.font("Regular").fontSize(8);
   const rowHeight = Math.max(
     30,
-    doc.heightOfString(desc, { width: 184, lineGap: 2 }) + 12,
+    doc.heightOfString(desc, {
+      width: 184,
+      lineGap: 2,
+    }) + 12,
   );
   const discounted = invoice.discount.gt(0);
   const values = [
@@ -203,7 +219,7 @@ async function invoicePdf(invoice) {
     desc,
     "0%",
     "1.00",
-    "Shërbim",
+    t("Shërbim"),
     invoice.subtotal.toFixed(2),
     discounted ? invoice.discount.toFixed(2) : "",
     discounted ? invoice.amount.toFixed(2) : "",
@@ -229,9 +245,9 @@ async function invoicePdf(invoice) {
   }
   const totalY = tableY + 37 + rowHeight;
   [
-    ["Vlera Neto", invoice.amount.toFixed(2)],
-    ["TVSH", "0.00"],
-    ["Total për pagesë", invoice.amount.toFixed(2)],
+    [t("Vlera Neto"), invoice.amount.toFixed(2)],
+    [t("TVSH"), "0.00"],
+    [t("Total për pagesë"), invoice.amount.toFixed(2)],
   ].forEach(([label, value], index) => {
     text(label, 359, totalY + index * 19 + 4, 132, 9, index === 2, "right");
     doc
@@ -243,7 +259,7 @@ async function invoicePdf(invoice) {
   });
   if (invoice.status === "PARTIAL") {
     text(
-      `Paguar: ${invoice.paidAmount.toFixed(2)} EUR`,
+      t("Paguar: {0} EUR", [invoice.paidAmount.toFixed(2)]),
       365,
       totalY + 65,
       194,
@@ -252,7 +268,9 @@ async function invoicePdf(invoice) {
       "right",
     );
     text(
-      `Mbetja: ${invoice.amount.minus(invoice.paidAmount).toFixed(2)} EUR`,
+      t("Mbetja: {0} EUR", [
+        invoice.amount.minus(invoice.paidAmount).toFixed(2),
+      ]),
       365,
       totalY + 81,
       194,
@@ -263,26 +281,29 @@ async function invoicePdf(invoice) {
   }
   let paymentY = totalY + 108;
   function paymentHeader() {
-    text("Pagesa", left + 8, paymentY, 340, 9, true);
+    text(t("Pagesa"), left + 8, paymentY, 340, 9, true);
     paymentY += 17;
     let px = left + 8;
     const widths = [75, 102, 111, 76];
-    ["Data", "Lloji i pagesës", "Paguar në", "Shuma e paguar"].forEach(
-      (label, index) => {
-        doc.fillColor("#A6A6A6").rect(px, paymentY, widths[index], 30).fill();
-        text(
-          label,
-          px + 4,
-          paymentY + 5,
-          widths[index] - 8,
-          8,
-          false,
-          "left",
-          "#FFFFFF",
-        );
-        px += widths[index];
-      },
-    );
+    [
+      t("Data"),
+      t("Lloji i pagesës"),
+      t("Paguar në"),
+      t("Shuma e paguar"),
+    ].forEach((label, index) => {
+      doc.fillColor("#A6A6A6").rect(px, paymentY, widths[index], 30).fill();
+      text(
+        label,
+        px + 4,
+        paymentY + 5,
+        widths[index] - 8,
+        8,
+        false,
+        "left",
+        "#FFFFFF",
+      );
+      px += widths[index];
+    });
     paymentY += 30;
   }
   paymentHeader();
@@ -297,11 +318,13 @@ async function invoicePdf(invoice) {
     const values = payment
       ? [
           formatDate(payment.paidAt),
-          payment.method === "CASH" ? "Të gatshme (Cash)" : "Transfer bankar",
-          payment.method === "CASH" ? "Arka zyre" : "Bankë",
+          payment.method === "CASH"
+            ? t("Të gatshme (Cash)")
+            : t("Transfer bankar"),
+          payment.method === "CASH" ? t("Arka zyre") : t("Bankë"),
           allocation.amount.toFixed(2),
         ]
-      : ["-", "Pa pagesë", "-", "0.00"];
+      : ["-", t("Pa pagesë"), "-", "0.00"];
     let px = left + 8;
     [75, 102, 111, 76].forEach((w, index) => {
       doc
@@ -324,7 +347,7 @@ async function invoicePdf(invoice) {
   }
   if (invoice.status === "VOID")
     text(
-      "FATURË E ANULUAR",
+      t("FATURË E ANULUAR"),
       left,
       paymentY + 22,
       width,
@@ -351,4 +374,6 @@ async function invoicePdf(invoice) {
   doc.end();
   return finished;
 }
-module.exports = { invoicePdf };
+module.exports = {
+  invoicePdf,
+};

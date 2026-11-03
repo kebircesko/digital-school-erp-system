@@ -1,3 +1,4 @@
+import { t } from "../services/i18n.js";
 import { GraduationCap } from "lucide-react";
 export default function Brand() {
   return (
@@ -6,8 +7,8 @@ export default function Brand() {
         <GraduationCap size={28} />
       </div>
       <div>
-        <strong>SHKOLLA DIGJITALE</strong>
-        <span>PRIZREN · ERP</span>
+        <strong>{t("SHKOLLA DIGJITALE")}</strong>
+        <span>{t("PRIZREN · ERP")}</span>
       </div>
     </div>
   );

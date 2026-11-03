@@ -1,3 +1,5 @@
+import { t, tm } from "./services/i18n.js";
+import LanguageSelector, { useLanguage } from "./components/LanguageSelector";
 import PdfWorkspace from "./components/PdfWorkspace";
 import QuickAccess from "./components/QuickAccess";
 import ResourcePage from "./pages/ResourcePage";
@@ -24,21 +26,39 @@ import Brand from "./components/Brand";
 import StudentWorkspace from "./components/StudentWorkspace";
 import { useEffect, useState } from "react";
 import { LayoutDashboard, Users, LogOut, Moon, Sun } from "lucide-react";
-import { api, setToken } from "./services/api";
+import { api, setToken, hasSession } from "./services/api";
 const roleLabel = {
-  ADMIN: "Administrator",
-  FINANCE: "Financat",
-  INSTRUCTOR: "Instruktor",
+  get ADMIN() {
+    return t("Administrator");
+  },
+  get FINANCE() {
+    return t("Financat");
+  },
+  get INSTRUCTOR() {
+    return t("Instruktor");
+  },
 };
 export default function App() {
+  useLanguage();
+  const [checkingSession, setCheckingSession] = useState(hasSession),
+    [sessionError, setSessionError] = useState(""),
+    [sessionAttempt, setSessionAttempt] = useState(0);
   const [user, setUser] = useState(null),
-    [routes, setRoutes] = useState([{ page: "dashboard" }]),
+    [routes, setRoutes] = useState([
+      {
+        page: "dashboard",
+      },
+    ]),
     [dark, setDark] = useState(localStorage.getItem("theme") === "dark"),
     [message, setMessage] = useState(""),
     [reminders, setReminders] = useState(null),
     [paymentReminders, setPaymentReminders] = useState(null);
   useEffect(() => {
-    setRoutes([{ page: "dashboard" }]);
+    setRoutes([
+      {
+        page: "dashboard",
+      },
+    ]);
   }, [user]);
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -48,11 +68,34 @@ export default function App() {
     const expired = () => {
       setToken(null);
       setUser(null);
-      setMessage("Sesioni ka skaduar. Kyçuni përsëri.");
+      setMessage(t("Sesioni ka skaduar. Kyçuni përsëri."));
     };
     window.addEventListener("session-expired", expired);
     return () => window.removeEventListener("session-expired", expired);
   }, []);
+  useEffect(() => {
+    if (!hasSession()) {
+      setCheckingSession(false);
+      return;
+    }
+    const controller = new AbortController();
+    setCheckingSession(true);
+    setSessionError("");
+    api("/auth/me", {
+      signal: controller.signal,
+    })
+      .then((value) => {
+        if (!controller.signal.aborted) setUser(value);
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted && hasSession())
+          setSessionError(error.message);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setCheckingSession(false);
+      });
+    return () => controller.abort();
+  }, [sessionAttempt]);
   useEffect(() => {
     if (!user || user.role === "INSTRUCTOR") {
       setReminders(null);
@@ -62,12 +105,16 @@ export default function App() {
     const controller = new AbortController();
     const load = () =>
       Promise.allSettled([
-        api("/invoice-review/reminders", { signal: controller.signal })
+        api("/invoice-review/reminders", {
+          signal: controller.signal,
+        })
           .then((r) => {
             if (!controller.signal.aborted) setReminders(r);
           })
           .catch(() => {}),
-        api("/dashboard/payment-reminders", { signal: controller.signal })
+        api("/dashboard/payment-reminders", {
+          signal: controller.signal,
+        })
           .then((r) => {
             if (!controller.signal.aborted) setPaymentReminders(r);
           })
@@ -87,39 +134,129 @@ export default function App() {
   const route = routes.at(-1);
   const page = route.page;
   function navigate(nextPage, options = {}) {
-    setRoutes((previous) => [...previous, { page: nextPage, ...options }]);
+    setRoutes((previous) => [
+      ...previous,
+      {
+        page: nextPage,
+        ...options,
+      },
+    ]);
   }
   function openReview(period) {
-    navigate("invoices", { view: "review", period });
+    navigate("invoices", {
+      view: "review",
+      period,
+    });
   }
   async function logout() {
     try {
-      await api("/auth/logout", { method: "POST" });
+      await api("/auth/logout", {
+        method: "POST",
+      });
       setToken(null);
       setUser(null);
     } catch (e) {
       setMessage(e.message);
     }
   }
+  if (checkingSession || (!user && sessionError && hasSession()))
+    return (
+      <div className="session-check">
+        <section className="card">
+          <LanguageSelector />
+          <h2>
+            {checkingSession
+              ? t("Duke kontrolluar sesionin…")
+              : t("Nuk u lidhëm me serverin")}
+          </h2>
+          <p role={checkingSession ? "status" : "alert"}>
+            {checkingSession ? t("Ju lutemi prisni.") : tm(sessionError)}
+          </p>
+          {!checkingSession && (
+            <div className="modal-actions">
+              <button
+                className="secondary"
+                onClick={() => {
+                  setToken(null);
+                  setSessionError("");
+                }}
+              >
+                {t("Kthehu te kyçja")}
+              </button>
+              <button
+                className="primary"
+                onClick={() => setSessionAttempt((v) => v + 1)}
+              >
+                {t("Riprovo lidhjen")}
+              </button>
+            </div>
+          )}
+        </section>
+      </div>
+    );
   if (!user) return <Login message={message} onLogin={setUser} />;
   const navigation = [
-    { id: "dashboard", label: "Përmbledhja", icon: LayoutDashboard },
-    { id: "students", label: "Nxënësit", icon: Users },
-    { id: "courses", label: "Kurset", icon: BookOpen },
-    { id: "groups", label: "Grupet", icon: CalendarDays },
-    { id: "enrollments", label: "Regjistrimet", icon: ClipboardList },
+    {
+      id: "dashboard",
+      label: t("Përmbledhja"),
+      icon: LayoutDashboard,
+    },
+    {
+      id: "students",
+      label: t("Nxënësit"),
+      icon: Users,
+    },
+    {
+      id: "courses",
+      label: t("Kurset"),
+      icon: BookOpen,
+    },
+    {
+      id: "groups",
+      label: t("Grupet"),
+      icon: CalendarDays,
+    },
+    {
+      id: "enrollments",
+      label: t("Regjistrimet"),
+      icon: ClipboardList,
+    },
     ...(user.role !== "INSTRUCTOR"
       ? [
-          { id: "invoices", label: "Faturat", icon: Receipt },
-          { id: "debts", label: "Borxhet", icon: HandCoins },
-          { id: "financial", label: "Raportet", icon: ChartNoAxesCombined },
+          {
+            id: "invoices",
+            label: t("Faturat"),
+            icon: Receipt,
+          },
+          {
+            id: "debts",
+            label: t("Borxhet"),
+            icon: HandCoins,
+          },
+          {
+            id: "financial",
+            label: t("Raportet"),
+            icon: ChartNoAxesCombined,
+          },
         ]
       : []),
     ...(user.role === "ADMIN"
       ? [
-          { id: "users", label: "Përdoruesit", icon: UserCog },
-          { id: "audit", label: "Historiku", icon: History },
-          { id: "backups", label: "Backup", icon: Database },
+          {
+            id: "users",
+            label: t("Përdoruesit"),
+            icon: UserCog,
+          },
+          {
+            id: "audit",
+            label: t("Historiku"),
+            icon: History,
+          },
+          {
+            id: "backups",
+            label: t("Backup"),
+            icon: Database,
+          },
         ]
       : []),
   ];
@@ -129,7 +266,7 @@ export default function App() {
         <div className="app-shell">
           <aside className="sidebar">
             <Brand />
-            <div className="workspace">HAPËSIRA E SHKOLLËS</div>
+            <div className="workspace">{t("HAPËSIRA E SHKOLLËS")}</div>
             <nav>
               {(() => {
                 const daily =
@@ -171,7 +308,7 @@ export default function App() {
                           ].includes(page) || undefined
                         }
                       >
-                        <summary>Organizimi</summary>
+                        <summary>{t("Organizimi")}</summary>
                         {navigation
                           .filter((item) =>
                             [
@@ -192,7 +329,7 @@ export default function App() {
                           undefined
                         }
                       >
-                        <summary>Administrimi</summary>
+                        <summary>{t("Administrimi")}</summary>
                         {navigation
                           .filter((item) =>
                             ["users", "audit", "backups"].includes(item.id),
@@ -210,7 +347,7 @@ export default function App() {
                 <strong>{user.name}</strong>
                 <small>{roleLabel[user.role]}</small>
               </div>
-              <button title="Çkyçu" onClick={logout}>
+              <button title={t("Çkyçu")} onClick={logout}>
                 <LogOut size={18} />
               </button>
             </div>
@@ -219,13 +356,17 @@ export default function App() {
             <header>
               <div>
                 <span className="breadcrumb">
-                  Shkolla Digjitale <span>/</span> Prizren <span>/</span>
+                  {t("Shkolla Digjitale ")}
+                  <span>/</span>
+                  {t(" Prizren ")}
+                  <span>/</span>
                 </span>
                 <strong>
                   {navigation.find((item) => item.id === page)?.label}
                 </strong>
               </div>
               <div className="header-tools">
+                <LanguageSelector />
                 {user.role !== "INSTRUCTOR" &&
                   paymentReminders &&
                   paymentReminders.upcoming.total +
@@ -234,13 +375,27 @@ export default function App() {
                     <button
                       className="billing-alert"
                       onClick={() => {
-                        navigate("dashboard", { focusPayments: true });
+                        navigate("dashboard", {
+                          focusPayments: true,
+                        });
                       }}
-                      title={`${paymentReminders.upcoming.total} me afat sot ose brenda 7 ditëve, ${paymentReminders.overdue.total} me vonesë`}
-                      aria-label={`Njoftimet e pagesave: ${paymentReminders.upcoming.total} afër afatit, ${paymentReminders.overdue.total} me vonesë`}
+                      title={t(
+                        "{0} me afat sot ose brenda 7 ditëve, {1} me vonesë",
+                        [
+                          paymentReminders.upcoming.total,
+                          paymentReminders.overdue.total,
+                        ],
+                      )}
+                      aria-label={t(
+                        "Njoftimet e pagesave: {0} afër afatit, {1} me vonesë",
+                        [
+                          paymentReminders.upcoming.total,
+                          paymentReminders.overdue.total,
+                        ],
+                      )}
                     >
                       <Bell size={18} />
-                      Pagesat (
+                      {t("Pagesat (")}
                       {paymentReminders.upcoming.total +
                         paymentReminders.overdue.total}
                       )
@@ -256,19 +411,23 @@ export default function App() {
                           : reminders.next.period,
                       )
                     }
-                    title={`${reminders.current.count} këtë muaj, ${reminders.next.count} muajin e ardhshëm`}
+                    title={t("{0} këtë muaj, {1} muajin e ardhshëm", [
+                      reminders.current.count,
+                      reminders.next.count,
+                    ])}
                   >
                     <Bell size={18} />
-                    {reminders.total} fatura për të përgatitur
+                    {reminders.total}
+                    {t(" fatura për të përgatitur")}
                   </button>
                 )}
                 <span className="connection">
                   <i />
-                  API qendrore
+                  {t("API qendrore")}
                 </span>
                 <button
                   className="icon-button"
-                  aria-label="Ndrysho temën"
+                  aria-label={t("Ndrysho temën")}
                   onClick={() => setDark(!dark)}
                 >
                   {dark ? <Sun size={19} /> : <Moon size={19} />}
@@ -282,14 +441,28 @@ export default function App() {
                 onClick={() => setRoutes((previous) => previous.slice(0, -1))}
               >
                 <ArrowLeft size={16} />
-                Kthehu
+                {t("Kthehu")}
               </button>
-              <QuickAccess user={user} navigate={navigate} />
+              <QuickAccess
+                user={user}
+                navigate={navigate}
+                showSearch={
+                  ![
+                    "students",
+                    "courses",
+                    "groups",
+                    "enrollments",
+                    "users",
+                    "invoices",
+                    "audit",
+                  ].includes(page)
+                }
+              />
             </div>
             <main>
               {message && (
                 <div role="alert" className="error">
-                  {message}
+                  {tm(message)}
                   <button onClick={() => setMessage("")}>×</button>
                 </div>
               )}
@@ -336,8 +509,8 @@ export default function App() {
               )}
             </main>
             <footer>
-              Shkolla Digjitale Prizren{" "}
-              <span>Platforma e menaxhimit · ERP</span>
+              {t("Shkolla Digjitale Prizren")}{" "}
+              <span>{t("Platforma e menaxhimit · ERP")}</span>
             </footer>
           </div>
         </div>

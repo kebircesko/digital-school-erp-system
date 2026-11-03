@@ -1,3 +1,4 @@
+import { t } from "../services/i18n.js";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useDialog } from "../hooks/useDialog";
 const PdfPreview = lazy(() => import("./PdfPreview"));
@@ -5,7 +6,10 @@ export default function PdfWorkspace({ children }) {
   const [document, setDocument] = useState(null);
   useEffect(() => {
     const open = (event) =>
-      setDocument({ ...event.detail, key: crypto.randomUUID() });
+      setDocument({
+        ...event.detail,
+        key: crypto.randomUUID(),
+      });
     window.addEventListener("pdf-preview", open);
     return () => window.removeEventListener("pdf-preview", open);
   }, []);
@@ -26,7 +30,6 @@ export default function PdfWorkspace({ children }) {
     </>
   );
 }
-
 function PdfLoading({ close }) {
   useDialog(close);
   return (
@@ -35,11 +38,11 @@ function PdfLoading({ close }) {
         className="modal"
         role="dialog"
         aria-modal="true"
-        aria-label="Pamja PDF"
+        aria-label={t("Pamja PDF")}
       >
-        <p role="status">Duke hapur shikuesin PDF…</p>
+        <p role="status">{t("Duke hapur shikuesin PDF…")}</p>
         <button className="secondary" onClick={close}>
-          Mbyll
+          {t("Mbyll")}
         </button>
       </section>
     </div>

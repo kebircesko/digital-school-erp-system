@@ -1,7 +1,7 @@
+import { t } from "../services/i18n.js";
 import { useEffect, useState } from "react";
 import Finance from "./Finance";
 import BillingReview from "./BillingReview";
-
 export default function InvoiceWorkspace({
   user,
   initialView = "list",
@@ -10,13 +10,13 @@ export default function InvoiceWorkspace({
   const [view, setView] = useState(initialView);
   useEffect(() => setView(initialView), [initialView, initialPeriod]);
   const tabs = [
-    ["list", "Lista e faturave"],
-    ["review", "Faturat e muajit"],
-    ["payments", "Pagesat"],
+    ["list", t("Lista e faturave")],
+    ["review", t("Faturat e muajit")],
+    ["payments", t("Pagesat")],
   ];
   return (
     <>
-      <div className="workspace-tabs" aria-label="Faturat dhe pagesat">
+      <div className="workspace-tabs" aria-label={t("Faturat dhe pagesat")}>
         {tabs.map(([id, label]) => (
           <button
             key={id}

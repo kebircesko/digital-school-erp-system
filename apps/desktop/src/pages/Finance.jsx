@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import { Plus, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { useDialog } from "../hooks/useDialog";
@@ -10,10 +11,18 @@ import PaymentDeadline, { useSchoolDay } from "../components/PaymentDeadline";
 import { calendarDay, date, monthLabel } from "../services/format";
 import { InvoiceDialog, NewInvoiceDialog } from "../components/InvoiceDialog";
 const labelStatus = {
-  UNPAID: "Papaguar",
-  PARTIAL: "Pjesërisht paguar",
-  PAID: "Paguar",
-  VOID: "Anuluar",
+  get UNPAID() {
+    return t("Papaguar");
+  },
+  get PARTIAL() {
+    return t("Pjesërisht paguar");
+  },
+  get PAID() {
+    return t("Paguar");
+  },
+  get VOID() {
+    return t("Anuluar");
+  },
 };
 const money = (value) => value + " €";
 function cents(value) {
@@ -98,13 +107,17 @@ export function PaymentEditor({ close, saved }) {
     setError("");
     try {
       if (invalidOrder)
-        throw new Error("Mbyllni fillimisht muajt më të vjetër të papaguar.");
+        throw new Error(
+          t("Mbyllni fillimisht muajt më të vjetër të papaguar."),
+        );
       if (
         !Object.keys(allocations).length ||
         Object.values(allocations).some((v) => !cents(v))
       )
         throw new Error(
-          "Zgjidhni faturat dhe vendosni shuma pozitive me dy shifra dhjetore.",
+          t(
+            "Zgjidhni faturat dhe vendosni shuma pozitive me dy shifra dhjetore.",
+          ),
         );
       const payment = await api("/payments", {
         method: "POST",
@@ -116,7 +129,10 @@ export function PaymentEditor({ close, saved }) {
           paidAt,
           notes,
           allocations: Object.entries(allocations).map(
-            ([invoiceId, amount]) => ({ invoiceId, amount }),
+            ([invoiceId, amount]) => ({
+              invoiceId,
+              amount,
+            }),
           ),
         }),
       });
@@ -132,7 +148,7 @@ export function PaymentEditor({ close, saved }) {
     <div className="modal-backdrop">
       <section className="modal wide" role="dialog" aria-modal="true">
         <div className="modal-heading">
-          <h2>Regjistro pagesë</h2>
+          <h2>{t("Regjistro pagesë")}</h2>
           <button disabled={busy} onClick={close}>
             ×
           </button>
@@ -141,7 +157,7 @@ export function PaymentEditor({ close, saved }) {
           <fieldset disabled={busy}>
             <Lookup
               endpoint="/students"
-              label="Nxënësi"
+              label={t("Nxënësi")}
               value={studentId}
               onChange={setStudentId}
             />
@@ -153,17 +169,17 @@ export function PaymentEditor({ close, saved }) {
             />
             <div className="form-grid spaced">
               <label>
-                Metoda
+                {t("Metoda")}
                 <select
                   value={method}
                   onChange={(e) => setMethod(e.target.value)}
                 >
-                  <option value="CASH">Para të gatshme</option>
-                  <option value="BANK">Bankë</option>
+                  <option value="CASH">{t("Para të gatshme")}</option>
+                  <option value="BANK">{t("Bankë")}</option>
                 </select>
               </label>
               <label>
-                Data e pagesës
+                {t("Data e pagesës")}
                 <input
                   type="date"
                   required
@@ -173,14 +189,18 @@ export function PaymentEditor({ close, saved }) {
               </label>
             </div>
             <h3 className="section-label">
-              Muajt e papaguar · më i vjetri i pari
+              {t("Muajt e papaguar · më i vjetri i pari")}
             </h3>
-            {loading && <p role="status">Duke kontrolluar muajt e papaguar…</p>}
+            {loading && (
+              <p role="status">{t("Duke kontrolluar muajt e papaguar…")}</p>
+            )}
             {invoices.length > 0 && (
               <p className="payment-order-note">
-                Mbyllni fillimisht {monthLabel(invoices[0].period)}. Për të
-                përfshirë muajin tjetër, mbuloni plotësisht faturat e muajve më
-                të vjetër.
+                {t("Mbyllni fillimisht ")}
+                {monthLabel(invoices[0].period)}
+                {t(
+                  ". Për të përfshirë muajin tjetër, mbuloni plotësisht faturat e muajve më të vjetër.",
+                )}
               </p>
             )}
             {invoices.map((i) => {
@@ -196,7 +216,9 @@ export function PaymentEditor({ close, saved }) {
                       checked={i.id in allocations}
                       onChange={(e) =>
                         setAllocations((previous) => {
-                          const next = { ...previous };
+                          const next = {
+                            ...previous,
+                          };
                           if (e.target.checked) next[i.id] = balance;
                           else delete next[i.id];
                           return next;
@@ -204,11 +226,14 @@ export function PaymentEditor({ close, saved }) {
                       }
                     />
                     {monthLabel(i.period)} · {i.number}
-                    <small>Mbetja: {balance} €</small>
+                    <small>
+                      {t("Mbetja: ")}
+                      {balance} €
+                    </small>
                   </label>
                   {i.id in allocations && (
                     <input
-                      aria-label={"Shuma për " + i.number}
+                      aria-label={t("Shuma për ") + i.number}
                       inputMode="decimal"
                       pattern="[0-9]+([.][0-9]{1,2})?"
                       required
@@ -225,10 +250,10 @@ export function PaymentEditor({ close, saved }) {
               );
             })}
             {studentId && !loading && !error && !invoices.length && (
-              <p>Nuk ka fatura të papaguara për këtë nxënës.</p>
+              <p>{t("Nuk ka fatura të papaguara për këtë nxënës.")}</p>
             )}
             <label className="spaced">
-              Shënime
+              {t("Shënime")}
               <textarea
                 rows={2}
                 maxLength={500}
@@ -237,12 +262,13 @@ export function PaymentEditor({ close, saved }) {
               />
             </label>
             <div className="payment-total">
-              Totali i pagesës <strong>{amount(total)} €</strong>
+              {t("Totali i pagesës ")}
+              <strong>{amount(total)} €</strong>
             </div>
           </fieldset>
           {error && (
             <div className="error" role="alert">
-              {error}
+              {tm(error)}
             </div>
           )}
           <div className="modal-actions">
@@ -252,13 +278,13 @@ export function PaymentEditor({ close, saved }) {
               disabled={busy}
               onClick={close}
             >
-              Anulo
+              {t("Anulo")}
             </button>
             <button
               className="primary"
               disabled={busy || loading || invalidOrder || total === 0n}
             >
-              {busy ? "Duke regjistruar…" : "Regjistro pagesën"}
+              {busy ? t("Duke regjistruar…") : t("Regjistro pagesën")}
             </button>
           </div>
         </form>
@@ -296,10 +322,20 @@ export default function Finance({ kind, user, openReview }) {
       const params = new URLSearchParams({
         page: String(page),
         search,
-        ...(kind === "invoices" && period ? { period } : {}),
-        ...(kind === "invoices" && status ? { status } : {}),
+        ...(kind === "invoices" && period
+          ? {
+              period,
+            }
+          : {}),
+        ...(kind === "invoices" && status
+          ? {
+              status,
+            }
+          : {}),
       });
-      api("/" + kind + "?" + params, { signal: controller.signal })
+      api("/" + kind + "?" + params, {
+        signal: controller.signal,
+      })
         .then((result) => {
           if (!controller.signal.aborted) setData(result);
         })
@@ -326,10 +362,15 @@ export default function Finance({ kind, user, openReview }) {
     try {
       await api(
         `/${kind}/${action.id}/${kind === "invoices" ? "void" : "reverse"}`,
-        { method: "POST", body: JSON.stringify({ reason }) },
+        {
+          method: "POST",
+          body: JSON.stringify({
+            reason,
+          }),
+        },
       );
       setAction(null);
-      setNotice("Veprimi u regjistrua në historik.");
+      setNotice(t("Veprimi u regjistrua në historik."));
       window.dispatchEvent(new Event("billing-updated"));
       setRevision((v) => v + 1);
     } catch (e) {
@@ -342,12 +383,16 @@ export default function Finance({ kind, user, openReview }) {
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">FINANCAT · EUR</span>
-          <h1>{kind === "invoices" ? "Faturat" : "Pagesat"}</h1>
+          <span className="eyebrow">{t("FINANCAT · EUR")}</span>
+          <h1>{kind === "invoices" ? t("Faturat") : t("Pagesat")}</h1>
           <p>
             {kind === "invoices"
-              ? "Hap faturën, regjistro pagesën dhe printoje nga e njëjta dritare."
-              : "Pagesa të plota ose të pjesshme, me historik të gjurmueshëm."}
+              ? t(
+                  "Hap faturën, regjistro pagesën dhe printoje nga e njëjta dritare.",
+                )
+              : t(
+                  "Pagesa të plota ose të pjesshme, me historik të gjurmueshëm.",
+                )}
           </p>
         </div>
         {(kind !== "invoices" || user.role === "ADMIN") && (
@@ -358,27 +403,29 @@ export default function Finance({ kind, user, openReview }) {
             }
           >
             <Plus size={18} />
-            {kind === "invoices" ? "Regjistro faturën" : "Regjistro pagesë"}
+            {kind === "invoices"
+              ? t("Regjistro faturën")
+              : t("Regjistro pagesë")}
           </button>
         )}
       </div>
       {error && (
         <div className="error" role="alert">
-          {error}
+          {tm(error)}
           <button onClick={() => setError("")}>×</button>
         </div>
       )}
       {notice && (
         <div className="success" role="status">
-          {notice}
+          {tm(notice)}
           <button onClick={() => setNotice("")}>×</button>
         </div>
       )}
       <section className={`card ${kind === "invoices" ? "invoice-list" : ""}`}>
         <div className="table-toolbar">
           <input
-            aria-label="Kërko faturë ose pagesë"
-            placeholder="Kërko numrin ose nxënësin…"
+            aria-label={t("Kërko faturë ose pagesë")}
+            placeholder={t("Kërko numrin ose nxënësin…")}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -388,7 +435,7 @@ export default function Finance({ kind, user, openReview }) {
           {kind === "invoices" && (
             <>
               <input
-                aria-label="Periudha"
+                aria-label={t("Periudha")}
                 type="month"
                 value={period}
                 onChange={(e) => {
@@ -397,14 +444,14 @@ export default function Finance({ kind, user, openReview }) {
                 }}
               />
               <select
-                aria-label="Statusi i faturave"
+                aria-label={t("Statusi i faturave")}
                 value={status}
                 onChange={(e) => {
                   setStatus(e.target.value);
                   setPage(1);
                 }}
               >
-                <option value="">Të gjitha statuset</option>
+                <option value="">{t("Të gjitha statuset")}</option>
                 {Object.entries(labelStatus).map(([key, value]) => (
                   <option key={key} value={key}>
                     {value}
@@ -418,18 +465,20 @@ export default function Finance({ kind, user, openReview }) {
           <table>
             <thead>
               <tr>
-                <th>Numri</th>
-                <th>Nxënësi</th>
+                <th>{t("Numri")}</th>
+                <th>{t("Nxënësi")}</th>
                 <th>
                   {kind === "invoices" ? "Kursi / Periudha" : "Data / Metoda"}
                 </th>
-                {kind === "invoices" && <th>Datat</th>}
-                {kind === "invoices" && <th>Afati i pagesës</th>}
-                <th>Shuma</th>
-                {kind === "invoices" && <th>Paguar</th>}
-                <th>{kind === "invoices" ? "Mbetja" : "Regjistruar nga"}</th>
-                <th>Statusi</th>
-                <th>Veprimet</th>
+                {kind === "invoices" && <th>{t("Datat")}</th>}
+                {kind === "invoices" && <th>{t("Afati i pagesës")}</th>}
+                <th>{t("Shuma")}</th>
+                {kind === "invoices" && <th>{t("Paguar")}</th>}
+                <th>
+                  {kind === "invoices" ? t("Mbetja") : t("Regjistruar nga")}
+                </th>
+                <th>{t("Statusi")}</th>
+                <th>{t("Veprimet")}</th>
               </tr>
             </thead>
             <tbody>
@@ -437,14 +486,21 @@ export default function Finance({ kind, user, openReview }) {
                 <tr
                   key={r.id}
                   onDoubleClick={() => {
-                    if (kind === "invoices") setInvoiceDialog({ id: r.id });
+                    if (kind === "invoices")
+                      setInvoiceDialog({
+                        id: r.id,
+                      });
                   }}
                 >
                   <td>
                     {kind === "invoices" ? (
                       <button
                         className="invoice-number"
-                        onClick={() => setInvoiceDialog({ id: r.id })}
+                        onClick={() =>
+                          setInvoiceDialog({
+                            id: r.id,
+                          })
+                        }
                       >
                         {r.number}
                       </button>
@@ -463,15 +519,18 @@ export default function Finance({ kind, user, openReview }) {
                       ? r.courseName + " · " + r.period
                       : r.paidAt.slice(0, 10) +
                         " · " +
-                        (r.method === "CASH" ? "Para të gatshme" : "Bankë")}
+                        (r.method === "CASH"
+                          ? t("Para të gatshme")
+                          : t("Bankë"))}
                   </td>
                   {kind === "invoices" && (
                     <td>
-                      <span title="Data e lëshimit të faturës">
+                      <span title={t("Data e lëshimit të faturës")}>
                         {date(r.issuedAt)}
                       </span>
                       <small>
-                        Pagesa: {r.lastPaidAt ? date(r.lastPaidAt) : "-"}
+                        {t("Pagesa: ")}
+                        {r.lastPaidAt ? date(r.lastPaidAt) : "-"}
                       </small>
                     </td>
                   )}
@@ -492,33 +551,40 @@ export default function Finance({ kind, user, openReview }) {
                     {kind === "invoices"
                       ? labelStatus[r.status]
                       : r.reversedAt
-                        ? "Anuluar"
-                        : "Regjistruar"}
+                        ? t("Anuluar")
+                        : t("Regjistruar")}
                   </td>
                   <td>
                     <div className="row-actions">
                       {kind === "invoices" && (
                         <>
                           <button
-                            onClick={() => setInvoiceDialog({ id: r.id })}
+                            onClick={() =>
+                              setInvoiceDialog({
+                                id: r.id,
+                              })
+                            }
                           >
-                            Hap
+                            {t("Hap")}
                           </button>
                           {r.status !== "VOID" && Number(r.balance) > 0 && (
                             <button
                               className="pay-invoice"
                               onClick={() =>
-                                setInvoiceDialog({ id: r.id, pay: true })
+                                setInvoiceDialog({
+                                  id: r.id,
+                                  pay: true,
+                                })
                               }
                             >
-                              Paguaj
+                              {t("Paguaj")}
                             </button>
                           )}
                         </>
                       )}
                       <button
-                        title="PDF / Printo"
-                        aria-label={"Printo faturën " + r.number}
+                        title={t("PDF / Printo")}
+                        aria-label={t("Printo faturën ") + r.number}
                         onClick={() => doc(r.id, r.number)}
                       >
                         <FileText size={17} />
@@ -535,7 +601,7 @@ export default function Finance({ kind, user, openReview }) {
                             setReason("");
                           }}
                         >
-                          Anulo
+                          {t("Anulo")}
                         </button>
                       )}
                     </div>
@@ -546,11 +612,15 @@ export default function Finance({ kind, user, openReview }) {
           </table>
         </div>
         {data && !data.items.length && (
-          <div className="empty">Nuk ka regjistrime për këto filtra.</div>
+          <div className="empty">
+            {t("Nuk ka regjistrime për këto filtra.")}
+          </div>
         )}
         <div className="pagination">
           <span>
-            {data?.total ?? 0} regjistrime · Faqja {page}
+            {data?.total ?? 0}
+            {t(" regjistrime · Faqja ")}
+            {page}
           </span>
           <div>
             <button disabled={page <= 1} onClick={() => setPage(page - 1)}>
@@ -570,7 +640,10 @@ export default function Finance({ kind, user, openReview }) {
           close={() => setNewInvoice(false)}
           created={(invoice) => {
             setNewInvoice(false);
-            setInvoiceDialog({ id: invoice.id, pay: true });
+            setInvoiceDialog({
+              id: invoice.id,
+              pay: true,
+            });
             setRevision((v) => v + 1);
           }}
         />
@@ -600,10 +673,13 @@ export default function Finance({ kind, user, openReview }) {
               ),
             ];
             setNotice(
-              "Pagesa u regjistrua me sukses." +
+              t("Pagesa u regjistrua me sukses.") +
                 (nextPeriods.length
-                  ? ` Muaji pasues: ${nextPeriods.join(", ")}. Kontrolloni listën Për aprovim për regjistrimet që vazhdojnë.`
-                  : " Mbetja qëndron te faturat e papaguara."),
+                  ? t(
+                      " Muaji pasues: {0}. Kontrolloni listën Për aprovim për regjistrimet që vazhdojnë.",
+                      [nextPeriods.join(", ")],
+                    )
+                  : t(" Mbetja qëndron te faturat e papaguara.")),
             );
             setRevision((v) => v + 1);
           }}
@@ -612,15 +688,18 @@ export default function Finance({ kind, user, openReview }) {
       {action && (
         <div className="modal-backdrop">
           <section className="modal small" role="dialog" aria-modal="true">
-            <h2>Anulo {action.number}</h2>
+            <h2>
+              {t("Anulo ")}
+              {action.number}
+            </h2>
             <p>
               {kind === "payments"
-                ? "Shuma do të hiqet nga faturat; pagesa ruhet në historik."
-                : "Fatura ruhet në historik dhe hiqet nga detyrimet."}
+                ? t("Shuma do të hiqet nga faturat; pagesa ruhet në historik.")
+                : t("Fatura ruhet në historik dhe hiqet nga detyrimet.")}
             </p>
             <form onSubmit={cancel}>
               <label>
-                Arsyeja
+                {t("Arsyeja")}
                 <textarea
                   required
                   maxLength={500}
@@ -628,7 +707,7 @@ export default function Finance({ kind, user, openReview }) {
                   onChange={(e) => setReason(e.target.value)}
                 />
               </label>
-              {error && <div className="error">{error}</div>}
+              {error && <div className="error">{tm(error)}</div>}
               <div className="modal-actions">
                 <button
                   type="button"
@@ -636,10 +715,10 @@ export default function Finance({ kind, user, openReview }) {
                   disabled={busy}
                   onClick={() => setAction(null)}
                 >
-                  Mbyll
+                  {t("Mbyll")}
                 </button>
                 <button className="danger" disabled={busy}>
-                  Konfirmo anulimin
+                  {t("Konfirmo anulimin")}
                 </button>
               </div>
             </form>

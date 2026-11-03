@@ -1,3 +1,4 @@
+const { translate } = require("@erp/shared/src/translate.cjs");
 const {
   app,
   BrowserWindow,
@@ -49,28 +50,29 @@ function createWindow() {
   else win.loadURL("app://erp/index.html");
 }
 app.whenReady().then(() => {
-  ipcMain.handle("save-file", async (event, data, name) => {
+  ipcMain.handle("save-file", async (event, data, name, language) => {
+    const t = (source) => translate(source, [], language);
     const origin = event.senderFrame?.url;
     if (!(
       origin?.startsWith("app://erp/") ||
       (!app.isPackaged && origin?.startsWith("http://localhost:5174/"))
     ))
-      throw new Error("Qasja u refuzua.");
+      throw new Error(t("Qasja u refuzua."));
     if (
       typeof name !== "string" ||
       name !== path.basename(name) ||
       !/^[-a-zA-Z0-9_. ]+\.(pdf|xlsx|erpbackup)$/.test(name)
     )
-      throw new Error("Emri i skedarit është i pavlefshëm.");
+      throw new Error(t("Emri i skedarit është i pavlefshëm."));
     const bytes = Buffer.from(data);
     if (bytes.length > 200 * 1024 * 1024)
-      throw new Error("Skedari është tepër i madh.");
+      throw new Error(t("Skedari është tepër i madh."));
     const choice = await dialog.showSaveDialog(
       BrowserWindow.fromWebContents(event.sender),
       {
         defaultPath: name,
         filters: [
-          { name: "Dokumenti ERP", extensions: [name.split(".").pop()] },
+          { name: t("Dokumenti ERP"), extensions: [name.split(".").pop()] },
         ],
       },
     );
@@ -80,19 +82,20 @@ app.whenReady().then(() => {
     });
     return true;
   });
-  ipcMain.handle("open-pdf", async (event, data) => {
+  ipcMain.handle("open-pdf", async (event, data, language) => {
+    const t = (source) => translate(source, [], language);
     const origin = event.senderFrame?.url;
     if (!(
       origin?.startsWith("app://erp/") ||
       (!app.isPackaged && origin?.startsWith("http://localhost:5174/"))
     ))
-      throw new Error("Qasja u refuzua.");
+      throw new Error(t("Qasja u refuzua."));
     const bytes = Buffer.from(data);
     if (
       bytes.length > 20 * 1024 * 1024 ||
       bytes.subarray(0, 5).toString() !== "%PDF-"
     )
-      throw new Error("PDF i pavlefshëm.");
+      throw new Error(t("PDF i pavlefshëm."));
     const fs = require("node:fs/promises"),
       os = require("node:os");
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), "erp-pdf-"));
@@ -101,7 +104,7 @@ app.whenReady().then(() => {
     const viewer = new BrowserWindow({
       width: 1000,
       height: 850,
-      title: "Dokumenti - ruaj ose printo",
+      title: t("Dokumenti - ruaj ose printo"),
       webPreferences: {
         sandbox: true,
         contextIsolation: true,

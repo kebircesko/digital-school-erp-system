@@ -1,9 +1,8 @@
+import { t, tm } from "../services/i18n.js";
 import { useEffect, useId, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { api } from "../services/api";
-
 const nameOf = (student) => `${student.firstName} ${student.lastName}`;
-
 export default function StudentLookup({
   endpoint,
   label,
@@ -23,10 +22,9 @@ export default function StudentLookup({
   const current =
     result?.query === query && result?.endpoint === endpoint ? result : null;
   const rows = current?.rows ?? [];
-
   useEffect(() => {
     input.current?.setCustomValidity(
-      value || !text ? "" : "Zgjidhni nxënësin nga sugjerimet poshtë.",
+      value || !text ? "" : t("Zgjidhni nxënësin nga sugjerimet poshtë."),
     );
   }, [value, text]);
   useEffect(() => {
@@ -37,7 +35,9 @@ export default function StudentLookup({
       return;
     }
     const controller = new AbortController();
-    api(`/students/${value}`, { signal: controller.signal })
+    api(`/students/${value}`, {
+      signal: controller.signal,
+    })
       .then((student) => {
         if (!controller.signal.aborted) {
           cache.current.set(`${endpoint}:${student.id}`, student);
@@ -54,19 +54,34 @@ export default function StudentLookup({
       api(
         endpoint +
           (endpoint.includes("?") ? "&" : "?") +
-          new URLSearchParams({ limit: "12", search: query }),
-        { signal: controller.signal },
+          new URLSearchParams({
+            limit: "12",
+            search: query,
+          }),
+        {
+          signal: controller.signal,
+        },
       )
         .then((data) => {
           if (controller.signal.aborted) return;
           for (const student of data.items)
             cache.current.set(`${endpoint}:${student.id}`, student);
-          setResult({ query, endpoint, rows: data.items, total: data.total });
+          setResult({
+            query,
+            endpoint,
+            rows: data.items,
+            total: data.total,
+          });
           setActive(data.items.length ? 0 : -1);
         })
         .catch((error) => {
           if (!controller.signal.aborted)
-            setResult({ query, endpoint, rows: [], error: error.message });
+            setResult({
+              query,
+              endpoint,
+              rows: [],
+              error: error.message,
+            });
         });
     }, 150);
     return () => {
@@ -116,9 +131,9 @@ export default function StudentLookup({
               ? (active + 1) % rows.length
               : (active - 1 + rows.length) % rows.length;
         setActive(next);
-        document
-          .getElementById(`${id}-option-${next}`)
-          ?.scrollIntoView({ block: "nearest" });
+        document.getElementById(`${id}-option-${next}`)?.scrollIntoView({
+          block: "nearest",
+        });
       }
     }
     if (event.key === "Enter" && open) {
@@ -142,14 +157,14 @@ export default function StudentLookup({
           id={id}
           ref={input}
           role="combobox"
-          aria-label={`Kërko: ${label}`}
+          aria-label={t("Kërko: {0}", [label])}
           aria-autocomplete="list"
           aria-expanded={open}
           aria-controls={`${id}-list`}
           aria-activedescendant={
             open && rows[active] ? `${id}-option-${active}` : undefined
           }
-          placeholder="Shkruani emrin, prindin ose telefonin…"
+          placeholder={t("Shkruani emrin, prindin ose telefonin…")}
           autoComplete="off"
           spellCheck={false}
           required
@@ -162,7 +177,7 @@ export default function StudentLookup({
           <button
             type="button"
             className="icon-button"
-            aria-label={`Pastro zgjedhjen: ${label}`}
+            aria-label={t("Pastro zgjedhjen: {0}", [label])}
             onClick={() => {
               setText("");
               setQuery("");
@@ -179,15 +194,15 @@ export default function StudentLookup({
       {open && (
         <div className="student-lookup-results">
           {!current ? (
-            <p role="status">Duke kërkuar nxënësit…</p>
+            <p role="status">{t("Duke kërkuar nxënësit…")}</p>
           ) : current.error ? (
-            <p role="alert">{current.error}</p>
+            <p role="alert">{tm(current.error)}</p>
           ) : (
             <>
               <ul
                 id={`${id}-list`}
                 role="listbox"
-                aria-label={`Sugjerime: ${label}`}
+                aria-label={t("Sugjerime: {0}", [label])}
               >
                 {rows.map((student, index) => (
                   <li
@@ -211,13 +226,18 @@ export default function StudentLookup({
               </ul>
               {!rows.length && (
                 <p role="status">
-                  Nuk u gjetën nxënës. Provoni një emër ose telefon tjetër.
+                  {t(
+                    "Nuk u gjetën nxënës. Provoni një emër ose telefon tjetër.",
+                  )}
                 </p>
               )}
               {current.total > rows.length && (
                 <p className="student-lookup-hint">
-                  Shfaqen {rows.length} nga {current.total}. Shkruani më shumë
-                  shkronja për ta ngushtuar kërkimin.
+                  {t("Shfaqen ")}
+                  {rows.length}
+                  {t(" nga ")}
+                  {current.total}
+                  {t(". Shkruani më shumë shkronja për ta ngushtuar kërkimin.")}
                 </p>
               )}
             </>

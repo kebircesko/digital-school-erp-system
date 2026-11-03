@@ -1,5 +1,7 @@
 "use strict";
 const ExcelJS = require("exceljs");
+const { t } = require("../common/i18n");
+const { translate } = require("@erp/shared/src/translate.cjs");
 const { Prisma } = require("@prisma/client");
 const { Type } = require("class-transformer");
 const { parseClassReport, previewClassReport } = require("./class-report");
@@ -145,13 +147,18 @@ async function parseAttendance(content) {
       "Lejohen deri në 2000 rreshta në fletën e parë.",
     );
   const columns = new Map();
-  sheet
-    .getRow(1)
-    .eachCell((cell, index) => columns.set(normalize(cell.text), index));
+  sheet.getRow(1).eachCell((cell, index) => {
+    const canonical = HEADERS.find((header) =>
+      [header, translate(header, [], "en")].some(
+        (value) => normalize(value) === normalize(cell.text),
+      ),
+    );
+    columns.set(normalize(canonical ?? cell.text), index);
+  });
   for (const header of [HEADERS[0], HEADERS[2], ...HEADERS.slice(4)])
     if (!columns.has(normalize(header)))
       throw new BadRequestException(
-        `Mungon kolona: ${header}. Përdorni modelin Excel.`,
+        `Mungon kolona: ${t(header)}. Përdorni modelin Excel.`,
       );
   const rows = [],
     errors = [],
@@ -345,8 +352,8 @@ class AttendanceController {
       orderBy: [{ studentId: "asc" }, { courseId: "asc" }],
     });
     const book = new ExcelJS.Workbook(),
-      sheet = book.addWorksheet("Mungesat");
-    sheet.addRow(HEADERS);
+      sheet = book.addWorksheet(t("Mungesat"));
+    sheet.addRow(HEADERS.map((header) => t(header)));
     sheet.getRow(1).font = { bold: true, color: { argb: "FFFFFFFF" } };
     sheet.getRow(1).fill = {
       type: "pattern",

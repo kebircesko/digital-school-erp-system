@@ -1,5 +1,13 @@
 # Përdorimi i Shkollës Digjitale ERP
 
+## Gjuha e aplikacionit
+
+Shqipja është gjuha fillestare. Zgjidhni **Shqip** ose **English** te zgjedhësi
+i gjuhës në kyçje ose në shiritin e sipërm. Zgjedhja ruhet në këtë kompjuter
+edhe pas rihapjes. Ndryshimi përkthen menutë, formularët, mesazhet dhe
+dokumentet PDF/Excel; emrat dhe shënimet që keni shkruar mbeten siç janë.
+Formularët e hapur dhe zbritjet e papërfunduara ruhen gjatë ndërrimit të gjuhës.
+
 ## Kyçja dhe serveri
 
 Hapni aplikacionin dhe kyçuni me llogarinë tuaj. Administratori fillestar
@@ -50,6 +58,18 @@ Në fushat monetare përdorni pikën dhjetore: `80.50`. Shuma e faturës është
 individual minus zbritja, përpara vendimit përfundimtar të adminit. Çdo muaj i
 prekur nga regjistrimi mund të aprovohet plotësisht; nuk ka ndarje sipas ditëve.
 
+## Mbyllja e dritareve dhe nxënësit demonstrues
+
+**ESC** mbyll dritaren e hapur sipër: PDF, faturën, profilin, formularin ose
+konfirmimin. Nëse janë hapur disa dritare, mbyllen një nga një. Te kërkimi i
+nxënësit ESC mbyll fillimisht sugjerimet; një shtypje tjetër mbyll formularin.
+Gjatë ruajtjes së një veprimi pritet përfundimi i tij.
+
+Për të provuar borxhet, kërkoni **Demo3Muaj** ose **Demo5Muaj**. U shtuan nga 5
+nxënës për secilin rast, me 40 € për muaj dhe borxh fillestar 120 € ose 200 €.
+Mbetja zvogëlohet kur provoni pagesat. Faturat dallohen nga prefiksi
+**DEMO-FAT**. Skripti nuk shton dublikata dhe nuk i anulon pagesat e provuara.
+
 ## Zgjedhja e nxënësit në formularë
 
 Te regjistrimi i faturës, pagesës ose regjistrimit në grup, shkruani në fushën
@@ -64,12 +84,15 @@ më listë të dytë “Zgjidhni…” për nxënësin.
 
 ## Afati, muajt e papaguar dhe pamja PDF
 
-Afati i faturave të reja ndjek ditën e fillimit të regjistrimit në kurs:
-regjistrimi më 29 cakton afatin më 29 të muajit të faturës. Në muajt më të
-shkurtër përdoret dita e fundit. Afati shfaqet për kontroll para ruajtjes. Për
-faturat ekzistuese me afat tjetër, administratori mund të përdorë **Vendos
-afatin sipas regjistrimit** brenda faturës. Ky veprim ruhet në historik dhe
-ndryshon vetëm afatin.
+Pagesa e radhës llogaritet një muaj kalendarik pas muajit të shërbimit, nga dita
+e fillimit të regjistrimit në kurs. Shembull: regjistrimi më **29 tetor 2026** →
+pagesa e radhës më **29 nëntor 2026**, pastaj më **29 dhjetor 2026**. Nuk
+përdoren 30 ditë fikse.
+
+Për regjistrimin më 31 janar, afati pasues është 28 shkurt (29 në vit të
+brishtë); pagesa tjetër kthehet më 31 mars. Afati shfaqet para ruajtjes së
+faturës. Afatet e vjetra mund të korrigjohen me **Vendos afatin sipas
+regjistrimit**; veprimi ruhet në historik dhe nuk ndryshon shumat/pagesat.
 
 Në profil dhe te pagesa shfaqen **Muajt e papaguar**, nga më i vjetri. Shtatori
 duhet të mbyllet para Tetorit; një pagesë e pjesshme nuk e mbyll muajin. Mund të
@@ -106,10 +129,20 @@ Nxënësit, Faturat dhe Raportet. Kurset, grupet, regjistrimet dhe borxhet janë
 
 Te **Faturat → Faturat e muajit** shfaqen nxënësit që ende nuk kanë faturë për
 muajin e zgjedhur. Kur tetori paguhet plotësisht, regjistrimi që vazhdon shfaqet
-për nëntor. Pagesa e pjesshme mbetet për tetor. Administratori hap **Regjistro
-faturën**, kontrollon shumën dhe e ruan. Faturat nuk krijohen pa këtë veprim.
-Mungesat shihen brenda formularit te **Mungesat për kontroll**. “Pa të dhëna”
-nuk do të thotë zero mungesa.
+për nëntor. Pagesa e pjesshme mbetet për tetor. Me **Përgatit muajin e
+ardhshëm** hapet lista për muajin vijues. Administratori sheh mungesat e muajit
+paraprak, grupin, instruktorin dhe çmimin; vendos vetë **Zbritjen (€)** dhe
+arsyen për ndryshimin e shumës. Nuk ka zbritje automatike nga mungesat. “Pa të
+dhëna” nuk do të thotë zero mungesa.
+
+Zgjidhni nxënësit me kutitë ✓ ose **Zgjidh të gjithë në këtë faqe** (vetëm faqja
+e dukshme). Klikoni **Regjistro faturat e zgjedhura**, kontrolloni listën,
+totalin dhe afatet dhe shtypni **Konfirmo regjistrimin**. ESC para konfirmimit
+ju kthen te lista duke ruajtur përzgjedhjen dhe zbritjet. Faturat nuk krijohen
+pa konfirmim. **Regjistro veçmas** ruan edhe mundësinë e formularit individual.
+Pas regjistrimit në grup shfaqen faturat e suksesshme dhe gabimet; pas
+**Përfundo** lista rifreskohet dhe faturat e krijuara hiqen nga propozimet.
+Pagesat regjistrohen veçmas kur pranohen paratë.
 
 Te **Përmbledhja → Njoftimet e pagesave**, administratori dhe financat shohin
 faturat me afat sot ose brenda 7 ditëve dhe, në filtrin **Me vonesë**, afatet e
@@ -118,8 +151,8 @@ plotë të faturave. Numrat janë fatura; një nxënës mund të ketë disa kurs
 Klikoni numrin e faturës për ta hapur dhe regjistruar pagesën. Butoni
 **Pagesat** në shiritin e sipërm hap Përmbledhjen prej çdo faqeje. Njoftimet
 rifreskohen çdo minutë dhe pas regjistrimit të pagesës. Afati merret nga fatura;
-për faturat mujore aktualisht është data 15 e muajit. Ditët llogariten sipas
-kalendarit Europe/Tirane.
+për faturat mujore llogaritet sipas ditës së regjistrimit në muajin pasues.
+Ditët llogariten sipas kalendarit Europe/Tirane.
 
 Emri i nxënësit është i klikueshëm në listën e nxënësve, regjistrimet e fundit,
 faturat, listën mujore, regjistrimet në kurse dhe raportet. Hapet profili me

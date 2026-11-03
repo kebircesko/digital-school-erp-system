@@ -1,3 +1,5 @@
+import { t, tm } from "../services/i18n.js";
+import { useLanguage } from "./LanguageSelector";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Download, Printer, X } from "lucide-react";
@@ -6,8 +8,8 @@ import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { fetchFile, saveFile } from "../services/api";
 import { useDialog } from "../hooks/useDialog";
 GlobalWorkerOptions.workerSrc = workerUrl;
-
 export default function PdfPreview({ path, filename, autoPrint, close }) {
+  const language = useLanguage();
   const container = useRef(null),
     bytes = useRef(null),
     printed = useRef(false);
@@ -29,7 +31,7 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
       const { buffer } = await fetchFile(path, controller.signal);
       if (stopped) return;
       if (buffer.byteLength > 20 * 1024 * 1024)
-        throw new Error("PDF-ja është më e madhe se 20 MB.");
+        throw new Error(t("PDF-ja është më e madhe se 20 MB."));
       bytes.current = buffer;
       task = getDocument({
         data: new Uint8Array(buffer.slice(0)),
@@ -40,11 +42,13 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
       for (let number = 1; number <= pdf.numPages; number++) {
         if (stopped) return;
         const page = await pdf.getPage(number);
-        const viewport = page.getViewport({ scale: 2 });
+        const viewport = page.getViewport({
+          scale: 2,
+        });
         const canvas = document.createElement("canvas");
         canvas.width = Math.ceil(viewport.width);
         canvas.height = Math.ceil(viewport.height);
-        canvas.setAttribute("aria-label", `Faqja ${number} e PDF-së`);
+        canvas.setAttribute("aria-label", t("Faqja {0} e PDF-së", [number]));
         render = page.render({
           canvasContext: canvas.getContext("2d"),
           viewport,
@@ -56,7 +60,7 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
       }
       if (!stopped) setPages(images);
     })().catch((error) => {
-      if (!stopped) setError(error.message || "PDF-ja nuk mund të hapej.");
+      if (!stopped) setError(error.message || t("PDF-ja nuk mund të hapej."));
     });
     return () => {
       stopped = true;
@@ -64,7 +68,7 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
       render?.cancel();
       task?.destroy().catch(() => {});
     };
-  }, [path, revision]);
+  }, [path, revision, language]);
   async function print() {
     if (!pages.length) return;
     try {
@@ -75,7 +79,7 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
       );
       window.print();
     } catch (error) {
-      setError(error.message || "Printimi nuk mund të hapej.");
+      setError(error.message || t("Printimi nuk mund të hapej."));
     }
   }
   useEffect(() => {
@@ -102,15 +106,15 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
           className="modal pdf-preview"
           role="dialog"
           aria-modal="true"
-          aria-label="Pamja PDF"
+          aria-label={t("Pamja PDF")}
         >
           <div className="modal-heading">
             <div>
-              <h2>Shiko PDF</h2>
+              <h2>{t("Shiko PDF")}</h2>
               <p>{filename}</p>
             </div>
             <button
-              aria-label="Mbyll PDF-në"
+              aria-label={t("Mbyll PDF-në")}
               className="icon-button"
               disabled={busy}
               onClick={close}
@@ -125,7 +129,7 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
               onClick={print}
             >
               <Printer size={17} />
-              Printo
+              {t("Printo")}
             </button>
             <button
               className="secondary"
@@ -133,24 +137,24 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
               onClick={save}
             >
               <Download size={17} />
-              {busy ? "Duke ruajtur…" : "Ruaj PDF"}
+              {busy ? t("Duke ruajtur…") : t("Ruaj PDF")}
             </button>
             <span>
               {pages.length
-                ? `${pages.length} faqe`
-                : "Duke përgatitur PDF-në…"}
+                ? t("{0} faqe", [pages.length])
+                : t("Duke përgatitur PDF-në…")}
             </span>
           </div>
           {error && (
             <div className="error" role="alert">
-              {error}
+              {tm(error)}
               <button onClick={() => setRevision((value) => value + 1)}>
-                Provo përsëri
+                {t("Provo përsëri")}
               </button>
             </div>
           )}
           {!pages.length && !error && (
-            <p role="status">Duke ngarkuar PDF-në…</p>
+            <p role="status">{t("Duke ngarkuar PDF-në…")}</p>
           )}
           <div className="pdf-canvas-pages" ref={container} />
         </section>
@@ -159,7 +163,7 @@ export default function PdfPreview({ path, filename, autoPrint, close }) {
         <div className="pdf-print-pages" aria-hidden="true">
           {pages.map((src, index) => (
             <div className="pdf-print-page" key={index}>
-              <img src={src} alt={`Faqja ${index + 1}`} />
+              <img src={src} alt={t("Faqja {0}", [index + 1])} />
             </div>
           ))}
         </div>,

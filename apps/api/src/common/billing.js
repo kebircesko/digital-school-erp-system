@@ -1,9 +1,14 @@
 const { periodDates } = require("./finance");
 const { ConflictException } = require("@nestjs/common");
 
-// Use the enrollment's date-only UTC day, clamping short months without rollover.
+// One calendar month after the invoice's service month, anchored to enrollment day.
+// Always reuse the original day so February never shifts March's anniversary.
 function registrationDeadline(period, startDate) {
-  const { first, last } = periodDates(period);
+  const { first } = periodDates(period);
+  first.setUTCMonth(first.getUTCMonth() + 1);
+  const last = new Date(
+    Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0),
+  );
   const day = new Date(startDate).getUTCDate();
   if (!Number.isInteger(day))
     throw new Error("Data e regjistrimit është e pavlefshme.");

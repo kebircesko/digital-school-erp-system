@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import StudentHistory from "../components/StudentHistory";
 import StudentModal from "../components/StudentModal";
 import StudentLink from "../components/StudentLink";
@@ -27,7 +28,7 @@ export default function StudentsPage({
     [search, setSearch] = useState(initialSearch),
     [query, setQuery] = useState(initialSearch),
     [status, setStatus] = useState(initialStatus),
-    [sort, setSort] = useState("name"),
+    [sort, setSort] = useState("newest"),
     [page, setPage] = useState(1),
     [editing, setEditing] = useState(null),
     [history, setHistory] = useState(null),
@@ -49,11 +50,15 @@ export default function StudentsPage({
     setError("");
     setData(null);
     api(
-      `/students?${new URLSearchParams({ search: query, status, sort, page: String(page) })}`.replace(
-        "status=&",
-        "",
-      ),
-      { signal: controller.signal },
+      `/students?${new URLSearchParams({
+        search: query,
+        status,
+        sort,
+        page: String(page),
+      })}`.replace("status=&", ""),
+      {
+        signal: controller.signal,
+      },
     )
       .then((result) => {
         if (!controller.signal.aborted) setData(result);
@@ -67,9 +72,11 @@ export default function StudentsPage({
     if (!deleting) return;
     setBusy(true);
     try {
-      await api(`/students/${deleting.id}`, { method: "DELETE" });
+      await api(`/students/${deleting.id}`, {
+        method: "DELETE",
+      });
       setDeleting(null);
-      setNotice("Nxënësi u fshi me sukses.");
+      setNotice(t("Nxënësi u fshi me sukses."));
       setPage(1);
       setRevision((v) => v + 1);
     } catch (e) {
@@ -84,29 +91,31 @@ export default function StudentsPage({
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">MENAXHIMI I SHKOLLËS</span>
-          <h1>Nxënësit</h1>
-          <p>Të dhënat dhe kontaktet e çdo nxënësi, gjithmonë pranë jush.</p>
+          <span className="eyebrow">{t("MENAXHIMI I SHKOLLËS")}</span>
+          <h1>{t("Nxënësit")}</h1>
+          <p>
+            {t("Të dhënat dhe kontaktet e çdo nxënësi, gjithmonë pranë jush.")}
+          </p>
         </div>
         {canWrite && (
           <button className="primary" onClick={() => setEditing("new")}>
             <Plus size={18} />
-            Regjistro nxënës
+            {t("Regjistro nxënës")}
           </button>
         )}
       </div>
       {error && (
         <div className="error" role="alert">
-          {error}
+          {tm(error)}
           <button onClick={() => setRevision((v) => v + 1)}>
-            Provo përsëri
+            {t("Provo përsëri")}
           </button>
         </div>
       )}
       {notice && (
         <div className="success" role="status">
           <CheckCircle2 size={17} />
-          {notice}
+          {tm(notice)}
           <button onClick={() => setNotice("")}>×</button>
         </div>
       )}
@@ -115,46 +124,47 @@ export default function StudentsPage({
           <div className="search">
             <Search size={18} />
             <input
-              aria-label="Kërko nxënës"
-              placeholder="Kërko emër, prind ose telefon…"
+              aria-label={t("Kërko nxënës")}
+              placeholder={t("Kërko emër, prind ose telefon…")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select
-            aria-label="Filtro statusin"
+            aria-label={t("Filtro statusin")}
             value={status}
             onChange={(e) => {
               setStatus(e.target.value);
               setPage(1);
             }}
           >
-            <option value="">Të gjithë statuset</option>
-            <option value="ACTIVE">Aktivë</option>
-            <option value="INACTIVE">Joaktivë</option>
+            <option value="">{t("Të gjithë statuset")}</option>
+            <option value="ACTIVE">{t("Aktivë")}</option>
+            <option value="INACTIVE">{t("Joaktivë")}</option>
           </select>
           <select
-            aria-label="Rendit nxënësit"
+            aria-label={t("Rendit nxënësit")}
             value={sort}
             onChange={(e) => {
               setSort(e.target.value);
               setPage(1);
             }}
           >
-            <option value="name">Sipas mbiemrit</option>
-            <option value="newest">Më të rinjtë</option>
+            <option value="newest">{t("Më të rinjtë")}</option>
+            <option value="name">{t("Sipas mbiemrit")}</option>
+            <option value="oldest">{t("Më të vjetrit")}</option>
           </select>
         </div>
         <div className="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>Nxënësi</th>
-                <th>Datëlindja</th>
-                <th>Prindi / Kujdestari</th>
-                <th>Telefoni</th>
-                <th>Statusi</th>
-                <th>Veprime</th>
+                <th>{t("Nxënësi")}</th>
+                <th>{t("Datëlindja")}</th>
+                <th>{t("Prindi / Kujdestari")}</th>
+                <th>{t("Telefoni")}</th>
+                <th>{t("Statusi")}</th>
+                <th>{t("Veprime")}</th>
               </tr>
             </thead>
             <tbody>
@@ -181,16 +191,20 @@ export default function StudentsPage({
                   </td>
                   <td>
                     <div className="row-actions">
-                      <StudentLink id={s.id}>Profili / Pagesat</StudentLink>
+                      <StudentLink id={s.id}>
+                        {t("Profili / Pagesat")}
+                      </StudentLink>
                       <button
-                        title="Historiku i nxënësit"
+                        title={t("Historiku i nxënësit")}
                         onClick={() => setHistory(s)}
                       >
-                        Historiku
+                        {t("Historiku")}
                       </button>
                       <button
                         title={
-                          canWrite ? "Ndrysho të dhënat" : "Shiko të dhënat"
+                          canWrite
+                            ? t("Ndrysho të dhënat")
+                            : t("Shiko të dhënat")
                         }
                         onClick={() => setEditing(s)}
                       >
@@ -198,7 +212,7 @@ export default function StudentsPage({
                       </button>
                       {user.role === "ADMIN" && (
                         <button
-                          title="Fshi nxënësin"
+                          title={t("Fshi nxënësin")}
                           onClick={() => setDeleting(s)}
                         >
                           <Trash2 size={16} />
@@ -212,33 +226,37 @@ export default function StudentsPage({
           </table>
         </div>
         {!data && !error && (
-          <div className="empty">Duke ngarkuar nxënësit…</div>
+          <div className="empty">{t("Duke ngarkuar nxënësit…")}</div>
         )}
         {data && !data.items.length && (
           <div className="empty">
             <Users size={34} />
-            <h3>Nuk u gjetën nxënës</h3>
+            <h3>{t("Nuk u gjetën nxënës")}</h3>
             <p>
               {query || status
-                ? "Provoni një kërkim ose filtër tjetër."
-                : "Regjistroni nxënësin e parë për të filluar."}
+                ? t("Provoni një kërkim ose filtër tjetër.")
+                : t("Regjistroni nxënësin e parë për të filluar.")}
             </p>
           </div>
         )}
         <div className="pagination">
           <span>
-            {data?.total ?? 0} nxënës · Faqja {page} nga {data?.pages ?? 1}
+            {data?.total ?? 0}
+            {t(" nxënës · Faqja ")}
+            {page}
+            {t(" nga ")}
+            {data?.pages ?? 1}
           </span>
           <div>
             <button
-              aria-label="Faqja e mëparshme"
+              aria-label={t("Faqja e mëparshme")}
               disabled={page <= 1 || !data}
               onClick={() => setPage(page - 1)}
             >
               <ChevronLeft size={18} />
             </button>
             <button
-              aria-label="Faqja tjetër"
+              aria-label={t("Faqja tjetër")}
               disabled={!data || page >= data.pages}
               onClick={() => setPage(page + 1)}
             >
@@ -261,7 +279,7 @@ export default function StudentsPage({
           close={() => setEditing(null)}
           saved={() => {
             setEditing(null);
-            setNotice("Të dhënat u ruajtën me sukses.");
+            setNotice(t("Të dhënat u ruajtën me sukses."));
             setRevision((v) => v + 1);
           }}
         />
@@ -274,10 +292,11 @@ export default function StudentsPage({
             aria-modal="true"
             aria-labelledby="delete-title"
           >
-            <h2 id="delete-title">Fshi nxënësin?</h2>
+            <h2 id="delete-title">{t("Fshi nxënësin?")}</h2>
             <p>
-              Regjistrimi i {deleting.firstName} {deleting.lastName} do të
-              fshihet përgjithmonë. Ky veprim nuk mund të zhbëhet.
+              {t("Regjistrimi i ")}
+              {deleting.firstName} {deleting.lastName}
+              {t(" do të fshihet përgjithmonë. Ky veprim nuk mund të zhbëhet.")}
             </p>
             <div className="modal-actions">
               <button
@@ -285,10 +304,10 @@ export default function StudentsPage({
                 disabled={busy}
                 onClick={() => setDeleting(null)}
               >
-                Anulo
+                {t("Anulo")}
               </button>
               <button className="danger" disabled={busy} onClick={remove}>
-                {busy ? "Duke fshirë…" : "Fshi nxënësin"}
+                {busy ? t("Duke fshirë…") : t("Fshi nxënësin")}
               </button>
             </div>
           </section>

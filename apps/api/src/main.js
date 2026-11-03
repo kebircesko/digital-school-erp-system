@@ -13,6 +13,7 @@ async function bootstrap() {
   });
   app.use(require("express").json({ limit: "3mb" }));
   app.setGlobalPrefix("api");
+  app.use(require("./common/i18n").languageMiddleware);
   const proxyHops = Number(process.env.TRUST_PROXY_HOPS ?? 0);
   if (!Number.isInteger(proxyHops) || proxyHops < 0 || proxyHops > 5)
     throw new Error("TRUST_PROXY_HOPS është i pavlefshëm.");
@@ -29,7 +30,7 @@ async function bootstrap() {
   app.enableCors({
     origin: origins,
     methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Authorization", "Content-Type"],
+    allowedHeaders: ["Authorization", "Content-Type", "Accept-Language"],
   });
   app.useGlobalPipes(
     new common_1.ValidationPipe({

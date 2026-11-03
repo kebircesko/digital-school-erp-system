@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import {
   Plus,
@@ -12,7 +13,7 @@ import Lookup from "../components/Lookup";
 import StudentLink from "../components/StudentLink";
 import { useSchoolUpdates } from "../hooks/useSchoolUpdates";
 import { useDialog } from "../hooks/useDialog";
-import { resources } from "./resources";
+import { getResources } from "./resources";
 export function ResourceEditor({
   config,
   row,
@@ -39,7 +40,9 @@ export function ResourceEditor({
     setBusy(true);
     setError("");
     try {
-      const data = { ...form };
+      const data = {
+        ...form,
+      };
       for (const f of config.fields) {
         if (f.type === "number") data[f.key] = Number(data[f.key]);
         if (
@@ -69,7 +72,12 @@ export function ResourceEditor({
           endpoint={f.endpoint}
           label={f.label}
           value={form[f.key]}
-          onChange={(id) => setForm({ ...form, [f.key]: id })}
+          onChange={(id) =>
+            setForm({
+              ...form,
+              [f.key]: id,
+            })
+          }
           initialLabel={
             row === "new" ? (initialLabels[f.key] ?? "") : f.initialLabel?.(row)
           }
@@ -80,25 +88,31 @@ export function ResourceEditor({
         <fieldset key={f.key}>
           <legend>{f.label}</legend>
           <div className="days-options">
-            {["Hën", "Mar", "Mër", "Enj", "Pre", "Sht", "Die"].map(
-              (name, i) => (
-                <label key={name}>
-                  <input
-                    type="checkbox"
-                    checked={form.days.includes(i + 1)}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        days: e.target.checked
-                          ? [...form.days, i + 1].sort()
-                          : form.days.filter((d) => d !== i + 1),
-                      })
-                    }
-                  />
-                  {name}
-                </label>
-              ),
-            )}
+            {[
+              t("Hën"),
+              t("Mar"),
+              t("Mër"),
+              t("Enj"),
+              t("Pre"),
+              t("Sht"),
+              t("Die"),
+            ].map((name, i) => (
+              <label key={name}>
+                <input
+                  type="checkbox"
+                  checked={form.days.includes(i + 1)}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      days: e.target.checked
+                        ? [...form.days, i + 1].sort()
+                        : form.days.filter((d) => d !== i + 1),
+                    })
+                  }
+                />
+                {name}
+              </label>
+            ))}
           </div>
         </fieldset>
       );
@@ -108,7 +122,12 @@ export function ResourceEditor({
           <input
             type="checkbox"
             checked={form[f.key]}
-            onChange={(e) => setForm({ ...form, [f.key]: e.target.checked })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                [f.key]: e.target.checked,
+              })
+            }
           />
           {f.label}
         </label>
@@ -120,7 +139,12 @@ export function ResourceEditor({
           <select
             aria-label={f.label}
             value={form[f.key]}
-            onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                [f.key]: e.target.value,
+              })
+            }
           >
             {f.options?.map(([value, label]) => (
               <option key={value} value={value}>
@@ -134,7 +158,12 @@ export function ResourceEditor({
             rows={3}
             value={form[f.key]}
             maxLength={3000}
-            onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                [f.key]: e.target.value,
+              })
+            }
           />
         ) : (
           <input
@@ -147,7 +176,12 @@ export function ResourceEditor({
             minLength={f.type === "password" ? 12 : undefined}
             maxLength={f.type === "password" ? 128 : 300}
             value={form[f.key]}
-            onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                [f.key]: e.target.value,
+              })
+            }
           />
         )}
       </label>
@@ -158,11 +192,11 @@ export function ResourceEditor({
       <section className="modal" role="dialog" aria-modal="true">
         <div className="modal-heading">
           <h2>
-            {row === "new" ? "Shto" : "Ndrysho"} {config.singular}
+            {row === "new" ? t("Shto") : t("Ndrysho")} {config.singular}
           </h2>
           <button
             className="icon-button"
-            aria-label="Mbyll"
+            aria-label={t("Mbyll")}
             disabled={busy}
             onClick={close}
           >
@@ -175,7 +209,7 @@ export function ResourceEditor({
           </fieldset>
           {error && (
             <div className="error" role="alert">
-              {error}
+              {tm(error)}
             </div>
           )}
           <div className="modal-actions">
@@ -185,10 +219,10 @@ export function ResourceEditor({
               disabled={busy}
               onClick={close}
             >
-              Anulo
+              {t("Anulo")}
             </button>
             <button className="primary" disabled={busy}>
-              {busy ? "Duke ruajtur…" : "Ruaj"}
+              {busy ? t("Duke ruajtur…") : t("Ruaj")}
             </button>
           </div>
         </form>
@@ -204,7 +238,7 @@ export default function ResourcePage({
   initialStatus,
 }) {
   const updates = useSchoolUpdates();
-  const config = resources[kind],
+  const config = getResources()[kind],
     canWrite = user.role !== "INSTRUCTOR";
   const [data, setData] = useState(null),
     [page, setPage] = useState(1),
@@ -232,12 +266,26 @@ export default function ResourcePage({
       const params = new URLSearchParams({
         page: String(page),
         search,
-        ...(context?.groupId ? { groupId: context.groupId } : {}),
-        ...(context?.courseId ? { courseId: context.courseId } : {}),
-        ...(status ? { status } : {}),
+        ...(context?.groupId
+          ? {
+              groupId: context.groupId,
+            }
+          : {}),
+        ...(context?.courseId
+          ? {
+              courseId: context.courseId,
+            }
+          : {}),
+        ...(status
+          ? {
+              status,
+            }
+          : {}),
       });
       setError("");
-      api(config.endpoint + "?" + params, { signal: controller.signal })
+      api(config.endpoint + "?" + params, {
+        signal: controller.signal,
+      })
         .then((result) => {
           if (!controller.signal.aborted) setData(result);
         })
@@ -253,7 +301,7 @@ export default function ResourcePage({
   function saved() {
     setEditing(null);
     setAction(null);
-    setNotice("Veprimi u krye me sukses.");
+    setNotice(t("Veprimi u krye me sukses."));
     setRevision((v) => v + 1);
   }
   async function perform(e) {
@@ -263,7 +311,9 @@ export default function ResourcePage({
     setError("");
     try {
       if (action.kind === "delete")
-        await api(config.endpoint + "/" + action.row.id, { method: "DELETE" });
+        await api(config.endpoint + "/" + action.row.id, {
+          method: "DELETE",
+        });
       else if (action.kind === "end")
         await api(`/enrollments/${action.row.id}/end`, {
           method: "PATCH",
@@ -292,41 +342,43 @@ export default function ResourcePage({
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">MENAXHIMI I SHKOLLËS</span>
+          <span className="eyebrow">{t("MENAXHIMI I SHKOLLËS")}</span>
           <h1>{config.title}</h1>
-          <p>Të dhëna të lidhura me databazën qendrore.</p>
+          <p>{t("Të dhëna të lidhura me databazën qendrore.")}</p>
         </div>
         {canWrite && (
           <button className="primary" onClick={() => setEditing("new")}>
             <Plus size={18} />
-            Shto {config.singular}
+            {t("Shto ")}
+            {config.singular}
           </button>
         )}
       </div>
       {error && (
         <div className="error" role="alert">
-          {error}
+          {tm(error)}
         </div>
       )}
       {notice && (
         <div className="success" role="status">
-          {notice}
+          {tm(notice)}
           <button onClick={() => setNotice("")}>×</button>
         </div>
       )}
       {context && (
         <div className="context-filter" role="status">
-          Regjistrimet: {context.label}
+          {t("Regjistrimet: ")}
+          {context.label}
           <button className="text-button" onClick={() => navigate(kind)}>
-            Shiko të gjitha
+            {t("Shiko të gjitha")}
           </button>
         </div>
       )}
       <section className="card">
         <div className="table-toolbar">
           <input
-            aria-label="Kërko"
-            placeholder="Kërko…"
+            aria-label={t("Kërko")}
+            placeholder={t("Kërko…")}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -335,16 +387,16 @@ export default function ResourcePage({
           />
           {config.status && (
             <select
-              aria-label="Filtro statusin"
+              aria-label={t("Filtro statusin")}
               value={status}
               onChange={(e) => {
                 setStatus(e.target.value);
                 setPage(1);
               }}
             >
-              <option value="">Të gjitha statuset</option>
-              <option value="ACTIVE">Aktivë</option>
-              <option value="INACTIVE">Joaktivë</option>
+              <option value="">{t("Të gjitha statuset")}</option>
+              <option value="ACTIVE">{t("Aktivë")}</option>
+              <option value="INACTIVE">{t("Joaktivë")}</option>
             </select>
           )}
         </div>
@@ -355,7 +407,7 @@ export default function ResourcePage({
                 {config.columns.map((c) => (
                   <th key={c.label}>{c.label}</th>
                 ))}
-                {canWrite && <th>Veprime</th>}
+                {canWrite && <th>{t("Veprime")}</th>}
               </tr>
             </thead>
             <tbody>
@@ -363,15 +415,16 @@ export default function ResourcePage({
                 <tr key={row.id}>
                   {config.columns.map((c) => (
                     <td key={c.label}>
-                      {kind === "enrollments" && c.label === "Nxënësi" ? (
+                      {kind === "enrollments" && c.label === t("Nxënësi") ? (
                         <StudentLink id={row.studentId ?? row.student?.id}>
                           {c.render(row)}
                         </StudentLink>
                       ) : ["courses", "groups"].includes(kind) &&
-                        c.label === (kind === "courses" ? "Kursi" : "Grupi") ? (
+                        c.label ===
+                          (kind === "courses" ? t("Kursi") : t("Grupi")) ? (
                         <button
                           className="student-link"
-                          title="Shiko nxënësit dhe regjistrimet"
+                          title={t("Shiko nxënësit dhe regjistrimet")}
                           onClick={() =>
                             navigate("enrollments", {
                               context: {
@@ -394,7 +447,7 @@ export default function ResourcePage({
                       <div className="row-actions">
                         {config.editable !== false && (
                           <button
-                            title="Ndrysho"
+                            title={t("Ndrysho")}
                             onClick={() => setEditing(row)}
                           >
                             <Pencil size={16} />
@@ -402,8 +455,13 @@ export default function ResourcePage({
                         )}
                         {config.deletable && user.role === "ADMIN" && (
                           <button
-                            title="Fshi"
-                            onClick={() => setAction({ row, kind: "delete" })}
+                            title={t("Fshi")}
+                            onClick={() =>
+                              setAction({
+                                row,
+                                kind: "delete",
+                              })
+                            }
                           >
                             <Trash2 size={16} />
                           </button>
@@ -412,20 +470,26 @@ export default function ResourcePage({
                           <>
                             <button
                               onClick={() => {
-                                setAction({ row, kind: "transfer" });
+                                setAction({
+                                  row,
+                                  kind: "transfer",
+                                });
                                 setGroupId("");
                                 setActionDate("");
                               }}
                             >
-                              Ndërro grupin
+                              {t("Ndërro grupin")}
                             </button>
                             <button
                               onClick={() => {
-                                setAction({ row, kind: "end" });
+                                setAction({
+                                  row,
+                                  kind: "end",
+                                });
                                 setActionDate("");
                               }}
                             >
-                              Përfundo
+                              {t("Përfundo")}
                             </button>
                           </>
                         )}
@@ -438,25 +502,27 @@ export default function ResourcePage({
           </table>
         </div>
         {!data ? (
-          <div className="empty">Duke ngarkuar…</div>
+          <div className="empty">{t("Duke ngarkuar…")}</div>
         ) : !data.items.length ? (
-          <div className="empty">Nuk u gjetën regjistrime.</div>
+          <div className="empty">{t("Nuk u gjetën regjistrime.")}</div>
         ) : null}
         <div className="pagination">
           <span>
-            {data?.total ?? 0} regjistrime · Faqja {page}
+            {data?.total ?? 0}
+            {t(" regjistrime · Faqja ")}
+            {page}
           </span>
           <div>
             <button
               disabled={page <= 1}
-              aria-label="Faqja e mëparshme"
+              aria-label={t("Faqja e mëparshme")}
               onClick={() => setPage(page - 1)}
             >
               <ChevronLeft size={18} />
             </button>
             <button
               disabled={!data || page >= data.pages}
-              aria-label="Faqja tjetër"
+              aria-label={t("Faqja tjetër")}
               onClick={() => setPage(page + 1)}
             >
               <ChevronRight size={18} />
@@ -478,21 +544,22 @@ export default function ResourcePage({
           <section className="modal small" role="dialog" aria-modal="true">
             <h2>
               {action.kind === "delete"
-                ? "Fshi regjistrimin?"
+                ? t("Fshi regjistrimin?")
                 : action.kind === "end"
-                  ? "Përfundo regjistrimin"
-                  : "Ndërro grupin"}
+                  ? t("Përfundo regjistrimin")
+                  : t("Ndërro grupin")}
             </h2>
             <form onSubmit={perform}>
               {action.kind === "delete" ? (
                 <p>
-                  Regjistrimi me historik nuk mund të fshihet. Çaktivizojeni për
-                  ta ruajtur historikun.
+                  {t(
+                    "Regjistrimi me historik nuk mund të fshihet. Çaktivizojeni për ta ruajtur historikun.",
+                  )}
                 </p>
               ) : (
                 <>
                   <label>
-                    Data
+                    {t("Data")}
                     <input
                       type="date"
                       required
@@ -503,15 +570,16 @@ export default function ResourcePage({
                   {action.kind === "transfer" && (
                     <>
                       <p>
-                        Ndërrimi fillon në datën 1 të muajit dhe ruan
-                        historikun.
+                        {t(
+                          "Ndërrimi fillon në datën 1 të muajit dhe ruan historikun.",
+                        )}
                       </p>
                       <Lookup
                         endpoint={
                           "/groups?status=ACTIVE&courseId=" +
                           action.row.courseId
                         }
-                        label="Grupi i ri"
+                        label={t("Grupi i ri")}
                         value={groupId}
                         onChange={setGroupId}
                       />
@@ -519,7 +587,7 @@ export default function ResourcePage({
                   )}
                 </>
               )}
-              {error && <div className="error">{error}</div>}
+              {error && <div className="error">{tm(error)}</div>}
               <div className="modal-actions">
                 <button
                   type="button"
@@ -527,13 +595,13 @@ export default function ResourcePage({
                   disabled={busy}
                   onClick={() => setAction(null)}
                 >
-                  Anulo
+                  {t("Anulo")}
                 </button>
                 <button
                   className={action.kind === "delete" ? "danger" : "primary"}
                   disabled={busy}
                 >
-                  {busy ? "Duke punuar…" : "Konfirmo"}
+                  {busy ? t("Duke punuar…") : t("Konfirmo")}
                 </button>
               </div>
             </form>

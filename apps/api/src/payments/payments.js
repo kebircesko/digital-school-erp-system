@@ -1,6 +1,10 @@
 "use strict";
+
+const { t } = require("../common/i18n");
 var _a, _b, _c, _d, _e, _f, _g;
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {
+  value: true,
+});
 exports.PaymentsController = exports.PaymentDto = void 0;
 const tslib_1 = require("tslib");
 const { checkOldestMonths } = require("../common/billing");
@@ -105,7 +109,9 @@ tslib_1.__decorate(
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ArrayMinSize)(1),
     (0, class_validator_1.ArrayMaxSize)(100),
-    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_validator_1.ValidateNested)({
+      each: true,
+    }),
     (0, class_transformer_1.Type)(() => AllocationDto),
     tslib_1.__metadata("design:type", Array),
   ],
@@ -114,9 +120,22 @@ tslib_1.__decorate(
   void 0,
 );
 const include = {
-  student: { select: { firstName: true, lastName: true } },
-  user: { select: { name: true } },
-  allocations: { include: { invoice: true } },
+  student: {
+    select: {
+      firstName: true,
+      lastName: true,
+    },
+  },
+  user: {
+    select: {
+      name: true,
+    },
+  },
+  allocations: {
+    include: {
+      invoice: true,
+    },
+  },
 };
 let PaymentsController = class PaymentsController {
   db;
@@ -125,20 +144,39 @@ let PaymentsController = class PaymentsController {
   }
   async list(q) {
     const where = {
-      ...(q.studentId ? { studentId: q.studentId } : {}),
-      ...(q.method ? { method: q.method } : {}),
+      ...(q.studentId
+        ? {
+            studentId: q.studentId,
+          }
+        : {}),
+      ...(q.method
+        ? {
+            method: q.method,
+          }
+        : {}),
       ...(q.search
         ? {
             OR: [
-              { number: { contains: q.search, mode: "insensitive" } },
               {
-                student: {
-                  firstName: { contains: q.search, mode: "insensitive" },
+                number: {
+                  contains: q.search,
+                  mode: "insensitive",
                 },
               },
               {
                 student: {
-                  lastName: { contains: q.search, mode: "insensitive" },
+                  firstName: {
+                    contains: q.search,
+                    mode: "insensitive",
+                  },
+                },
+              },
+              {
+                student: {
+                  lastName: {
+                    contains: q.search,
+                    mode: "insensitive",
+                  },
                 },
               },
             ],
@@ -146,11 +184,15 @@ let PaymentsController = class PaymentsController {
         : {}),
     };
     const [total, items] = await this.db.$transaction([
-      this.db.payment.count({ where }),
+      this.db.payment.count({
+        where,
+      }),
       this.db.payment.findMany({
         where,
         include,
-        orderBy: { createdAt: "desc" },
+        orderBy: {
+          createdAt: "desc",
+        },
         skip: (q.page - 1) * q.limit,
         take: q.limit,
       }),
@@ -185,7 +227,9 @@ let PaymentsController = class PaymentsController {
     return (0, finance_1.atomic)(this.db, async (tx) => {
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${dto.idempotencyKey}))`;
       const previous = await tx.payment.findUnique({
-        where: { idempotencyKey: dto.idempotencyKey },
+        where: {
+          idempotencyKey: dto.idempotencyKey,
+        },
         include,
       });
       if (previous) {
@@ -212,16 +256,27 @@ let PaymentsController = class PaymentsController {
       const openInvoices = await tx.invoice.findMany({
         where: {
           studentId: dto.studentId,
-          status: { in: ["UNPAID", "PARTIAL"] },
+          status: {
+            in: ["UNPAID", "PARTIAL"],
+          },
         },
-        orderBy: [{ period: "asc" }, { id: "asc" }],
+        orderBy: [
+          {
+            period: "asc",
+          },
+          {
+            id: "asc",
+          },
+        ],
       });
       checkOldestMonths(openInvoices, allocations);
       for (const a of [...allocations].sort((a, b) =>
         a.invoiceId.localeCompare(b.invoiceId),
       )) {
         const invoice = await tx.invoice.findUnique({
-          where: { id: a.invoiceId },
+          where: {
+            id: a.invoiceId,
+          },
         });
         if (
           !invoice ||
@@ -237,7 +292,9 @@ let PaymentsController = class PaymentsController {
             "Shuma tejkalon mbetjen e faturës. Rifreskoni të dhënat.",
           );
         await tx.invoice.update({
-          where: { id: invoice.id },
+          where: {
+            id: invoice.id,
+          },
           data: {
             paidAmount: paid,
             status: paid.eq(invoice.amount) ? "PAID" : "PARTIAL",
@@ -258,7 +315,9 @@ let PaymentsController = class PaymentsController {
           paidAt,
           notes: dto.notes,
           idempotencyKey: dto.idempotencyKey,
-          allocations: { create: allocations },
+          allocations: {
+            create: allocations,
+          },
         },
         include,
       });
@@ -271,50 +330,71 @@ let PaymentsController = class PaymentsController {
       throw new common_1.BadRequestException("Shkruani arsyen.");
     return (0, finance_1.atomic)(this.db, async (tx) => {
       const old = await tx.payment.findUnique({
-        where: { id },
-        include: { allocations: true },
+        where: {
+          id,
+        },
+        include: {
+          allocations: true,
+        },
       });
       if (!old) throw new common_1.NotFoundException("Pagesa nuk u gjet.");
       if (old.reversedAt)
         throw new common_1.ConflictException("Pagesa është anuluar tashmë.");
       for (const a of old.allocations) {
         const invoice = await tx.invoice.findUniqueOrThrow({
-          where: { id: a.invoiceId },
+          where: {
+            id: a.invoiceId,
+          },
         });
         const paid = invoice.paidAmount.minus(a.amount);
         await tx.invoice.update({
-          where: { id: invoice.id },
-          data: { paidAmount: paid, status: paid.eq(0) ? "UNPAID" : "PARTIAL" },
+          where: {
+            id: invoice.id,
+          },
+          data: {
+            paidAmount: paid,
+            status: paid.eq(0) ? "UNPAID" : "PARTIAL",
+          },
         });
       }
       const result = await tx.payment.update({
-        where: { id },
-        data: { reversedAt: new Date(), reverseReason: dto.reason },
+        where: {
+          id,
+        },
+        data: {
+          reversedAt: new Date(),
+          reverseReason: dto.reason,
+        },
       });
       await (0, finance_1.audit)(tx, req.user.id, "PAYMENT_REVERSE", id);
       return result;
     });
   }
   async receipt(id, res) {
-    const p = await this.db.payment.findUnique({ where: { id }, include });
-    if (!p) throw new common_1.NotFoundException("Pagesa nuk u gjet.");
+    const p = await this.db.payment.findUnique({
+      where: {
+        id,
+      },
+      include,
+    });
+    if (!p) throw new common_1.NotFoundException(t("Pagesa nuk u gjet."));
     const rows = [
-      ["Nxënësi", `${p.student.firstName} ${p.student.lastName}`],
-      ["Data", p.paidAt.toISOString().slice(0, 10)],
-      ["Metoda", p.method === "CASH" ? "Para të gatshme" : "Bankë"],
-      ["Regjistruar nga", p.user.name],
+      [t("Nxënësi"), `${p.student.firstName} ${p.student.lastName}`],
+      [t("Data"), p.paidAt.toISOString().slice(0, 10)],
+      [t("Metoda"), p.method === "CASH" ? t("Para të gatshme") : t("Bankë")],
+      [t("Regjistruar nga"), p.user.name],
       ...p.allocations.map((a) => [
         a.invoice.number + " · " + a.invoice.period,
         a.amount.toFixed(2) + " EUR",
       ]),
-      ["Totali", p.amount.toFixed(2) + " EUR"],
-      ["Shënime", p.notes || "-"],
+      [t("Totali"), p.amount.toFixed(2) + " EUR"],
+      [t("Shënime"), p.notes || "-"],
     ];
-    if (p.reversedAt) rows.push(["ANULUAR", p.reverseReason ?? ""]);
+    if (p.reversedAt) rows.push([t("ANULUAR"), p.reverseReason ?? ""]);
     res
       .type("application/pdf")
       .attachment(p.number + ".pdf")
-      .send(await (0, documents_1.pdf)("Dëshmi e pagesës", p.number, rows));
+      .send(await (0, documents_1.pdf)(t("Dëshmi e pagesës"), p.number, rows));
   }
 };
 exports.PaymentsController = PaymentsController;

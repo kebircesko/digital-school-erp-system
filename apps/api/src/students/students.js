@@ -196,7 +196,11 @@ tslib_1.__decorate(
 tslib_1.__decorate(
   [
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)({ name: "name", newest: "newest" }),
+    (0, class_validator_1.IsEnum)({
+      name: "name",
+      newest: "newest",
+      oldest: "oldest",
+    }),
     tslib_1.__metadata("design:type", String),
   ],
   StudentQuery.prototype,
@@ -256,7 +260,9 @@ let StudentsController = class StudentsController {
           orderBy:
             query.sort === "newest"
               ? [{ createdAt: "desc" }, { id: "asc" }]
-              : [{ lastName: "asc" }, { firstName: "asc" }, { id: "asc" }],
+              : query.sort === "oldest"
+                ? [{ createdAt: "asc" }, { id: "asc" }]
+                : [{ lastName: "asc" }, { firstName: "asc" }, { id: "asc" }],
           skip: (query.page - 1) * query.limit,
           take: query.limit,
         }),

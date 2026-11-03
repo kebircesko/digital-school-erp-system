@@ -165,3 +165,79 @@ kalon validimin e formularit. Kërkimi pranon edhe emër dhe mbiemër së bashku
 Kaluan `scripts/student-autocomplete-smoke.mjs`, build-et e API-së/desktop-it
 dhe 173 kontrollet me API reale/PostgreSQL, përfshirë rrjedhën e pagesës dhe
 PDF-në në Electron. Pamjet janë te `output/student-autocomplete/`.
+
+## Afati mujor, ESC dhe 10 nxënës demonstrues — 1 nëntor 2026
+
+- Afati i pagesës llogaritet një muaj kalendarik pas muajit të shërbimit, sipas
+  ditës së regjistrimit: 29 tetor → 29 nëntor → 29 dhjetor. U provuan edhe
+  shkurti, vitet e brishta, fundi i muajit dhe kalimi në vitin pasues.
+- U korrigjuan 147 afate lokale të faturave UNPAID/PARTIAL, pas backup-it të
+  enkriptuar dhe me audit. U ndryshua vetëm dueDate; kontrolli pas aplikimit
+  gjeti zero afate të mbetura për korrigjim. Faturat PAID/VOID nuk u prekën.
+- U shtuan dhe verifikuan 10 nxënës sintetikë: pesë Demo3Muaj me 3 fatura dhe
+  pesë Demo5Muaj me 5 fatura, gjithsej 40 fatura. Ripërsëritja e skriptit nuk
+  shton dublikata dhe ruan pagesat e provuara. Kontrolli përfundimtar ruajti
+  edhe pagesat që përdoruesi kishte kryer ndërkohë te Besa Demo5Muaj.
+- ESC u verifikua për PDF, faturë, profil, ndryshim nxënësi, krijim fature,
+  krijim pagese dhe konfirmim fshirjeje; mbyllet vetëm dritarja sipër. U provua
+  edhe rendi sugjerime → formular dhe sjellja në Electron.
+- Kaluan build-et, 9 skedarët e testeve automatike dhe 187 kontrolle integrimi
+  me PostgreSQL të përkohshëm, përfshirë 39 kontrolle të faturimit/UI-së.
+
+Manifestet e veprimeve lokale janë te `output/arrears-demo/students.json` dhe
+`output/monthly-deadlines/applied.json`.
+
+### Përfundimi i kontrolleve të ESC-së — 1 nëntor 2026
+
+U provuan edhe konfirmimet e përfundimit të regjistrimit, ndërrimit të grupit
+dhe anulimit të faturës. ESC i mbyll pa ndryshuar regjistrimet ose faturën.
+Gjatë një kërkese pagese të mbajtur qëllimisht në pritje, ESC nuk e mbylli
+dritaren dhe pagesa u ruajt vetëm një herë pas përfundimit të kërkesës.
+
+Kaluan 192 kontrolle integrimi me PostgreSQL të përkohshëm, përfshirë 44
+kontrolle të faturimit/UI-së dhe verifikimin në Electron. Ky kontroll nuk
+ndryshoi databazën lokale të shkollës.
+
+### Faturimi në grup — 2 nëntor 2026
+
+`node scripts/batch-invoices-smoke.mjs` kaloi në Chrome me API provuese:
+vijueshmëria e muajit paraprak për muajin e ardhshëm, pa zbritje automatike,
+përzgjedhja e faqes, zbritja manuale dhe arsyeja, kufiri i çmimit, totali para
+konfirmimit, ESC që ruan ndryshimet dhe bllokohet gjatë ruajtjes, rezultat i
+pjesshëm dhe riprovim vetëm për faturën e pakrijuar. Kaluan edhe nëntë skedarët
+e testeve me `node --test tests/*.test.mjs` dhe build-i i projektit. Pamjet:
+`output/batch-invoices/review.png` dhe `output/batch-invoices/result.png`. Nuk u
+ndryshuan nxënësit, faturat ose pagesat e databazës reale.
+
+Korrigjimi i pamjes së faturimit u kontrollua vizualisht në 1440, 1100 dhe 800
+px dhe në temën e errët. Emri/grupi dhe mungesat kanë hapësirë të veçantë;
+çmimi, zbritja, shuma dhe shënimet grupohen bashkë. Në ekran të ngushtë lista
+kthehet në blloqe për nxënës. Testi verifikon që lista nuk tejkalon gjerësinë e
+zonës së saj dhe që rrjedha e faturimit vazhdon të funksionojë.
+
+`node scripts/session-refresh-smoke.mjs` verifikoi me API provuese që Refresh-i
+rikthen kyçjen pas kontrollit te serveri, ndërprerja e rrjetit lejon riprovim,
+çkyçja dhe përgjigjja 401 pastrojnë sesionin, dhe tokeni nuk dërgohet te një
+server tjetër pas ndryshimit të adresës. Build-i i projektit kaloi.
+
+## Desktop release 0.1.5 — 2026-11-03
+
+- Linux AppImage and Windows x64 NSIS installer rebuilt from the latest desktop
+  source with Electron 44.7.0.
+- Launched the actual AppImage using an isolated user profile. The language
+  smoke test passed for Albanian default, English navigation and forms, retained
+  inputs, monthly discounts and selection, PDF reload, persisted language,
+  preload IPC, native save dialog and invalid filename handling. Only fixture
+  API responses were used.
+- Extracted the Windows installer payload and matched its application archive
+  against `win-unpacked`. Both platform archives contain identical current
+  renderer assets, PDF worker, main/preload bridge and shared translation files;
+  both report version 0.1.5.
+- No native Windows runtime test was performed on the Linux host.
+- Installer SHA-256 files and release manifest:
+  `apps/desktop/release/SHA256SUMS-0.1.5.txt` and `RELEASE-0.1.5.json`.
+- Reproduce artifact verification with
+  `node scripts/verify-desktop-packages.mjs`. Run the existing language smoke
+  test against an AppImage by setting `ERP_DESKTOP_EXECUTABLE` to its path;
+  generate its synthetic PDF fixtures first using
+  `node scripts/i18n-document-preview.mjs`.

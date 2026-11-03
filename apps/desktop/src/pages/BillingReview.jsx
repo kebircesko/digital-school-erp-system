@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { t, tm } from "../services/i18n.js";
+import { useEffect, useRef, useState } from "react";
 import {
   Download,
   Upload,
@@ -13,7 +14,7 @@ import StudentLink from "../components/StudentLink";
 import { useSchoolUpdates } from "../hooks/useSchoolUpdates";
 import PdfAttendanceImport from "../components/PdfAttendanceImport";
 import { presentCount, otherAttendance } from "../services/attendance";
-
+import BatchInvoices from "../components/BatchInvoices";
 export function calendarMonth(offset = 0) {
   const [year, month] = calendarDay().slice(0, 7).split("-").map(Number);
   return new Date(Date.UTC(year, month - 1 + offset, 1))
@@ -37,7 +38,7 @@ function AttendanceImport({ refresh }) {
       !file.name.toLowerCase().endsWith(".xlsx") ||
       file.size > 2 * 1024 * 1024
     ) {
-      setError("Zgjidhni një skedar .xlsx deri në 2 MB.");
+      setError(t("Zgjidhni një skedar .xlsx deri në 2 MB."));
       return;
     }
     setBusy(true);
@@ -45,10 +46,13 @@ function AttendanceImport({ refresh }) {
       const content = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(String(reader.result).split(",")[1]);
-        reader.onerror = () => reject(new Error("Skedari nuk u lexua."));
+        reader.onerror = () => reject(new Error(t("Skedari nuk u lexua.")));
         reader.readAsDataURL(file);
       });
-      const body = { filename: file.name, content };
+      const body = {
+        filename: file.name,
+        content,
+      };
       setPreview(
         await api("/attendance/import", {
           method: "POST",
@@ -77,7 +81,10 @@ function AttendanceImport({ refresh }) {
         signal: AbortSignal.timeout(60000),
       });
       setNotice(
-        `${result.imported} rreshta mungesash u ruajtën. Faturat ekzistuese ruajnë shumën dhe historikun e aprovimit.`,
+        t(
+          "{0} rreshta mungesash u ruajtën. Faturat ekzistuese ruajnë shumën dhe historikun e aprovimit.",
+          [result.imported],
+        ),
       );
       setUpload(null);
       setPreview(null);
@@ -93,16 +100,17 @@ function AttendanceImport({ refresh }) {
     <section className="card attendance-import">
       <div className="card-heading">
         <div>
-          <h2>Mungesat nga Excel</h2>
+          <h2>{t("Mungesat nga Excel")}</h2>
           <p>
-            Plotësoni modelin dhe kontrolloni parashikimin para ruajtjes.
-            Importi nuk ndryshon shumat e faturave.
+            {t(
+              "Plotësoni modelin dhe kontrolloni parashikimin para ruajtjes. Importi nuk ndryshon shumat e faturave.",
+            )}
           </p>
         </div>
       </div>
       <div className="table-toolbar">
         <label>
-          Muaji i modelit
+          {t("Muaji i modelit")}
           <input
             type="month"
             value={month}
@@ -125,13 +133,13 @@ function AttendanceImport({ refresh }) {
           }}
         >
           <Download size={16} />
-          Shkarko modelin
+          {t("Shkarko modelin")}
         </button>
         <label className="secondary upload-label">
           <Upload size={16} />
-          {busy ? "Duke përpunuar…" : "Ngarko Excel"}
+          {busy ? t("Duke përpunuar…") : t("Ngarko Excel")}
           <input
-            aria-label="Ngarko Excel të mungesave"
+            aria-label={t("Ngarko Excel të mungesave")}
             type="file"
             accept=".xlsx"
             disabled={busy}
@@ -143,31 +151,35 @@ function AttendanceImport({ refresh }) {
         </label>
       </div>
       <p className="muted">
-        Modeli përmban ID-të e nxënësve dhe kurseve. “Orë gjithsej” janë orët e
-        mbajtura nga klasa gjatë muajit. Plotësoni “Orë gjithsej”, “Mungesa” dhe
-        “Me arsye”. Mungesat me arsye janë pjesë e numrit të përgjithshëm.
+        {t(
+          "Modeli përmban ID-të e nxënësve dhe kurseve. “Orë gjithsej” janë orët e mbajtura nga klasa gjatë muajit. Plotësoni “Orë gjithsej”, “Mungesa” dhe “Me arsye”. Mungesat me arsye janë pjesë e numrit të përgjithshëm.",
+        )}
       </p>
       {error && (
         <div className="error" role="alert">
-          {error}
+          {tm(error)}
         </div>
       )}
       {notice && (
         <div className="success" role="status">
-          {notice}
+          {tm(notice)}
         </div>
       )}
       {preview && (
         <div className="import-preview">
           <h3>
-            Parashikimi: {preview.count} rreshta ·{" "}
-            {preview.items.filter((r) => r.replacesExisting).length} zëvendësime
+            {t("Parashikimi: ")}
+            {preview.count}
+            {t(" rreshta ·")}{" "}
+            {preview.items.filter((r) => r.replacesExisting).length}
+            {t(" zëvendësime")}
           </h3>
           {preview.errors.length > 0 && (
             <div className="error" role="alert">
               {preview.errors.map((e, i) => (
                 <p key={i}>
-                  Rreshti {e.row}: {e.message}
+                  {t("Rreshti ")}
+                  {e.row}: {tm(e.message)}
                 </p>
               ))}
             </div>
@@ -176,14 +188,14 @@ function AttendanceImport({ refresh }) {
             <table>
               <thead>
                 <tr>
-                  <th>Rreshti</th>
-                  <th>Nxënësi / Kursi</th>
-                  <th>Muaji</th>
-                  <th>Orë gjithsej</th>
-                  <th>Mungesa</th>
-                  <th>Me arsye</th>
-                  <th>Orë të ndjekura</th>
-                  <th>Veprimi</th>
+                  <th>{t("Rreshti")}</th>
+                  <th>{t("Nxënësi / Kursi")}</th>
+                  <th>{t("Muaji")}</th>
+                  <th>{t("Orë gjithsej")}</th>
+                  <th>{t("Mungesa")}</th>
+                  <th>{t("Me arsye")}</th>
+                  <th>{t("Orë të ndjekura")}</th>
+                  <th>{t("Veprimi")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -205,8 +217,14 @@ function AttendanceImport({ refresh }) {
                     </td>
                     <td>
                       {r.replacesExisting
-                        ? `Zëvendëson P: ${presentCount(r.previous)}, A: ${r.previous.absences}${otherAttendance(r.previous) ? ` · ${otherAttendance(r.previous)}` : ""}`
-                        : "I ri"}
+                        ? t("Zëvendëson P: {0}, A: {1}{2}", [
+                            presentCount(r.previous),
+                            r.previous.absences,
+                            otherAttendance(r.previous)
+                              ? ` · ${otherAttendance(r.previous)}`
+                              : "",
+                          ])
+                        : t("I ri")}
                     </td>
                   </tr>
                 ))}
@@ -222,14 +240,14 @@ function AttendanceImport({ refresh }) {
                 setUpload(null);
               }}
             >
-              Anulo importin
+              {t("Anulo importin")}
             </button>
             <button
               className="primary"
               disabled={busy || !preview.valid}
               onClick={commit}
             >
-              Konfirmo importin
+              {t("Konfirmo importin")}
             </button>
           </div>
         </div>
@@ -239,24 +257,46 @@ function AttendanceImport({ refresh }) {
 }
 export default function BillingReview({ user, initialPeriod }) {
   const updates = useSchoolUpdates();
+  const batchActive = useRef(false);
+  const draftCache = useRef({});
   const [period, setPeriod] = useState(initialPeriod || calendarMonth()),
     [data, setData] = useState(null),
     [page, setPage] = useState(1),
+    [search, setSearch] = useState(""),
+    [query, setQuery] = useState(""),
+    [status, setStatus] = useState(""),
     [revision, setRevision] = useState(0),
     [error, setError] = useState(""),
+    [notice, setNotice] = useState(""),
     [candidate, setCandidate] = useState(null),
     [invoice, setInvoice] = useState(null);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setQuery(search.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
   useEffect(() => {
     setPeriod(initialPeriod || calendarMonth());
     setPage(1);
   }, [initialPeriod]);
   useEffect(() => {
+    if (batchActive.current) return;
     const controller = new AbortController();
     setData(null);
     setError("");
-    api(`/invoice-review/pending?period=${period}&page=${page}`, {
-      signal: controller.signal,
-    })
+    api(
+      `/invoice-review/pending?${new URLSearchParams({
+        period,
+        page: String(page),
+        search: query,
+        status,
+      })}`,
+      {
+        signal: controller.signal,
+      },
+    )
       .then((d) => {
         if (!controller.signal.aborted) setData(d);
       })
@@ -264,7 +304,7 @@ export default function BillingReview({ user, initialPeriod }) {
         if (!controller.signal.aborted) setError(e.message);
       });
     return () => controller.abort();
-  }, [period, page, revision, updates]);
+  }, [period, page, query, status, revision, updates]);
   function reload() {
     setRevision((v) => v + 1);
     window.dispatchEvent(new Event("billing-updated"));
@@ -273,25 +313,29 @@ export default function BillingReview({ user, initialPeriod }) {
     <>
       <div className="page-heading">
         <div>
-          <h1>Faturat e muajit</h1>
+          <h1>{t("Faturat e muajit")}</h1>
           <p>
-            Ngarkoni vijueshmërinë e muajit, kontrolloni orët e ndjekura dhe
-            vendosni çmimin për secilin nxënës.
+            {t("Zgjidh muajin → kontrollo zbritjet → konfirmo faturat bashkë.")}
           </p>
         </div>
         <button className="secondary" onClick={reload}>
           <RefreshCw size={16} />
-          Rifresko
+          {t("Rifresko")}
         </button>
       </div>
       {error && (
         <div className="error" role="alert">
-          {error}
+          {tm(error)}
+        </div>
+      )}
+      {notice && (
+        <div className="success" role="status">
+          {tm(notice)}
         </div>
       )}
       {user.role === "ADMIN" && (
-        <details className="attendance-disclosure" open>
-          <summary>1. Ngarko orët dhe mungesat e muajit</summary>
+        <details className="attendance-disclosure">
+          <summary>{t("Ngarko vijueshmërinë nga PDF ose Excel")}</summary>
           <PdfAttendanceImport
             imported={(month) => {
               setPeriod(month);
@@ -300,22 +344,25 @@ export default function BillingReview({ user, initialPeriod }) {
             }}
           />
           <details className="attendance-excel-alternative">
-            <summary>Alternativë: modeli ynë Excel</summary>
+            <summary>{t("Alternativë: modeli ynë Excel")}</summary>
             <AttendanceImport refresh={reload} />
           </details>
         </details>
       )}
-      <p className="billing-attendance-help">
-        2. Kontrolloni orët për muajin e zgjedhur dhe hapni “Regjistro faturën”
-        për të vendosur shumën. Te raporti PDF numërohen direkt P-të dhe A-të;
-        U, T dhe orët pa shënim nuk numërohen si prezenca.
-      </p>
+      <details className="billing-attendance-help">
+        <summary>{t("Si llogariten shumat dhe mungesat?")}</summary>
+        <p>
+          {t(
+            "Zgjidhni nxënësit, kontrolloni mungesat dhe caktoni zbritjen në euro. Për muajin e ardhshëm shfaqet vijueshmëria e muajit paraprak. Sistemi nuk zbret automatikisht nga çmimi. Te raporti PDF numërohen direkt P-të dhe A-të; U, T dhe orët pa shënim nuk numërohen si prezenca. Për muajin e ardhshëm përfshihen regjistrimet e reja dhe nxënësit që kanë paguar muajin paraprak.",
+          )}
+        </p>
+      </details>
       <section className="card monthly-invoices">
         <div className="table-toolbar">
           <label>
-            Muaji
+            {t("Muaji")}
             <input
-              aria-label="Muaji i faturës për aprovim"
+              aria-label={t("Muaji i faturës për aprovim")}
               type="month"
               required
               value={period}
@@ -335,7 +382,7 @@ export default function BillingReview({ user, initialPeriod }) {
               setPage(1);
             }}
           >
-            Ky muaj
+            {t("Ky muaj")}
           </button>
           <button
             className="secondary"
@@ -344,84 +391,158 @@ export default function BillingReview({ user, initialPeriod }) {
               setPage(1);
             }}
           >
-            Muaji i ardhshëm
+            {t("Përgatit muajin e ardhshëm")}
           </button>
-          <span>{data ? `${data.total} pa faturë` : "Duke ngarkuar…"}</span>
+          <span>
+            {data ? t("{0} pa faturë", [data.total]) : t("Duke ngarkuar…")}
+          </span>
         </div>
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Nxënësi</th>
-                <th>Kursi / Grupi</th>
-                <th>Muaji</th>
-                <th>Orë gjithsej</th>
-                <th>Mungesa (A)</th>
-                <th>Prezent (P)</th>
-                <th>Çmimi mujor</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.items.map((row) => (
-                <tr key={row.enrollmentId}>
-                  <td>
-                    <StudentLink id={row.studentId}>
-                      <strong>{row.studentName}</strong>
-                    </StudentLink>
-                  </td>
-                  <td>
-                    {row.courseName}
-                    <small>{row.groupName}</small>
-                  </td>
-                  <td>{row.period}</td>
-                  {row.attendance?.current ? (
-                    <>
-                      <td>{row.attendance.current.totalLessons}</td>
-                      <td>
-                        {row.attendance.current.absences}
-                        <small>
-                          {row.attendance.current.excusedAbsences} me arsye
-                        </small>
-                      </td>
-                      <td>
-                        <strong>{presentCount(row.attendance.current)}</strong>
-                        <small>{otherAttendance(row.attendance.current)}</small>
-                      </td>
-                    </>
-                  ) : (
-                    <td colSpan={3}>
-                      <span className="attendance-missing">
-                        Pa të dhëna për këtë muaj
-                      </span>
-                    </td>
-                  )}
-                  <td>{Number(row.suggestedAmount).toFixed(2)} €</td>
-                  <td>
-                    {user.role === "ADMIN" ? (
-                      <button
-                        className="primary"
-                        onClick={() => setCandidate(row)}
-                      >
-                        Regjistro faturën
-                      </button>
-                    ) : (
-                      "Në pritje të adminit"
-                    )}
-                  </td>
+        <div className="billing-review-filters">
+          <input
+            aria-label={t("Kërko nxënës, kurs ose grup për faturim")}
+            placeholder={t("Kërko nxënës, kurs ose grup…")}
+            value={search}
+            maxLength={100}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <div
+            className="billing-filter-tabs"
+            aria-label={t("Filtro faturat e muajit")}
+          >
+            {[
+              ["", t("Të gjithë"), "all"],
+              ["absences", t("Me mungesa"), "absences"],
+              ["missing", t("Pa vijueshmëri"), "missing"],
+              ["regular", t("Pa mungesa"), "regular"],
+            ].map(([value, label, key]) => (
+              <button
+                key={key}
+                className="secondary"
+                aria-pressed={status === value}
+                onClick={() => {
+                  setStatus(value);
+                  setPage(1);
+                }}
+              >
+                {label}
+                {data?.summary ? ` (${data.summary[key]})` : ""}
+              </button>
+            ))}
+          </div>
+        </div>
+        {user.role === "ADMIN" ? (
+          data && (
+            <BatchInvoices
+              period={period}
+              draftCache={draftCache}
+              rows={data.items}
+              openSingle={setCandidate}
+              activeChanged={(value) => {
+                batchActive.current = value;
+              }}
+              finished={(results) => {
+                const count = results.filter((r) => r.ok).length;
+                setNotice(
+                  t("U regjistruan {0} fatura.{1}", [
+                    count,
+                    results.some((r) => !r.ok)
+                      ? t(
+                          " Disa kërkesa kërkojnë kontroll në listën e rifreskuar.",
+                        )
+                      : t(" Pagesat regjistrohen kur pranohen."),
+                  ]),
+                );
+                batchActive.current = false;
+                reload();
+              }}
+            />
+          )
+        ) : (
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>{t("Nxënësi")}</th>
+                  <th>{t("Kursi / Grupi")}</th>
+                  <th>{t("Muaji")}</th>
+                  <th>{t("Orë gjithsej")}</th>
+                  <th>{t("Mungesa (A)")}</th>
+                  <th>{t("Prezent (P)")}</th>
+                  <th>{t("Çmimi mujor")}</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {data?.items.map((row) => (
+                  <tr key={row.enrollmentId}>
+                    <td>
+                      <StudentLink id={row.studentId}>
+                        <strong>{row.studentName}</strong>
+                      </StudentLink>
+                    </td>
+                    <td>
+                      {row.courseName}
+                      <small>{row.groupName}</small>
+                    </td>
+                    <td>{row.period}</td>
+                    {row.attendance?.current ? (
+                      <>
+                        <td>{row.attendance.current.totalLessons}</td>
+                        <td>
+                          {row.attendance.current.absences}
+                          <small>
+                            {row.attendance.current.excusedAbsences}
+                            {t(" me arsye")}
+                          </small>
+                        </td>
+                        <td>
+                          <strong>
+                            {presentCount(row.attendance.current)}
+                          </strong>
+                          <small>
+                            {otherAttendance(row.attendance.current)}
+                          </small>
+                        </td>
+                      </>
+                    ) : (
+                      <td colSpan={3}>
+                        <span className="attendance-missing">
+                          {t("Pa të dhëna për këtë muaj")}
+                        </span>
+                      </td>
+                    )}
+                    <td>{Number(row.suggestedAmount).toFixed(2)} €</td>
+                    <td>
+                      {user.role === "ADMIN" ? (
+                        <button
+                          className="primary"
+                          onClick={() => setCandidate(row)}
+                        >
+                          {t("Regjistro faturën")}
+                        </button>
+                      ) : (
+                        t("Në pritje të adminit")
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         {data && !data.items.length && (
           <div className="empty">
-            Nuk ka fatura të reja për të regjistruar për {period}.
+            {query || status
+              ? t("Nuk u gjetën nxënës me këtë kërkim ose filtër.")
+              : t("Nuk ka fatura të reja për të regjistruar për {0}.", [
+                  period,
+                ])}
           </div>
         )}
         <div className="pagination">
           <span>
-            Faqja {data?.page ?? page} / {data?.pages ?? 1}
+            {t("Faqja ")}
+            {data?.page ?? page} / {data?.pages ?? 1}
           </span>
           <div>
             <button disabled={page <= 1} onClick={() => setPage((v) => v - 1)}>

@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import { useEffect, useState } from "react";
 import StudentLookup from "./StudentLookup";
 import { api } from "../services/api";
@@ -17,8 +18,13 @@ function ClassicLookup({
       api(
         endpoint +
           (endpoint.includes("?") ? "&" : "?") +
-          new URLSearchParams({ limit: "50", search }),
-        { signal: controller.signal },
+          new URLSearchParams({
+            limit: "50",
+            search,
+          }),
+        {
+          signal: controller.signal,
+        },
       )
         .then((result) => {
           if (!controller.signal.aborted) {
@@ -45,8 +51,8 @@ function ClassicLookup({
     <label>
       {label}
       <input
-        aria-label={`Kërko: ${label}`}
-        placeholder="Kërko për ta zgjedhur…"
+        aria-label={t("Kërko: {0}", [label])}
+        placeholder={t("Kërko për ta zgjedhur…")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
@@ -56,9 +62,9 @@ function ClassicLookup({
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
-        <option value="">Zgjidhni…</option>
+        <option value="">{t("Zgjidhni…")}</option>
         {value && !rows.some((r) => r.id === value) && (
-          <option value={value}>{initialLabel || "Zgjedhja aktuale"}</option>
+          <option value={value}>{initialLabel || t("Zgjedhja aktuale")}</option>
         )}
         {rows.map((r) => (
           <option key={r.id} value={r.id}>
@@ -69,14 +75,14 @@ function ClassicLookup({
       </select>
       {selected?.instructor?.name && (
         <small>
-          Instruktori: <strong>{selected.instructor.name}</strong>
+          {t("Instruktori: ")}
+          <strong>{selected.instructor.name}</strong>
         </small>
       )}
-      {error && <small className="field-error">{error}</small>}
+      {error && <small className="field-error">{tm(error)}</small>}
     </label>
   );
 }
-
 export default function Lookup(props) {
   return props.endpoint.split("?")[0] === "/students" ? (
     <StudentLookup {...props} />

@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { api } from "../services/api";
@@ -41,7 +42,11 @@ export default function StudentModal({ student, close, saved, readOnly }) {
           method: student === "new" ? "POST" : "PATCH",
           body: JSON.stringify({
             ...form,
-            ...(student === "new" ? {} : { version: student.version }),
+            ...(student === "new"
+              ? {}
+              : {
+                  version: student.version,
+                }),
           }),
         },
       );
@@ -67,7 +72,12 @@ export default function StudentModal({ student, close, saved, readOnly }) {
           max={
             type === "date" ? new Date().toISOString().slice(0, 10) : undefined
           }
-          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              [key]: e.target.value,
+            })
+          }
         />
       </label>
     );
@@ -82,19 +92,19 @@ export default function StudentModal({ student, close, saved, readOnly }) {
       >
         <div className="modal-heading">
           <div>
-            <span className="eyebrow">TË DHËNAT E NXËNËSIT</span>
+            <span className="eyebrow">{t("TË DHËNAT E NXËNËSIT")}</span>
             <h2 id="student-title">
               {student === "new"
-                ? "Regjistro nxënës"
+                ? t("Regjistro nxënës")
                 : readOnly
-                  ? "Profili i nxënësit"
-                  : "Ndrysho nxënësin"}
+                  ? t("Profili i nxënësit")
+                  : t("Ndrysho nxënësin")}
             </h2>
           </div>
           <button
             className="icon-button"
             disabled={busy}
-            aria-label="Mbyll formularin"
+            aria-label={t("Mbyll formularin")}
             onClick={close}
           >
             <X size={21} />
@@ -102,11 +112,11 @@ export default function StudentModal({ student, close, saved, readOnly }) {
         </div>
         <form onSubmit={submit}>
           <div className="form-grid">
-            {field("firstName", "Emri", "text", true, 80)}
-            {field("lastName", "Mbiemri", "text", true, 80)}
-            {field("birthDate", "Data e lindjes", "date")}
+            {field("firstName", t("Emri"), "text", true, 80)}
+            {field("lastName", t("Mbiemri"), "text", true, 80)}
+            {field("birthDate", t("Data e lindjes"), "date")}
             <label>
-              Statusi
+              {t("Statusi")}
               <select
                 disabled={readOnly || busy}
                 value={form.status}
@@ -117,29 +127,34 @@ export default function StudentModal({ student, close, saved, readOnly }) {
                   })
                 }
               >
-                <option value="ACTIVE">Aktiv</option>
-                <option value="INACTIVE">Joaktiv</option>
+                <option value="ACTIVE">{t("Aktiv")}</option>
+                <option value="INACTIVE">{t("Joaktiv")}</option>
               </select>
             </label>
-            {field("parentName", "Emri i prindit / kujdestarit")}
-            {field("parentPhone", "Telefoni i prindit", "tel", true, 30)}
+            {field("parentName", t("Emri i prindit / kujdestarit"))}
+            {field("parentPhone", t("Telefoni i prindit"), "tel", true, 30)}
             <div className="full">
-              {field("address", "Adresa", "text", false, 300)}
+              {field("address", t("Adresa"), "text", false, 300)}
             </div>
             <label className="full">
-              Shënime shtesë
+              {t("Shënime shtesë")}
               <textarea
                 disabled={readOnly || busy}
                 maxLength={2000}
                 rows={3}
                 value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    notes: e.target.value,
+                  })
+                }
               />
             </label>
           </div>
           {error && (
             <div className="error" role="alert">
-              {error}
+              {tm(error)}
             </div>
           )}
           <div className="modal-actions">
@@ -149,11 +164,11 @@ export default function StudentModal({ student, close, saved, readOnly }) {
               disabled={busy}
               onClick={close}
             >
-              {readOnly ? "Mbyll" : "Anulo"}
+              {readOnly ? t("Mbyll") : t("Anulo")}
             </button>
             {!readOnly && (
               <button className="primary" disabled={busy}>
-                {busy ? "Duke ruajtur…" : "Ruaj nxënësin"}
+                {busy ? t("Duke ruajtur…") : t("Ruaj nxënësin")}
               </button>
             )}
           </div>

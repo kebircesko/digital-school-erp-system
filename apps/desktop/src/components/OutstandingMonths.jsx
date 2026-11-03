@@ -1,3 +1,4 @@
+import { t } from "../services/i18n.js";
 import { monthLabel } from "../services/format";
 export default function OutstandingMonths({ invoices, selectedId, open }) {
   if (!invoices.length) return null;
@@ -7,11 +8,12 @@ export default function OutstandingMonths({ invoices, selectedId, open }) {
   );
   const oldest = rows[0].period;
   return (
-    <section className="outstanding-months" aria-label="Muajt e papaguar">
-      <h3>Muajt e papaguar</h3>
+    <section className="outstanding-months" aria-label={t("Muajt e papaguar")}>
+      <h3>{t("Muajt e papaguar")}</h3>
       <p>
-        Mbyllni fillimisht {monthLabel(oldest)}. Pastaj mund të vazhdoni me
-        muajin tjetër.
+        {t("Mbyllni fillimisht ")}
+        {monthLabel(oldest)}
+        {t(". Pastaj mund të vazhdoni me muajin tjetër.")}
       </p>
       {rows.map((row) => (
         <div className="outstanding-month" key={row.id}>
@@ -35,10 +37,10 @@ export default function OutstandingMonths({ invoices, selectedId, open }) {
               onClick={() => open(row)}
             >
               {row.id === selectedId
-                ? "Fatura e hapur"
+                ? t("Fatura e hapur")
                 : row.period === oldest
-                  ? "Paguaj këtë muaj"
-                  : "Pas muajit paraprak"}
+                  ? t("Paguaj këtë muaj")
+                  : t("Pas muajit paraprak")}
             </button>
           )}
         </div>

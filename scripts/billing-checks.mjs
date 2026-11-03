@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
 import { mkdir, readFile } from "node:fs/promises";
+import {
+  arrearsPlan,
+  seedArrears,
+  inspectArrears,
+} from "./seed-arrears-demo.mjs";
 import { chromium, _electron } from "playwright";
 
 export async function billingChecks({
@@ -136,15 +141,15 @@ export async function billingChecks({
       admin,
     );
     const row = pending.items.find((row) => row.studentId === student.id);
+    const following = new Date(`${month}-01T00:00:00Z`);
+    following.setUTCMonth(following.getUTCMonth() + 1);
+    const maxDay = new Date(
+      Date.UTC(following.getUTCFullYear(), following.getUTCMonth() + 1, 0),
+    ).getUTCDate();
     check(
-      Number(row.dueDate.slice(-2)) === day ||
-        Number(row.dueDate.slice(-2)) ===
-          new Date(
-            Number(month.slice(0, 4)),
-            Number(month.slice(5)),
-            0,
-          ).getDate(),
-      "Deadline follows enrollment day",
+      row.dueDate ===
+        `${following.toISOString().slice(0, 7)}-${String(Math.min(day, maxDay)).padStart(2, "0")}`,
+      "Next payment follows the enrollment anniversary one month later",
     );
     invoices.push(
       await request(
@@ -280,6 +285,52 @@ export async function billingChecks({
   );
   await request(`/invoices/${newer.id}`, "GET", undefined, instructor, 403);
   checks++;
+
+  const demoPlan = arrearsPlan(period);
+  check(
+    (await seedArrears(db, demoPlan)).created,
+    "Ten arrears demo students are created atomically",
+  );
+  const demoReport = await inspectArrears(db, demoPlan);
+  check(
+    demoReport.count === 10 &&
+      demoReport.students.filter(
+        (row) => row.unpaidMonths.length === 3 && row.debt === "120.00",
+      ).length === 5 &&
+      demoReport.students.filter(
+        (row) => row.unpaidMonths.length === 5 && row.debt === "200.00",
+      ).length === 5,
+    "Five three-month and five five-month debts are complete",
+  );
+  const demoInvoice = await db.invoice.findFirst({
+    where: { studentId: demoPlan.students[0].id },
+    orderBy: { period: "asc" },
+  });
+  await request(
+    "/payments",
+    "POST",
+    {
+      studentId: demoPlan.students[0].id,
+      idempotencyKey: randomUUID(),
+      amount: "10.00",
+      method: "CASH",
+      paidAt: `${period}-01`,
+      notes: "Provë e të dhënave demo",
+      allocations: [{ invoiceId: demoInvoice.id, amount: "10.00" }],
+    },
+    finance,
+    201,
+  );
+  check(
+    !(await seedArrears(db, demoPlan)).created,
+    "Re-running demo fixture creates no duplicates",
+  );
+  check(
+    (
+      await db.invoice.findUnique({ where: { id: demoInvoice.id } })
+    ).paidAmount.toFixed(2) === "10.00",
+    "Re-running demo fixture preserves test payments",
+  );
 
   const port = "5189",
     url = `http://127.0.0.1:${port}`;
@@ -435,13 +486,56 @@ export async function billingChecks({
       (await readFile(await file.path())).subarray(0, 5).toString() === "%PDF-",
       "Save preserves original PDF bytes",
     );
-    await pdf
-      .getByRole("button", { name: "Mbyll PDF-në", exact: true })
-      .click();
-    await invoice
-      .getByRole("button", { name: "Ruaj pagesën", exact: true })
-      .click();
-    await invoice.getByText(/Pagesa u ruajt/).waitFor();
+    await page.keyboard.press("Escape");
+    await pdf.waitFor({ state: "hidden" });
+    check(
+      (await invoice.count()) === 1,
+      "Escape closes only PDF, preserving the underlying invoice",
+    );
+    const paymentsBeforeSave = await db.payment.count({
+      where: { studentId: student.id },
+    });
+    let releasePayment;
+    const paymentGate = new Promise((resolve) => {
+      releasePayment = resolve;
+    });
+    const holdPayment = async (route) => {
+      if (route.request().method() === "POST") await paymentGate;
+      await route.continue();
+    };
+    await page.route("**/api/payments", holdPayment);
+    try {
+      const savingRequest = page.waitForRequest(
+        (req) => req.url().endsWith("/api/payments") && req.method() === "POST",
+      );
+      await invoice
+        .getByRole("button", { name: "Ruaj pagesën", exact: true })
+        .click();
+      await savingRequest;
+      await page.waitForFunction(
+        () =>
+          document.querySelector(".invoice-payment-form button.primary")
+            ?.disabled,
+      );
+      await page.keyboard.press("Escape");
+      check(
+        (await invoice.count()) === 1 &&
+          (await invoice
+            .getByRole("button", { name: "Mbyll faturën", exact: true })
+            .isDisabled()),
+        "Escape waits while a payment is being saved",
+      );
+      releasePayment();
+      await invoice.getByText(/Pagesa u ruajt/).waitFor();
+      check(
+        (await db.payment.count({ where: { studentId: student.id } })) ===
+          paymentsBeforeSave + 1,
+        "Escape during saving does not duplicate or lose the payment",
+      );
+    } finally {
+      releasePayment();
+      await page.unroute("**/api/payments", holdPayment);
+    }
     await invoice
       .locator(".outstanding-month")
       .getByRole("button", { name: "Paguaj këtë muaj", exact: true })
@@ -451,6 +545,157 @@ export async function billingChecks({
       (await invoice.getByLabel("Shuma e pagesës EUR").inputValue()) ===
         "20.00",
       "UI unlocks newer month after older payment",
+    );
+    await page.keyboard.press("Escape");
+    await invoice.waitFor({ state: "hidden" });
+    await profile.waitFor();
+    check(
+      (await profile.count()) === 1,
+      "Escape from invoice returns to student profile",
+    );
+    await profile
+      .getByRole("button", { name: "Ndrysho të dhënat", exact: true })
+      .click();
+    const editDialog = page.getByRole("dialog");
+    await editDialog.getByLabel("Emri", { exact: true }).waitFor();
+    await page.keyboard.press("Escape");
+    await profile.waitFor();
+    check(
+      (await profile.count()) === 1,
+      "Escape cancels editing and returns to profile",
+    );
+    await page.keyboard.press("Escape");
+    await profile.waitFor({ state: "hidden" });
+    check(
+      (await page.getByRole("dialog").count()) === 0,
+      "Escape closes profile without closing the app",
+    );
+    await page
+      .getByRole("button", { name: "Veprim i ri", exact: true })
+      .click();
+    await page
+      .locator("#quick-create-actions")
+      .getByRole("button", { name: "Regjistro faturën", exact: true })
+      .click();
+    const newInvoice = page.getByRole("dialog", {
+      name: "Regjistro faturën",
+      exact: true,
+    });
+    await newInvoice
+      .getByLabel("Kërko: Nxënësi", { exact: true })
+      .fill("Afati");
+    await newInvoice.getByRole("option", { name: /Afati Prova/ }).waitFor();
+    await page.keyboard.press("Escape");
+    check(
+      (await newInvoice.count()) === 1 &&
+        (await newInvoice.getByRole("listbox").count()) === 0,
+      "Escape dismisses student suggestions before the invoice form",
+    );
+    await page.keyboard.press("Escape");
+    await newInvoice.waitFor({ state: "hidden" });
+    check(
+      (await page.getByRole("dialog").count()) === 0,
+      "Second Escape closes invoice creation",
+    );
+    await page
+      .getByRole("button", { name: "Veprim i ri", exact: true })
+      .click();
+    await page
+      .locator("#quick-create-actions")
+      .getByRole("button", { name: "Regjistro pagesë", exact: true })
+      .click();
+    await page
+      .getByRole("heading", { name: "Regjistro pagesë", exact: true })
+      .waitFor();
+    await page.keyboard.press("Escape");
+    check(
+      (await page.getByRole("dialog").count()) === 0,
+      "Escape closes payment creation",
+    );
+    await page
+      .locator("nav")
+      .getByRole("button", { name: "Nxënësit", exact: true })
+      .click();
+    await page.getByLabel("Kërko nxënës", { exact: true }).fill("Afati");
+    const studentRow = page
+      .locator("tbody tr")
+      .filter({ hasText: "Afati Prova" });
+    await studentRow
+      .getByRole("button", { name: "Fshi nxënësin", exact: true })
+      .click();
+    await page
+      .getByRole("heading", { name: "Fshi nxënësin?", exact: true })
+      .waitFor();
+    await page.keyboard.press("Escape");
+    check(
+      (await page.getByRole("dialog").count()) === 0 &&
+        Boolean(await db.student.findUnique({ where: { id: student.id } })),
+      "Escape cancels deletion without changing records",
+    );
+    async function openPage(name) {
+      const button = page
+        .locator("nav")
+        .getByRole("button", { name, exact: true });
+      if (!(await button.isVisible()))
+        await page
+          .locator(".nav-group")
+          .filter({ hasText: name })
+          .locator("summary")
+          .click();
+      await button.click();
+    }
+    await openPage("Regjistrimet");
+    await page.getByLabel("Kërko", { exact: true }).fill("Afati");
+    const enrollmentRow = page
+      .locator("tbody tr")
+      .filter({ hasText: "Afati Prova" });
+    await enrollmentRow
+      .getByRole("button", { name: "Përfundo", exact: true })
+      .click();
+    await page
+      .getByRole("heading", { name: "Përfundo regjistrimin", exact: true })
+      .waitFor();
+    await page.keyboard.press("Escape");
+    check(
+      (await page.getByRole("dialog").count()) === 0 &&
+        (await db.enrollment.findFirst({ where: { studentId: student.id } }))
+          .status === "ACTIVE",
+      "Escape cancels enrollment completion",
+    );
+    await enrollmentRow
+      .getByRole("button", { name: "Ndërro grupin", exact: true })
+      .click();
+    await page
+      .getByRole("heading", { name: "Ndërro grupin", exact: true })
+      .waitFor();
+    await page.keyboard.press("Escape");
+    check(
+      (await page.getByRole("dialog").count()) === 0 &&
+        (await db.enrollment.count({ where: { studentId: student.id } })) === 1,
+      "Escape cancels group transfer without creating another enrollment",
+    );
+    await openPage("Faturat");
+    await page
+      .getByLabel("Kërko faturë ose pagesë", { exact: true })
+      .fill("DEMO-FAT");
+    const cancellation = page
+      .locator("tbody tr")
+      .filter({ has: page.getByRole("button", { name: "Anulo", exact: true }) })
+      .first();
+    await cancellation.waitFor();
+    const number = await cancellation.locator(".invoice-number").innerText();
+    await cancellation
+      .getByRole("button", { name: "Anulo", exact: true })
+      .click();
+    await page
+      .getByRole("heading", { name: "Anulo " + number, exact: true })
+      .waitFor();
+    await page.keyboard.press("Escape");
+    check(
+      (await page.getByRole("dialog").count()) === 0 &&
+        (await db.invoice.findUnique({ where: { number } })).status ===
+          "UNPAID",
+      "Escape cancels invoice cancellation without voiding the invoice",
     );
     check(errors.length === 0, errors.join("; "));
 
@@ -504,6 +749,23 @@ export async function billingChecks({
         path: "output/billing-preview/electron-preview.png",
         fullPage: true,
       });
+      await win.keyboard.press("Escape");
+      await nativePdf.waitFor({ state: "hidden" });
+      check(
+        (await win
+          .getByRole("dialog", { name: "Fatura", exact: true })
+          .count()) === 1,
+        "Desktop Escape closes PDF only",
+      );
+      await win.keyboard.press("Escape");
+      await win
+        .getByRole("dialog", { name: "Profili · Afati Prova", exact: true })
+        .waitFor();
+      await win.keyboard.press("Escape");
+      check(
+        (await win.getByRole("dialog").count()) === 0,
+        "Desktop Escape closes invoice and profile one at a time",
+      );
       check(desktopErrors.length === 0, desktopErrors.join("; "));
       checks++;
     }

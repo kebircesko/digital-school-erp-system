@@ -3,12 +3,15 @@ import assert from "node:assert/strict";
 import { Prisma } from "@prisma/client";
 import billing from "../apps/api/src/common/billing.js";
 const { registrationDeadline, checkOldestMonths } = billing;
-test("registration deadlines follow the start day, clamp short months and retain UTC date", () => {
-  assert.equal(registrationDeadline("2026-10", "2026-09-29"), "2026-10-29");
-  assert.equal(registrationDeadline("2026-02", "2025-01-31"), "2026-02-28");
-  assert.equal(registrationDeadline("2024-02", "2023-12-31"), "2024-02-29");
+test("next payment is one calendar month after the service month without drift", () => {
+  assert.equal(registrationDeadline("2026-10", "2026-10-29"), "2026-11-29");
+  assert.equal(registrationDeadline("2026-11", "2026-10-29"), "2026-12-29");
+  assert.equal(registrationDeadline("2026-12", "2026-10-29"), "2027-01-29");
+  assert.equal(registrationDeadline("2026-01", "2025-01-31"), "2026-02-28");
+  assert.equal(registrationDeadline("2026-02", "2025-01-31"), "2026-03-31");
+  assert.equal(registrationDeadline("2024-01", "2023-12-31"), "2024-02-29");
   assert.equal(
-    registrationDeadline("2026-04", "2026-01-31T00:00:00Z"),
+    registrationDeadline("2026-03", "2026-01-31T00:00:00Z"),
     "2026-04-30",
   );
   assert.throws(() => registrationDeadline("2026-13", "2026-01-29"));

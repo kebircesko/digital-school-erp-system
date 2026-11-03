@@ -1,5 +1,9 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+
+const { t } = require("../common/i18n");
+Object.defineProperty(exports, "__esModule", {
+  value: true,
+});
 exports.pdf = pdf;
 exports.excel = excel;
 const tslib_1 = require("tslib");
@@ -30,12 +34,12 @@ async function pdf(title, reference, rows) {
     .font("Bold")
     .fillColor("#00004E")
     .fontSize(17)
-    .text("SHKOLLA DIGJITALE PRIZREN");
+    .text(t("SHKOLLA DIGJITALE PRIZREN"));
   doc
     .font("Regular")
     .fillColor("#77778C")
     .fontSize(10)
-    .text("Platforma e menaxhimit të shkollës")
+    .text(t("Platforma e menaxhimit të shkollës"))
     .moveDown(2);
   doc.font("Bold").fillColor("#00004E").fontSize(23).text(title);
   doc
@@ -48,14 +52,22 @@ async function pdf(title, reference, rows) {
     doc.font("Regular").fontSize(10);
     const height =
       Math.max(
-        doc.heightOfString(label, { width: 155 }),
-        doc.heightOfString(value, { width: 307 }),
+        doc.heightOfString(label, {
+          width: 155,
+        }),
+        doc.heightOfString(value, {
+          width: 307,
+        }),
       ) + 22;
     if (doc.y + height > 740) doc.addPage();
     const y = doc.y;
     doc.fillColor("#F4F5FA").rect(48, y, 499, height).fill();
-    doc.fillColor("#62627D").text(label, 60, y + 10, { width: 155 });
-    doc.fillColor("#20203A").text(value, 228, y + 10, { width: 307 });
+    doc.fillColor("#62627D").text(label, 60, y + 10, {
+      width: 155,
+    });
+    doc.fillColor("#20203A").text(value, 228, y + 10, {
+      width: 307,
+    });
     doc.y = y + height + 5;
     doc.x = 48;
   }
@@ -66,26 +78,50 @@ async function pdf(title, reference, rows) {
       .font("Regular")
       .fontSize(8)
       .fillColor("#77778C")
-      .text("Shkolla Digjitale Prizren · EUR", 48, 780, { lineBreak: false });
-    doc.text(`${i + 1} / ${range.count}`, 480, 780, { lineBreak: false });
+      .text(t("Shkolla Digjitale Prizren · EUR"), 48, 780, {
+        lineBreak: false,
+      });
+    doc.text(`${i + 1} / ${range.count}`, 480, 780, {
+      lineBreak: false,
+    });
   }
   doc.end();
   return finished;
 }
 async function excel(title, headers, rows) {
   const book = new exceljs_1.default.Workbook();
-  book.creator = "Shkolla Digjitale Prizren";
+  book.creator = t("Shkolla Digjitale Prizren");
   const sheet = book.addWorksheet(title.slice(0, 31));
   sheet.addRow(headers);
-  sheet.getRow(1).font = { bold: true, color: { argb: "FFFFFFFF" } };
+  sheet.getRow(1).font = {
+    bold: true,
+    color: {
+      argb: "FFFFFFFF",
+    },
+  };
   sheet.getRow(1).fill = {
     type: "pattern",
     pattern: "solid",
-    fgColor: { argb: "FF00004E" },
+    fgColor: {
+      argb: "FF00004E",
+    },
   };
-  sheet.views = [{ state: "frozen", ySplit: 1 }];
+  sheet.views = [
+    {
+      state: "frozen",
+      ySplit: 1,
+    },
+  ];
   for (const row of rows) sheet.addRow(row);
-  sheet.columns = headers.map((_, i) => ({ width: i === 0 ? 28 : 22 }));
-  sheet.autoFilter = { from: "A1", to: { row: 1, column: headers.length } };
+  sheet.columns = headers.map((_, i) => ({
+    width: i === 0 ? 28 : 22,
+  }));
+  sheet.autoFilter = {
+    from: "A1",
+    to: {
+      row: 1,
+      column: headers.length,
+    },
+  };
   return Buffer.from(await book.xlsx.writeBuffer());
 }

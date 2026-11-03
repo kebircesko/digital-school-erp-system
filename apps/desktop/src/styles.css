@@ -1457,8 +1457,302 @@ fieldset {
   font-size: 13px;
   line-height: 1.6;
 }
+.billing-attendance-help summary,
+.batch-row-details summary {
+  cursor: pointer;
+}
+.billing-review-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.billing-review-filters > input {
+  flex: 1 1 240px;
+  width: auto;
+  min-width: 0;
+}
+.billing-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.monthly-invoices .billing-filter-tabs button[aria-pressed="true"] {
+  background: var(--navy);
+  color: white;
+}
+.batch-row-details {
+  margin-top: 6px;
+}
+.batch-row-details summary {
+  color: var(--muted);
+  font-size: 12px;
+}
+.batch-row-details[open] summary {
+  margin-bottom: 12px;
+}
+.batch-compact-amount {
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
 .attendance-missing {
   color: var(--muted);
+}
+.batch-invoice-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 24px;
+}
+.student-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+.session-check {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.session-check .card {
+  width: min(100%, 480px);
+  padding: 28px;
+}
+.session-check p {
+  margin-top: 16px;
+}
+.session-check .secondary {
+  background: var(--surface);
+  color: var(--text);
+}
+.student-profile-actions .secondary {
+  background: var(--surface);
+  color: var(--text);
+}
+.batch-invoice-actions label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.batch-invoice-actions input[type="checkbox"],
+.batch-invoice-table input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+.monthly-invoices .batch-invoice-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.batch-col-select {
+  width: 52px;
+}
+.batch-col-student {
+  width: 26%;
+}
+.batch-col-attendance {
+  width: 22%;
+}
+.batch-col-action {
+  width: 142px;
+}
+.monthly-invoices .batch-invoice-table th,
+.monthly-invoices .batch-invoice-table td {
+  padding: 14px;
+  overflow-wrap: break-word;
+  vertical-align: top;
+  max-width: none;
+}
+.monthly-invoices .batch-invoice-table th {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 650;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+.batch-invoice-table .student-link {
+  font-size: 15px;
+  line-height: 1.45;
+}
+.monthly-invoices .batch-invoice-table small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text);
+  opacity: 0.8;
+  margin-top: 5px;
+}
+.batch-absence-count {
+  display: inline-block;
+  padding: 3px 9px;
+  margin-top: 0;
+  border-radius: 6px;
+  background: #27834e12;
+}
+.batch-absence-count.has-absences {
+  background: #db6c3415;
+}
+.batch-base-price {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.batch-base-price strong {
+  white-space: nowrap;
+}
+.batch-price-editor {
+  display: grid;
+  grid-template-columns: minmax(80px, 100px) minmax(0, 1fr);
+  align-items: end;
+  gap: 14px;
+  margin-top: 10px;
+}
+.batch-invoice-table label {
+  font-size: 12px;
+  line-height: 1.4;
+  gap: 6px;
+  color: var(--text);
+}
+.batch-invoice-table input:not([type="checkbox"]) {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+.batch-final-price {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: right;
+  padding-bottom: 7px;
+}
+.batch-final-price span {
+  font-size: 12px;
+}
+.batch-final-price strong {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.batch-notes {
+  margin-top: 12px;
+}
+.batch-invoice-table .batch-action-cell button {
+  padding: 10px 12px;
+  font-size: 12px;
+  white-space: normal;
+}
+.batch-invoice-table .batch-select-cell input {
+  margin-top: 3px;
+}
+.batch-invoice-actions {
+  border-bottom: 1px solid var(--border);
+}
+.batch-invoice-actions > span {
+  font-size: 13px;
+}
+.batch-invoice-actions > button {
+  margin-left: auto;
+}
+.monthly-invoices .secondary {
+  background: var(--surface);
+  color: var(--text);
+}
+.dark .monthly-invoices input[type="month"] {
+  color-scheme: dark;
+}
+@media (max-width: 1200px) {
+  .monthly-invoices .batch-invoice-table colgroup,
+  .monthly-invoices .batch-invoice-table thead {
+    display: none;
+  }
+  .monthly-invoices .batch-invoice-table,
+  .monthly-invoices .batch-invoice-table tbody {
+    display: block;
+  }
+  .monthly-invoices .batch-invoice-table tbody {
+    padding: 16px;
+  }
+  .monthly-invoices .batch-invoice-table tr {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    padding: 18px;
+  }
+  .monthly-invoices .batch-invoice-table td {
+    padding: 0;
+    border: 0;
+  }
+  .batch-select-cell {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .batch-student-cell {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .batch-attendance-cell {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .batch-pricing-cell {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+  .batch-action-cell {
+    grid-column: 2 / 4;
+    grid-row: 3;
+  }
+}
+@media (max-width: 650px) {
+  .monthly-invoices .batch-invoice-table tr {
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+  .batch-attendance-cell {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .batch-pricing-cell {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .batch-action-cell {
+    grid-column: 2;
+    grid-row: 4;
+  }
+  .batch-invoice-actions > button {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+.batch-confirm-table {
+  max-height: 45vh;
+  overflow: auto;
+}
+.monthly-invoices .batch-confirm-table table {
+  min-width: 0;
+  table-layout: fixed;
+}
+.batch-confirm-table th:first-child {
+  width: 45%;
+}
+.batch-confirm-table th,
+.batch-confirm-table td {
+  overflow-wrap: break-word;
 }
 .pdf-import-controls {
   display: flex;
@@ -1999,4 +2293,38 @@ fieldset {
 }
 .student-lookup-results .student-lookup-hint {
   border-top: 1px solid var(--border);
+}
+
+.language-selector {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0 10px;
+}
+.language-selector select {
+  width: auto;
+  min-width: 84px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  padding: 10px 2px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.login-form {
+  position: relative;
+}
+.login-form > .language-selector {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+}
+.session-check .language-selector {
+  margin-bottom: 24px;
 }

@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import { useEffect, useState } from "react";
 import { useDialog } from "../hooks/useDialog";
 import { api, download } from "../services/api";
@@ -11,6 +12,7 @@ export default function StudentHistory({
   student,
   edit,
   enroll,
+  createInvoice,
 }) {
   const [invoice, setInvoice] = useState(null);
   const [revision, setRevision] = useState(0);
@@ -19,7 +21,9 @@ export default function StudentHistory({
     [error, setError] = useState("");
   useEffect(() => {
     const controller = new AbortController();
-    api("/students/" + id + "/history", { signal: controller.signal })
+    api("/students/" + id + "/history", {
+      signal: controller.signal,
+    })
       .then((result) => {
         if (!controller.signal.aborted) setData(result);
       })
@@ -50,50 +54,61 @@ export default function StudentHistory({
         className="modal wide"
         role="dialog"
         aria-modal="true"
-        aria-label={`Profili · ${name}`}
+        aria-label={t("Profili · {0}", [name])}
       >
         <div className="modal-heading">
           <h2>
-            {student ? "Profili" : "Historiku"} · {name}
+            {student ? t("Profili") : t("Historiku")} · {name}
           </h2>
-          <button aria-label="Mbyll historikun" onClick={close}>
+          <button aria-label={t("Mbyll historikun")} onClick={close}>
             ×
           </button>
         </div>
-        {error && <div className="error">{error}</div>}
+        {error && <div className="error">{tm(error)}</div>}
         {student && (
           <>
             <dl className="invoice-facts">
               <div>
-                <dt>Datëlindja</dt>
+                <dt>{t("Datëlindja")}</dt>
                 <dd>{date(student.birthDate)}</dd>
               </div>
               <div>
-                <dt>Statusi</dt>
-                <dd>{student.status === "ACTIVE" ? "Aktiv" : "Joaktiv"}</dd>
+                <dt>{t("Statusi")}</dt>
+                <dd>
+                  {student.status === "ACTIVE" ? t("Aktiv") : t("Joaktiv")}
+                </dd>
               </div>
               <div>
-                <dt>Prindi / Kujdestari</dt>
+                <dt>{t("Prindi / Kujdestari")}</dt>
                 <dd>{student.parentName}</dd>
               </div>
               <div>
-                <dt>Telefoni</dt>
+                <dt>{t("Telefoni")}</dt>
                 <dd>{student.parentPhone}</dd>
               </div>
             </dl>
-            {enroll && (
-              <button className="primary" onClick={enroll}>
-                Regjistro në kurs / grup
-              </button>
-            )}
-            {edit && (
-              <button className="secondary" onClick={edit}>
-                Ndrysho të dhënat
-              </button>
-            )}
+            <div className="student-profile-actions">
+              {createInvoice && (
+                <button className="primary" onClick={createInvoice}>
+                  {t("Regjistro faturën")}
+                </button>
+              )}
+              {enroll && (
+                <button className="secondary" onClick={enroll}>
+                  {t("Regjistro në kurs / grup")}
+                </button>
+              )}
+              {edit && (
+                <button className="secondary" onClick={edit}>
+                  {t("Ndrysho të dhënat")}
+                </button>
+              )}
+            </div>
           </>
         )}
-        {!data && !error && <p role="status">Duke ngarkuar historikun…</p>}
+        {!data && !error && (
+          <p role="status">{t("Duke ngarkuar historikun…")}</p>
+        )}
         {data?.invoices && (
           <OutstandingMonths
             invoices={data.invoices.filter(
@@ -101,10 +116,15 @@ export default function StudentHistory({
                 ["UNPAID", "PARTIAL"].includes(row.status) &&
                 Number(row.amount) > Number(row.paidAmount),
             )}
-            open={(row) => setInvoice({ id: row.id, pay: true })}
+            open={(row) =>
+              setInvoice({
+                id: row.id,
+                pay: true,
+              })
+            }
           />
         )}
-        <h3 className="section-label">Kurset dhe regjistrimet</h3>
+        <h3 className="section-label">{t("Kurset dhe regjistrimet")}</h3>
         {data?.enrollments.map((e) => (
           <div className="history-row" key={e.id}>
             <strong>
@@ -112,23 +132,30 @@ export default function StudentHistory({
             </strong>
             <small>
               {e.startDate.slice(0, 10)} →{" "}
-              {e.endDate?.slice(0, 10) ?? "Pa afat"}
+              {e.endDate?.slice(0, 10) ?? t("Pa afat")}
             </small>
             {e.monthlyPrice !== undefined && (
               <span>
-                {e.monthlyPrice} € · Zbritja {e.discount} €
+                {e.monthlyPrice}
+                {t(" € · Zbritja ")}
+                {e.discount} €
               </span>
             )}
           </div>
         ))}
         {data?.invoices && (
           <>
-            <h3 className="section-label">Faturat dhe detyrimet</h3>
+            <h3 className="section-label">{t("Faturat dhe detyrimet")}</h3>
             {data.invoices.map((i) => (
               <div className="history-row" key={i.id}>
                 <button
                   className="text-button"
-                  onClick={() => setInvoice({ id: i.id, pay: false })}
+                  onClick={() =>
+                    setInvoice({
+                      id: i.id,
+                      pay: false,
+                    })
+                  }
                 >
                   {i.number} · {i.period}
                 </button>
@@ -136,18 +163,25 @@ export default function StudentHistory({
                   className="text-button"
                   onClick={() => document("invoices", i)}
                 >
-                  PDF / Printo
+                  {t("PDF / Printo")}
                 </button>
                 <span>
-                  {i.amount} € · Paguar {i.paidAmount} €
+                  {i.amount}
+                  {t(" € · Paguar ")}
+                  {i.paidAmount} €
                 </span>
                 {["UNPAID", "PARTIAL"].includes(i.status) &&
                   Number(i.amount) > Number(i.paidAmount) && (
                     <button
                       className="primary"
-                      onClick={() => setInvoice({ id: i.id, pay: true })}
+                      onClick={() =>
+                        setInvoice({
+                          id: i.id,
+                          pay: true,
+                        })
+                      }
                     >
-                      Paguaj
+                      {t("Paguaj")}
                     </button>
                   )}
               </div>
@@ -156,18 +190,19 @@ export default function StudentHistory({
         )}
         {data?.payments && (
           <>
-            <h3 className="section-label">Pagesat</h3>
+            <h3 className="section-label">{t("Pagesat")}</h3>
             {data.payments.map((p) => (
               <div className="history-row" key={p.id}>
                 <button
                   className="text-button"
                   onClick={() => document("payments", p)}
                 >
-                  {p.number} · PDF
+                  {p.number}
+                  {t(" · PDF")}
                 </button>
                 <span>
                   {p.amount} € ·{" "}
-                  {p.method === "CASH" ? "Para të gatshme" : "Bankë"} ·{" "}
+                  {p.method === "CASH" ? t("Para të gatshme") : t("Bankë")} ·{" "}
                   {p.user.name}
                   {p.reversedAt ? " · Anuluar" : ""}
                 </span>
@@ -177,7 +212,7 @@ export default function StudentHistory({
         )}
         <div className="modal-actions">
           <button className="secondary" onClick={close}>
-            Mbyll
+            {t("Mbyll")}
           </button>
         </div>
       </section>

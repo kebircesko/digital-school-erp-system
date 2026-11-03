@@ -1,22 +1,27 @@
+import { t, tm } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import { StudentWorkspaceContext } from "./StudentLink";
 import StudentHistory from "./StudentHistory";
 import StudentModal from "./StudentModal";
 import { ResourceEditor } from "../pages/ResourcePage";
-import { resources } from "../pages/resources";
+import { getResources } from "../pages/resources";
 import { useDialog } from "../hooks/useDialog";
 import { api } from "../services/api";
-
+import { InvoiceDialog, NewInvoiceDialog } from "./InvoiceDialog";
 function StudentProfile({ id, user, close }) {
   const [student, setStudent] = useState(null);
   const [editing, setEditing] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
+  const [invoicing, setInvoicing] = useState(false);
+  const [createdInvoice, setCreatedInvoice] = useState(null);
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState("");
   useDialog(close, false, !student && !editing && !enrolling);
   useEffect(() => {
     const controller = new AbortController();
-    api(`/students/${id}`, { signal: controller.signal })
+    api(`/students/${id}`, {
+      signal: controller.signal,
+    })
       .then((row) => {
         if (!controller.signal.aborted) setStudent(row);
       })
@@ -25,12 +30,40 @@ function StudentProfile({ id, user, close }) {
       });
     return () => controller.abort();
   }, [id, revision]);
+  if (invoicing && student)
+    return (
+      <NewInvoiceDialog
+        initialStudent={student}
+        close={() => setInvoicing(false)}
+        created={(invoice) => {
+          setInvoicing(false);
+          setCreatedInvoice(invoice.id);
+          setRevision((v) => v + 1);
+          window.dispatchEvent(new Event("billing-updated"));
+        }}
+      />
+    );
+  if (createdInvoice)
+    return (
+      <InvoiceDialog
+        id={createdInvoice}
+        user={user}
+        pay
+        close={() => {
+          setCreatedInvoice(null);
+          setRevision((v) => v + 1);
+        }}
+        saved={() => setRevision((v) => v + 1)}
+      />
+    );
   if (enrolling && student)
     return (
       <ResourceEditor
-        config={resources.enrollments}
+        config={getResources().enrollments}
         row="new"
-        initialValues={{ studentId: id }}
+        initialValues={{
+          studentId: id,
+        }}
         initialLabels={{
           studentId: `${student.firstName} ${student.lastName}`,
         }}
@@ -61,14 +94,14 @@ function StudentProfile({ id, user, close }) {
           className="modal"
           role="dialog"
           aria-modal="true"
-          aria-label="Profili i nxënësit"
+          aria-label={t("Profili i nxënësit")}
         >
           <p role={error ? "alert" : "status"}>
-            {error || "Duke ngarkuar nxënësin…"}
+            {tm(error) || t("Duke ngarkuar nxënësin…")}
           </p>
           <div className="modal-actions">
             <button className="secondary" onClick={close}>
-              Mbyll
+              {t("Mbyll")}
             </button>
           </div>
         </section>
@@ -83,10 +116,12 @@ function StudentProfile({ id, user, close }) {
       close={close}
       enroll={user.role !== "INSTRUCTOR" ? () => setEnrolling(true) : undefined}
       edit={user.role !== "INSTRUCTOR" ? () => setEditing(true) : undefined}
+      createInvoice={
+        user.role === "ADMIN" ? () => setInvoicing(true) : undefined
+      }
     />
   );
 }
-
 export default function StudentWorkspace({ user, children }) {
   const [selection, setSelection] = useState(null);
   return (

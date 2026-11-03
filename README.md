@@ -3,7 +3,9 @@
 Aplikacion Electron për Windows/Linux, React + JavaScript + Vite + Tailwind,
 REST API NestJS dhe PostgreSQL/Prisma. Të gjitha modulet punojnë me databazën;
 nuk ka statistika ose të dhëna demonstrative në aplikacion. Ndërfaqja është në
-shqip, me light/dark mode.
+shqip si parazgjedhje, me zgjedhje **Shqip / English** dhe light/dark mode.
+Gjuha ruhet në kompjuter dhe zbatohet në ndërfaqe, mesazhe dhe eksportet
+PDF/Excel.
 
 Kodi burimor përdor JavaScript: `.js` për API-në dhe skriptet, `.jsx` për
 komponentët React. API-ja përdor CommonJS dhe thirrje eksplicite të dekoratorëve
@@ -119,7 +121,10 @@ lexohen nga `SCHOOL_*` në ambientin e API-së.
   çmime, zbritje ose të dhëna financiare.
 
 Fjalëkalimet ruhen me scrypt dhe salt të rastësishëm. Sesionet janë 8-orëshe, me
-hash të tokenit në PostgreSQL dhe token vetëm në memorie të desktop-it. Logout
+hash të tokenit në PostgreSQL. Tokeni ruhet në memorie dhe në `sessionStorage`
+të dritares, i lidhur me adresën e API-së; fjalëkalimi nuk ruhet. Pas Refresh-it
+sesioni verifikohet me `/auth/me`. Mbyllja e dritares/tab-it e përfundon
+ruajtjen lokale; gabimet e rrjetit lejojnë riprovim pa fshirë sesionin. Logout
 dhe ndryshimi i fjalëkalimit/rolit/statusit revokojnë sesionet. Administratori i
 fundit aktiv nuk mund të çaktivizohet ose të humbasë rolin. Një instruktor me
 grupe aktive duhet zëvendësuar para çaktivizimit.
@@ -237,6 +242,22 @@ pas testimit. Pamjet ruhen në `tests/screenshots/`; rezultatet në
 
 ## Serveri qendror dhe HTTPS
 
+Për provë të përkohshme nga rrjete të ndryshme është përgatitur
+`scripts/remote-preview.mjs`. Pasi të jetë miratuar publikimi përmes Cloudflare,
+me API-në lokale aktive dhe binarin zyrtar në `.local/bin/cloudflared`:
+
+```bash
+node scripts/remote-preview.mjs start
+node scripts/remote-preview.mjs status
+node scripts/remote-preview.mjs stop
+```
+
+Komanda `start` shfaq adresën HTTPS që vendoset në desktop te **Konfigurimi i
+serverit → Ruaj adresën**. Kërkohet kyçja ekzistuese. Kompjuteri dhe API-ja
+duhet të qëndrojnë ndezur; adresa ndryshon kur tuneli riniset. Kjo lidhje është
+vetëm për provë, pa garanci disponueshmërie. `stop` mbyll tunelin, duke lënë
+serverin lokal aktiv. Gjendja dhe log-u ruhen në `.local/`, jashtë versionimit.
+
 Konfigurimi Docker/Caddy është në [deploy/compose.yaml](deploy/compose.yaml).
 Vendosni `ERP_DOMAIN`, `POSTGRES_PASSWORD` dhe `BACKUP_KEY` në ambientin e
 serverit; për fjalëkalimin PostgreSQL përdorni vlerë hex që është e sigurt në
@@ -276,8 +297,8 @@ npm run package:win
 
 Artefaktet dalin në `apps/desktop/release/`. Paketa Linux hapet me double-click
 në AppImage. Nëse sistemi nuk ka FUSE, niseni me
-`./"Shkolla Digjitale ERP-0.1.0.AppImage" --appimage-extract-and-run`.
-Instaluesi Windows është skedari `Shkolla Digjitale ERP Setup 0.1.0.exe`. Këto
+`./"Shkolla Digjitale ERP-0.1.5.AppImage" --appimage-extract-and-run`.
+Instaluesi Windows është skedari `Shkolla Digjitale ERP Setup 0.1.5.exe`. Këto
 paketa përmbajnë klientin desktop; shërbimet API/PostgreSQL nisen veçmas.
 Windows NSIS mund të ndërtohet në Windows ose Linux me Wine. Në login →
 Konfigurimi i serverit mund të ndryshohet adresa pa rindërtim. Adresa ruhet
@@ -300,3 +321,12 @@ Për me hap aplikacionin desktop, hape terminalin në projekt dhe shkruaj: cd
 ~/Desktop/digital-school-erp npm run dev:local Lëre atë terminal hapur. Në një
 terminal tjetër, shkruaj: cd ~/Desktop/digital-school-erp ELECTRON_DEV=1 npm run
 desktop
+
+Per pc tjeter Lidhja është aktive dhe u verifikua: Në laptopin tjetër:
+
+1. Hape desktop app → Konfigurimi i serverit.
+2. Vendose këtë adresë:
+   https://oil-simultaneously-rocks-nashville.trycloudflare.com/api
+3. Kliko Ruaj adresën, pastaj kyçu me emailin dhe fjalëkalimin ekzistues.
+   Kompjuteri yt dhe serveri duhet të qëndrojnë ndezur. Adresa është e
+   përkohshme dhe ndryshon kur tuneli riniset.

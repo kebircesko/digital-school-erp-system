@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Plus, Search, X } from "lucide-react";
 import { api } from "../services/api";
@@ -5,8 +6,7 @@ import { StudentWorkspaceContext } from "./StudentLink";
 import StudentModal from "./StudentModal";
 import { InvoiceDialog, NewInvoiceDialog } from "./InvoiceDialog";
 import { PaymentEditor } from "../pages/Finance";
-
-export default function QuickAccess({ user, navigate }) {
+export default function QuickAccess({ user, navigate, showSearch = true }) {
   const openStudent = useContext(StudentWorkspaceContext);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState(null);
@@ -31,7 +31,12 @@ export default function QuickAccess({ user, navigate }) {
         !document.querySelector('[role="dialog"]')
       ) {
         event.preventDefault();
-        input.current?.focus();
+        const target = showSearch
+          ? input.current
+          : (document.querySelector(
+              `main input[aria-label^="${t("Kërko")}"]`,
+            ) ?? document.querySelector("main .table-toolbar input"));
+        target?.focus();
       }
     };
     document.addEventListener("pointerdown", close);
@@ -40,16 +45,21 @@ export default function QuickAccess({ user, navigate }) {
       document.removeEventListener("pointerdown", close);
       document.removeEventListener("keydown", shortcut);
     };
-  }, []);
+  }, [showSearch]);
   useEffect(() => {
     setResults(null);
     setError("");
-    if (!search.trim()) return;
+    if (!showSearch || !search.trim()) return;
     const controller = new AbortController();
     const timer = setTimeout(() => {
       api(
-        `/students?${new URLSearchParams({ search: search.trim(), limit: "6" })}`,
-        { signal: controller.signal },
+        `/students?${new URLSearchParams({
+          search: search.trim(),
+          limit: "6",
+        })}`,
+        {
+          signal: controller.signal,
+        },
       )
         .then((data) => {
           if (!controller.signal.aborted) setResults(data);
@@ -62,7 +72,10 @@ export default function QuickAccess({ user, navigate }) {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [search]);
+  }, [search, showSearch]);
+  useEffect(() => {
+    setSearch("");
+  }, [showSearch]);
   function open(id) {
     setSearch("");
     openStudent(id);
@@ -80,75 +93,84 @@ export default function QuickAccess({ user, navigate }) {
         }
       }}
     >
-      <div className="quick-search">
-        <Search size={18} aria-hidden="true" />
-        <input
-          ref={input}
-          aria-label="Kërko nxënës nga çdo faqe"
-          placeholder="Emër, prind ose telefon…"
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value);
-            setMenu(false);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && search.trim()) {
-              event.preventDefault();
-              if (results?.total === 1) open(results.items[0].id);
-              else {
-                navigate("students", { search: search.trim() });
-                setSearch("");
-              }
-            }
-          }}
-        />
-        {search ? (
-          <button
-            aria-label="Pastro kërkimin"
-            onClick={() => {
-              setSearch("");
-              input.current?.focus();
+      {showSearch && (
+        <div className="quick-search">
+          <Search size={18} aria-hidden="true" />
+          <input
+            ref={input}
+            aria-label={t("Kërko nxënës nga çdo faqe")}
+            placeholder={t("Emër, prind ose telefon…")}
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setMenu(false);
             }}
-          >
-            <X size={16} />
-          </button>
-        ) : (
-          <kbd>Ctrl K</kbd>
-        )}
-        {search.trim() && (
-          <div className="quick-results" aria-label="Rezultatet e kërkimit">
-            {error ? (
-              <p role="alert">{error}</p>
-            ) : !results ? (
-              <p role="status">Duke kërkuar…</p>
-            ) : (
-              <>
-                {!results.items.length && <p>Nuk u gjetën nxënës.</p>}
-                {results.items.map((student) => (
-                  <button key={student.id} onClick={() => open(student.id)}>
-                    <strong>
-                      {student.firstName} {student.lastName}
-                    </strong>
-                    <small>
-                      {student.parentName} · {student.parentPhone}
-                    </small>
-                    <span>Hap profilin / pagesat →</span>
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && search.trim()) {
+                event.preventDefault();
+                if (results?.total === 1) open(results.items[0].id);
+                else {
+                  navigate("students", {
+                    search: search.trim(),
+                  });
+                  setSearch("");
+                }
+              }
+            }}
+          />
+          {search ? (
+            <button
+              aria-label={t("Pastro kërkimin")}
+              onClick={() => {
+                setSearch("");
+                input.current?.focus();
+              }}
+            >
+              <X size={16} />
+            </button>
+          ) : (
+            <kbd>{t("Ctrl K")}</kbd>
+          )}
+          {search.trim() && (
+            <div
+              className="quick-results"
+              aria-label={t("Rezultatet e kërkimit")}
+            >
+              {error ? (
+                <p role="alert">{tm(error)}</p>
+              ) : !results ? (
+                <p role="status">{t("Duke kërkuar…")}</p>
+              ) : (
+                <>
+                  {!results.items.length && <p>{t("Nuk u gjetën nxënës.")}</p>}
+                  {results.items.map((student) => (
+                    <button key={student.id} onClick={() => open(student.id)}>
+                      <strong>
+                        {student.firstName} {student.lastName}
+                      </strong>
+                      <small>
+                        {student.parentName} · {student.parentPhone}
+                      </small>
+                      <span>{t("Hap profilin / pagesat →")}</span>
+                    </button>
+                  ))}
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      navigate("students", {
+                        search: search.trim(),
+                      });
+                      setSearch("");
+                    }}
+                  >
+                    {t("Shiko listën e plotë →")}
                   </button>
-                ))}
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    navigate("students", { search: search.trim() });
-                    setSearch("");
-                  }}
-                >
-                  Shiko listën e plotë →
-                </button>
-              </>
-            )}
-          </div>
-        )}
-      </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       {canWrite && (
         <div className="quick-create">
           <button
@@ -161,14 +183,14 @@ export default function QuickAccess({ user, navigate }) {
             }}
           >
             <Plus size={17} />
-            Veprim i ri
+            {t("Veprim i ri")}
           </button>
           {menu && (
             <div id="quick-create-actions" className="quick-results">
               {[
-                ["student", "Regjistro nxënës"],
-                ["invoice", "Regjistro faturën"],
-                ["payment", "Regjistro pagesë"],
+                ["student", t("Regjistro nxënës")],
+                ["invoice", t("Regjistro faturën")],
+                ["payment", t("Regjistro pagesë")],
               ].map(([id, label]) => (
                 <button
                   key={id}

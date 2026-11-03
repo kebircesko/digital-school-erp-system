@@ -1,3 +1,4 @@
+import { t, tm, getLocale } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import {
   RefreshCw,
@@ -22,9 +23,9 @@ export default function DashboardPage({
     [error, setError] = useState("");
   useEffect(() => {
     if (focusPayments && data)
-      document
-        .getElementById("payment-reminders")
-        ?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("payment-reminders")?.scrollIntoView({
+        behavior: "smooth",
+      });
   }, [focusPayments, Boolean(data)]);
   function load() {
     setError("");
@@ -49,70 +50,87 @@ export default function DashboardPage({
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">PAMJA E PËRGJITHSHME</span>
-          <h1>Mirë se erdhe, {user.name.split(" ")[0]}.</h1>
-          <p>Gjithçka që duhet të dini për nxënësit tuaj, në një vend.</p>
+          <span className="eyebrow">{t("PAMJA E PËRGJITHSHME")}</span>
+          <h1>
+            {t("Mirë se erdhe, ")}
+            {user.name.split(" ")[0]}.
+          </h1>
+          <p>
+            {t("Gjithçka që duhet të dini për nxënësit tuaj, në një vend.")}
+          </p>
         </div>
         <button className="secondary" onClick={load}>
           <RefreshCw size={16} />
-          Rifresko
+          {t("Rifresko")}
         </button>
       </div>
       {error ? (
         <div className="error" role="alert">
-          {error}
+          {tm(error)}
         </div>
       ) : !data ? (
-        <div className="empty">Duke ngarkuar statistikat…</div>
+        <div className="empty">{t("Duke ngarkuar statistikat…")}</div>
       ) : (
         <>
           <div className="stats">
             <Stat
-              label="Nxënës gjithsej"
+              label={t("Nxënës gjithsej")}
               onClick={() => navigate("students")}
               value={data.total}
               icon={<Users />}
-              text="Të gjithë nxënësit e regjistruar"
+              text={t("Të gjithë nxënësit e regjistruar")}
             />
             <Stat
-              label="Nxënës aktivë"
-              onClick={() => navigate("students", { status: "ACTIVE" })}
+              label={t("Nxënës aktivë")}
+              onClick={() =>
+                navigate("students", {
+                  status: "ACTIVE",
+                })
+              }
               value={data.active}
               icon={<UserCheck />}
-              text="Pjesë aktive e shkollës"
+              text={t("Pjesë aktive e shkollës")}
               green
             />
             <Stat
-              label="Nxënës joaktivë"
-              onClick={() => navigate("students", { status: "INACTIVE" })}
+              label={t("Nxënës joaktivë")}
+              onClick={() =>
+                navigate("students", {
+                  status: "INACTIVE",
+                })
+              }
               value={data.inactive}
               icon={<UserMinus />}
-              text="Regjistrime me status joaktiv"
+              text={t("Regjistrime me status joaktiv")}
             />
           </div>
 
           <div className="stats">
             <Stat
-              label="Kurset"
+              label={t("Kurset")}
               onClick={() => navigate("courses")}
               value={data.courses}
               icon={<GraduationCap />}
-              text="Kurse të regjistruara"
+              text={t("Kurse të regjistruara")}
             />
             <Stat
-              label="Grupet"
-              onClick={() => navigate("groups", { status: "" })}
+              label={t("Grupet")}
+              onClick={() =>
+                navigate("groups", {
+                  status: "",
+                })
+              }
               value={data.groups}
               icon={<Users />}
-              text="Grupe të shkollës"
+              text={t("Grupe të shkollës")}
             />
             {data.financial && (
               <Stat
-                label="Fatura të papaguara"
+                label={t("Fatura të papaguara")}
                 onClick={() => navigate("debts")}
                 value={data.financial.unpaid}
                 icon={<UserMinus />}
-                text={`${data.financial.paid} fatura të paguara`}
+                text={t("{0} fatura të paguara", [data.financial.paid])}
               />
             )}
           </div>
@@ -126,10 +144,10 @@ export default function DashboardPage({
               )}
               <section className="finance-summary">
                 {[
-                  ["Arkëtimet sot", data.financial.daily, "day"],
-                  ["Arkëtimet këtë muaj", data.financial.monthly, "month"],
-                  ["Arkëtimet këtë vit", data.financial.yearly, "year"],
-                  ["Borxhi total", data.financial.outstanding, "debts"],
+                  [t("Arkëtimet sot"), data.financial.daily, "day"],
+                  [t("Arkëtimet këtë muaj"), data.financial.monthly, "month"],
+                  [t("Arkëtimet këtë vit"), data.financial.yearly, "year"],
+                  [t("Borxhi total"), data.financial.outstanding, "debts"],
                 ].map(([label, value, preset]) => (
                   <button
                     className="card actionable-card"
@@ -146,7 +164,7 @@ export default function DashboardPage({
                 ))}
               </section>
               <section className="card income-chart">
-                <h2>Arkëtimet mujore</h2>
+                <h2>{t("Arkëtimet mujore")}</h2>
                 <div className="chart-bars">
                   {data.financial.chart.map((item) => (
                     <div
@@ -179,11 +197,12 @@ export default function DashboardPage({
             <section className="card">
               <div className="card-heading">
                 <div>
-                  <h2>Regjistrimet e fundit</h2>
-                  <p>Nxënësit e shtuar së fundmi në shkollë</p>
+                  <h2>{t("Regjistrimet e fundit")}</h2>
+                  <p>{t("Nxënësit e shtuar së fundmi në shkollë")}</p>
                 </div>
                 <button className="text-button" onClick={openStudents}>
-                  Shiko të gjithë <ArrowUpRight size={16} />
+                  {t("Shiko të gjithë ")}
+                  <ArrowUpRight size={16} />
                 </button>
               </div>
               {data.recent.length ? (
@@ -200,7 +219,10 @@ export default function DashboardPage({
                             {s.firstName} {s.lastName}
                           </strong>
                         </StudentLink>
-                        <small>Regjistruar më {date(s.createdAt)}</small>
+                        <small>
+                          {t("Regjistruar më ")}
+                          {date(s.createdAt)}
+                        </small>
                       </div>
                       <Badge status={s.status} />
                     </div>
@@ -209,17 +231,17 @@ export default function DashboardPage({
               ) : (
                 <div className="empty">
                   <Users size={35} />
-                  <h3>Shkolla juaj fillon këtu</h3>
-                  <p>Shtoni nxënësin e parë për të parë regjistrimet.</p>
+                  <h3>{t("Shkolla juaj fillon këtu")}</h3>
+                  <p>{t("Shtoni nxënësin e parë për të parë regjistrimet.")}</p>
                   <button className="primary" onClick={openStudents}>
-                    Hap menaxhimin e nxënësve
+                    {t("Hap menaxhimin e nxënësve")}
                   </button>
                 </div>
               )}
             </section>
             <section className="card activity">
-              <span className="eyebrow">PJESËMARRJA</span>
-              <h2>Statusi i nxënësve</h2>
+              <span className="eyebrow">{t("PJESËMARRJA")}</span>
+              <h2>{t("Statusi i nxënësve")}</h2>
               <div
                 className="ring"
                 style={{
@@ -233,20 +255,20 @@ export default function DashboardPage({
                       : 0}
                     %
                   </strong>
-                  <span>aktivë</span>
+                  <span>{t("aktivë")}</span>
                 </div>
               </div>
               <div className="legend">
                 <span>
                   <i />
-                  Aktivë
+                  {t("Aktivë")}
                 </span>
                 <strong>{data.active}</strong>
               </div>
               <div className="legend">
                 <span>
                   <i className="muted-dot" />
-                  Joaktivë
+                  {t("Joaktivë")}
                 </span>
                 <strong>{data.inactive}</strong>
               </div>
@@ -257,14 +279,16 @@ export default function DashboardPage({
               <GraduationCap size={30} />
             </div>
             <div>
-              <h2>Administrim i qartë. Shkollë e organizuar.</h2>
+              <h2>{t("Administrim i qartë. Shkollë e organizuar.")}</h2>
               <p>
-                Regjistroni nxënës, përditësoni kontaktet dhe mbani të dhënat të
-                sakta.
+                {t(
+                  "Regjistroni nxënës, përditësoni kontaktet dhe mbani të dhënat të sakta.",
+                )}
               </p>
             </div>
             <button className="secondary" onClick={openStudents}>
-              Menaxho nxënësit <ArrowUpRight size={17} />
+              {t("Menaxho nxënësit ")}
+              <ArrowUpRight size={17} />
             </button>
           </section>
         </>
@@ -277,13 +301,13 @@ function Stat({ label, value, icon, text, green = false, onClick }) {
     <button
       className="stat card actionable-card"
       onClick={onClick}
-      aria-label={`${label}: ${value}. Hap listën`}
+      aria-label={t("{0}: {1}. Hap listën", [label, value])}
     >
       <div>
         <span>{label}</span>
         <div className={green ? "stat-icon green" : "stat-icon"}>{icon}</div>
       </div>
-      <strong>{value.toLocaleString("sq-AL")}</strong>
+      <strong>{value.toLocaleString(getLocale())}</strong>
       <p>
         {text} <ArrowUpRight size={13} />
       </p>

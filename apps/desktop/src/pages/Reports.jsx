@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import { api, download } from "../services/api";
 import { InvoiceDialog } from "../components/InvoiceDialog";
@@ -23,16 +24,39 @@ export default function Reports({ kind, initialPreset = "month" }) {
     [data, setData] = useState(null),
     [error, setError] = useState("");
   const params = new URLSearchParams({
-    ...(kind === "financial" ? { from, to } : {}),
-    ...(period && kind === "debts" ? { period } : {}),
-    ...(courseId ? { courseId } : {}),
-    ...(groupId ? { groupId } : {}),
-    ...(method ? { method } : {}),
+    ...(kind === "financial"
+      ? {
+          from,
+          to,
+        }
+      : {}),
+    ...(period && kind === "debts"
+      ? {
+          period,
+        }
+      : {}),
+    ...(courseId
+      ? {
+          courseId,
+        }
+      : {}),
+    ...(groupId
+      ? {
+          groupId,
+        }
+      : {}),
+    ...(method
+      ? {
+          method,
+        }
+      : {}),
   }).toString();
   useEffect(() => {
     const controller = new AbortController();
     setError("");
-    api(`/reports/${kind}?${params}`, { signal: controller.signal })
+    api(`/reports/${kind}?${params}`, {
+      signal: controller.signal,
+    })
       .then((result) => {
         if (!controller.signal.aborted) setData(result);
       })
@@ -67,28 +91,32 @@ export default function Reports({ kind, initialPreset = "month" }) {
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">FINANCAT · EUR</span>
+          <span className="eyebrow">{t("FINANCAT · EUR")}</span>
           <h1>
-            {kind === "debts" ? "Borxhet e nxënësve" : "Raportet financiare"}
+            {kind === "debts"
+              ? t("Borxhet e nxënësve")
+              : t("Raportet financiare")}
           </h1>
           <p>
             {kind === "debts"
-              ? "Detyrimet e mbetura, sipas nxënësit dhe faturave."
-              : "Arkëtimet sipas datës, kursit, grupit dhe metodës së pagesës."}
+              ? t("Detyrimet e mbetura, sipas nxënësit dhe faturave.")
+              : t(
+                  "Arkëtimet sipas datës, kursit, grupit dhe metodës së pagesës.",
+                )}
           </p>
         </div>
         <div className="button-row">
           <button className="secondary" onClick={() => exportFile("xlsx")}>
-            Eksporto Excel
+            {t("Eksporto Excel")}
           </button>
           <button className="primary" onClick={() => exportFile("pdf")}>
-            PDF / Printo
+            {t("PDF / Printo")}
           </button>
         </div>
       </div>
       {error && (
         <div className="error" role="alert">
-          {error}
+          {tm(error)}
         </div>
       )}
       <section className="card report-filters">
@@ -96,17 +124,17 @@ export default function Reports({ kind, initialPreset = "month" }) {
           <>
             <div className="button-row">
               <button className="secondary" onClick={() => preset("day")}>
-                Sot
+                {t("Sot")}
               </button>
               <button className="secondary" onClick={() => preset("month")}>
-                Ky muaj
+                {t("Ky muaj")}
               </button>
               <button className="secondary" onClick={() => preset("year")}>
-                Ky vit
+                {t("Ky vit")}
               </button>
             </div>
             <label>
-              Nga data
+              {t("Nga data")}
               <input
                 type="date"
                 value={from}
@@ -114,7 +142,7 @@ export default function Reports({ kind, initialPreset = "month" }) {
               />
             </label>
             <label>
-              Deri më
+              {t("Deri më")}
               <input
                 type="date"
                 value={to}
@@ -122,20 +150,20 @@ export default function Reports({ kind, initialPreset = "month" }) {
               />
             </label>
             <label>
-              Metoda
+              {t("Metoda")}
               <select
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
-                <option value="">Të gjitha metodat</option>
-                <option value="CASH">Para të gatshme</option>
-                <option value="BANK">Bankë</option>
+                <option value="">{t("Të gjitha metodat")}</option>
+                <option value="CASH">{t("Para të gatshme")}</option>
+                <option value="BANK">{t("Bankë")}</option>
               </select>
             </label>
           </>
         ) : (
           <label>
-            Muaji i faturimit
+            {t("Muaji i faturimit")}
             <input
               type="month"
               value={period}
@@ -145,7 +173,7 @@ export default function Reports({ kind, initialPreset = "month" }) {
         )}
         <Lookup
           endpoint="/courses"
-          label="Kursi"
+          label={t("Kursi")}
           value={courseId}
           onChange={(id) => {
             setCourseId(id);
@@ -154,7 +182,7 @@ export default function Reports({ kind, initialPreset = "month" }) {
         />
         <Lookup
           endpoint={"/groups" + (courseId ? "?courseId=" + courseId : "")}
-          label="Grupi"
+          label={t("Grupi")}
           value={groupId}
           onChange={setGroupId}
         />
@@ -167,11 +195,13 @@ export default function Reports({ kind, initialPreset = "month" }) {
             setMethod("");
           }}
         >
-          Pastro filtrat
+          {t("Pastro filtrat")}
         </button>
       </section>
       <div className="payment-total card report-total">
-        <span>{kind === "debts" ? "Borxhi total" : "Totali i arkëtuar"}</span>
+        <span>
+          {kind === "debts" ? t("Borxhi total") : t("Totali i arkëtuar")}
+        </span>
         <strong>{data?.total ?? "0.00"} €</strong>
       </div>
       {kind === "debts" ? (
@@ -180,9 +210,9 @@ export default function Reports({ kind, initialPreset = "month" }) {
             <table>
               <thead>
                 <tr>
-                  <th>Nxënësi</th>
-                  <th>Borxhi</th>
-                  <th>Faturat e papaguara</th>
+                  <th>{t("Nxënësi")}</th>
+                  <th>{t("Borxhi")}</th>
+                  <th>{t("Faturat e papaguara")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -212,7 +242,7 @@ export default function Reports({ kind, initialPreset = "month" }) {
             </table>
           </div>
           {data && !data.items.length && (
-            <div className="empty">Nuk ka borxhe për këto filtra.</div>
+            <div className="empty">{t("Nuk ka borxhe për këto filtra.")}</div>
           )}
         </section>
       ) : (
@@ -220,14 +250,20 @@ export default function Reports({ kind, initialPreset = "month" }) {
           <div className="report-breakdowns">
             {["courses", "groups", "methods"].map((key, i) => (
               <section key={key} className="card breakdown">
-                <h2>{["Sipas kursit", "Sipas grupit", "Sipas metodës"][i]}</h2>
+                <h2>
+                  {
+                    [t("Sipas kursit"), t("Sipas grupit"), t("Sipas metodës")][
+                      i
+                    ]
+                  }
+                </h2>
                 {data?.[key]?.map((r) => (
                   <div className="legend" key={r.name}>
                     <span>
                       {r.name === "CASH"
-                        ? "Para të gatshme"
+                        ? t("Para të gatshme")
                         : r.name === "BANK"
-                          ? "Bankë"
+                          ? t("Bankë")
                           : r.name}
                     </span>
                     <strong>{r.amount} €</strong>
@@ -238,18 +274,18 @@ export default function Reports({ kind, initialPreset = "month" }) {
           </div>
           <section className="card">
             <div className="card-heading">
-              <h2>Historiku i arkëtimeve</h2>
+              <h2>{t("Historiku i arkëtimeve")}</h2>
             </div>
             <div className="table-scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Data</th>
-                    <th>Pagesa / Fatura</th>
-                    <th>Nxënësi</th>
-                    <th>Kursi / Grupi</th>
-                    <th>Shuma</th>
-                    <th>Përdoruesi</th>
+                    <th>{t("Data")}</th>
+                    <th>{t("Pagesa / Fatura")}</th>
+                    <th>{t("Nxënësi")}</th>
+                    <th>{t("Kursi / Grupi")}</th>
+                    <th>{t("Shuma")}</th>
+                    <th>{t("Përdoruesi")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -275,7 +311,9 @@ export default function Reports({ kind, initialPreset = "month" }) {
               </table>
             </div>
             {data && !data.rows.length && (
-              <div className="empty">Nuk ka pagesa në këtë periudhë.</div>
+              <div className="empty">
+                {t("Nuk ka pagesa në këtë periudhë.")}
+              </div>
             )}
           </section>
         </>

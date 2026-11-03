@@ -1,6 +1,10 @@
 "use strict";
+
+const { t } = require("../common/i18n");
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {
+  value: true,
+});
 exports.ReportsController = exports.ReportService = void 0;
 const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
@@ -20,10 +24,22 @@ let ReportService = class ReportService {
   async debts(q) {
     const invoices = await this.db.invoice.findMany({
       where: {
-        ...(0, invoices_1.invoiceWhere)({ ...q, status: undefined }),
-        status: { in: ["UNPAID", "PARTIAL"] },
+        ...(0, invoices_1.invoiceWhere)({
+          ...q,
+          status: undefined,
+        }),
+        status: {
+          in: ["UNPAID", "PARTIAL"],
+        },
       },
-      orderBy: [{ studentName: "asc" }, { period: "asc" }],
+      orderBy: [
+        {
+          studentName: "asc",
+        },
+        {
+          period: "asc",
+        },
+      ],
     });
     const rows = new Map();
     for (const i of invoices) {
@@ -60,24 +76,53 @@ let ReportService = class ReportService {
         await Promise.resolve().then(() =>
           tslib_1.__importStar(require("@nestjs/common")),
         )
-      ).BadRequestException("Data e fillimit duhet të jetë para përfundimit.");
+      ).BadRequestException(
+        t("Data e fillimit duhet të jetë para përfundimit."),
+      );
     const allocations = await this.db.paymentAllocation.findMany({
       where: {
         payment: {
           reversedAt: null,
-          paidAt: { gte: from, lte: to },
-          ...(q.method ? { method: q.method } : {}),
+          paidAt: {
+            gte: from,
+            lte: to,
+          },
+          ...(q.method
+            ? {
+                method: q.method,
+              }
+            : {}),
         },
         invoice: {
-          ...(q.courseId ? { courseId: q.courseId } : {}),
-          ...(q.groupId ? { groupId: q.groupId } : {}),
+          ...(q.courseId
+            ? {
+                courseId: q.courseId,
+              }
+            : {}),
+          ...(q.groupId
+            ? {
+                groupId: q.groupId,
+              }
+            : {}),
         },
       },
       include: {
-        payment: { include: { user: { select: { name: true } } } },
+        payment: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
         invoice: true,
       },
-      orderBy: { payment: { paidAt: "asc" } },
+      orderBy: {
+        payment: {
+          paidAt: "asc",
+        },
+      },
     });
     const daily = new Map(),
       courses = new Map(),
@@ -167,17 +212,17 @@ let ReportsController = class ReportsController {
   async workbook(q, res) {
     const report = await this.reports.financial(q);
     const data = await (0, documents_1.excel)(
-      "Pagesat",
+      t("Pagesat"),
       [
-        "Pagesa",
-        "Fatura",
-        "Nxënësi",
-        "Kursi",
-        "Grupi",
-        "Data",
-        "Metoda",
-        "Shuma EUR",
-        "Përdoruesi",
+        t("Pagesa"),
+        t("Fatura"),
+        t("Nxënësi"),
+        t("Kursi"),
+        t("Grupi"),
+        t("Data"),
+        t("Metoda"),
+        t("Shuma EUR"),
+        t("Përdoruesi"),
       ],
       report.rows.map((r) => [
         r.payment,
@@ -186,7 +231,7 @@ let ReportsController = class ReportsController {
         r.course,
         r.group,
         r.date,
-        r.method === "CASH" ? "Para të gatshme" : "Bankë",
+        r.method === "CASH" ? t("Para të gatshme") : t("Bankë"),
         r.amount,
         r.user,
       ]),
@@ -203,10 +248,10 @@ let ReportsController = class ReportsController {
       .attachment("raport-financiar.pdf")
       .send(
         await (0, documents_1.pdf)(
-          "Raport financiar",
+          t("Raport financiar"),
           `${report.from} - ${report.to}`,
           [
-            ["Totali i arkëtuar", report.total + " EUR"],
+            [t("Totali i arkëtuar"), report.total + " EUR"],
             ...report.rows.map((r) => [
               `${r.date} · ${r.payment}\n${r.student}\n${r.course} / ${r.group}`,
               r.amount + " EUR",
@@ -222,8 +267,8 @@ let ReportsController = class ReportsController {
       .attachment("borxhet.xlsx")
       .send(
         await (0, documents_1.excel)(
-          "Borxhet",
-          ["Nxënësi", "Borxhi EUR", "Fatura"],
+          t("Borxhet"),
+          [t("Nxënësi"), t("Borxhi EUR"), t("Fatura")],
           report.items.map((r) => [r.studentName, r.amount, r.invoices.length]),
         ),
       );
@@ -235,10 +280,10 @@ let ReportsController = class ReportsController {
       .attachment("borxhet.pdf")
       .send(
         await (0, documents_1.pdf)(
-          "Detyrimet e nxënësve",
-          q.period ?? "Të gjitha periudhat",
+          t("Detyrimet e nxënësve"),
+          q.period ?? t("Të gjitha periudhat"),
           [
-            ["Borxhi total", report.total + " EUR"],
+            [t("Borxhi total"), report.total + " EUR"],
             ...report.items.map((r) => [r.studentName, r.amount + " EUR"]),
           ],
         ),

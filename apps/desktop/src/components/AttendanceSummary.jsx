@@ -1,9 +1,9 @@
+import { t, tm } from "../services/i18n.js";
 import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { api } from "../services/api";
 import { calendarDay } from "../services/format";
 import { useSchoolUpdates } from "../hooks/useSchoolUpdates";
-
 export default function AttendanceSummary({
   studentId,
   courseId,
@@ -23,14 +23,28 @@ export default function AttendanceSummary({
     const params = new URLSearchParams({
       studentId,
       period,
-      ...(courseId ? { courseId } : {}),
+      ...(courseId
+        ? {
+            courseId,
+          }
+        : {}),
     });
-    api(`/attendance/summary?${params}`, { signal: controller.signal })
+    api(`/attendance/summary?${params}`, {
+      signal: controller.signal,
+    })
       .then((data) => {
-        if (!controller.signal.aborted) setState({ key, data });
+        if (!controller.signal.aborted)
+          setState({
+            key,
+            data,
+          });
       })
       .catch((error) => {
-        if (!controller.signal.aborted) setState({ key, error: error.message });
+        if (!controller.signal.aborted)
+          setState({
+            key,
+            error: error.message,
+          });
       });
     return () => controller.abort();
   }, [key, studentId, courseId, period]);
@@ -44,17 +58,17 @@ export default function AttendanceSummary({
   return (
     <section
       className="payment-attendance"
-      aria-label="Vijueshmëria për pagesën"
+      aria-label={t("Vijueshmëria për pagesën")}
     >
       <div className="payment-attendance-heading">
         <div>
-          <h3>Vijueshmëria</h3>
-          <p>Kontrolloni P, A, U dhe T për muajin përpara pagesës.</p>
+          <h3>{t("Vijueshmëria")}</h3>
+          <p>{t("Kontrolloni P, A, U dhe T për muajin përpara pagesës.")}</p>
         </div>
         <label>
-          Muaji i vijueshmërisë
+          {t("Muaji i vijueshmërisë")}
           <input
-            aria-label="Muaji i vijueshmërisë"
+            aria-label={t("Muaji i vijueshmërisë")}
             type="month"
             value={period}
             disabled={disabled}
@@ -64,7 +78,7 @@ export default function AttendanceSummary({
         <button
           type="button"
           className="secondary"
-          aria-label="Rifresko vijueshmërinë"
+          aria-label={t("Rifresko vijueshmërinë")}
           disabled={disabled}
           onClick={() => setRevision((value) => value + 1)}
         >
@@ -72,12 +86,15 @@ export default function AttendanceSummary({
         </button>
       </div>
       {!period ? (
-        <p>Zgjidhni muajin që dëshironi të kontrolloni.</p>
+        <p>{t("Zgjidhni muajin që dëshironi të kontrolloni.")}</p>
       ) : !current ? (
-        <p role="status">Duke ngarkuar vijueshmërinë për {period}…</p>
+        <p role="status">
+          {t("Duke ngarkuar vijueshmërinë për ")}
+          {period}…
+        </p>
       ) : current.error ? (
         <p className="error" role="alert">
-          {current.error}
+          {tm(current.error)}
         </p>
       ) : current.data.items.length ? (
         current.data.items.map((row) => (
@@ -87,10 +104,10 @@ export default function AttendanceSummary({
             </strong>
             <dl className="attendance-status-counts">
               {[
-                ["P", "Prezent"],
-                ["A", "Mungesa"],
-                ["U", "E papërcaktuar"],
-                ["T", "Vonesë"],
+                ["P", t("Prezent")],
+                ["A", t("Mungesa")],
+                [t("U"), t("E papërcaktuar")],
+                [t("T"), t("Vonesë")],
               ].map(([code, label]) => (
                 <div
                   key={code}
@@ -104,30 +121,35 @@ export default function AttendanceSummary({
               ))}
             </dl>
             <p className="attendance-source">
-              {row.totalLessons} orë gjithsej
+              {row.totalLessons}
+              {t(" orë gjithsej")}
               {row.counts.unmarked > 0
-                ? ` · ${row.counts.unmarked} pa shënim`
+                ? t(" · {0} pa shënim", [row.counts.unmarked])
                 : ""}{" "}
-              · Burimi: {row.sourceFile}
+              {t("· Burimi: ")}
+              {row.sourceFile}
             </p>
             {!row.hasStatusBreakdown && (
               <p className="attendance-source">
-                Importi Excel me numra jep P/A; U dhe T nuk janë regjistruar në
-                atë model.
+                {t(
+                  "Importi Excel me numra jep P/A; U dhe T nuk janë regjistruar në atë model.",
+                )}
               </p>
             )}
           </div>
         ))
       ) : (
         <p className="attendance-no-data">
-          Nuk ka vijueshmëri të ngarkuar për {period}
-          {courseId ? " për këtë kurs" : " për këtë nxënës"}. Ngarkojeni te
-          Faturat e muajit.
+          {t("Nuk ka vijueshmëri të ngarkuar për ")}
+          {period}
+          {courseId ? t(" për këtë kurs") : t(" për këtë nxënës")}
+          {t(". Ngarkojeni te Faturat e muajit.")}
         </p>
       )}
       {initialPeriod && initialPeriod !== period && (
         <p className="attendance-source">
-          Muaji i faturës për këtë pagesë: {initialPeriod}.
+          {t("Muaji i faturës për këtë pagesë: ")}
+          {initialPeriod}.
         </p>
       )}
     </section>

@@ -60,7 +60,11 @@ async function pendingFor(db, period) {
       OR: [{ endDate: null }, { endDate: { gte: first } }],
       student: { status: "ACTIVE" },
     },
-    include: { student: true, course: true, group: true },
+    include: {
+      student: true,
+      course: true,
+      group: { include: { instructor: true } },
+    },
     orderBy: [{ startDate: "asc" }, { id: "asc" }],
   });
   if (!enrollments.length) return [];
@@ -106,10 +110,12 @@ async function pendingFor(db, period) {
       current: currentAttendance,
       previous: previousAttendance,
     };
+    const dueDate = registrationDeadline(period, e.startDate);
     const reviewToken = createHash("sha256")
       .update(
         JSON.stringify({
           id: e.id,
+          dueDate,
           version: e.version,
           price: e.monthlyPrice.toFixed(2),
           discount: e.discount.toFixed(2),
@@ -127,8 +133,9 @@ async function pendingFor(db, period) {
       studentName: `${e.student.firstName} ${e.student.lastName}`,
       courseName: e.course.name,
       groupName: e.group.name,
+      instructorName: e.group.instructor?.name ?? "",
       period,
-      dueDate: registrationDeadline(period, e.startDate),
+      dueDate,
       monthlyPrice: e.monthlyPrice.toFixed(2),
       suggestedAmount: e.monthlyPrice.minus(e.discount).toFixed(2),
       previousPeriod,
@@ -186,6 +193,18 @@ class InvoiceReviewController {
           .includes(q.search.toLocaleLowerCase()),
       );
     if (q.studentId) rows = rows.filter((r) => r.studentId === q.studentId);
+    const category = (row) => {
+      const attendance =
+        period > today().slice(0, 7)
+          ? row.attendance.previous
+          : (row.attendance.current ?? row.attendance.previous);
+      if (!attendance) return "missing";
+      return attendance.absences > 0 ? "absences" : "regular";
+    };
+    const summary = { all: rows.length, absences: 0, missing: 0, regular: 0 };
+    for (const row of rows) summary[category(row)]++;
+    if (["absences", "missing", "regular"].includes(q.status))
+      rows = rows.filter((row) => category(row) === q.status);
     return {
       ...pagination(
         rows.length,
@@ -193,6 +212,7 @@ class InvoiceReviewController {
         rows.slice((q.page - 1) * q.limit, q.page * q.limit),
       ),
       period,
+      summary,
     };
   }
   async reminders() {

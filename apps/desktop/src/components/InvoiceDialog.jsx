@@ -1,3 +1,4 @@
+import { t, tm } from "../services/i18n.js";
 import { useEffect, useState } from "react";
 import { Eye, Printer, Wallet } from "lucide-react";
 import { useDialog } from "../hooks/useDialog";
@@ -9,13 +10,20 @@ import { presentCount, otherAttendance } from "../services/attendance";
 import PaymentDeadline, { useSchoolDay } from "./PaymentDeadline";
 import OutstandingMonths from "./OutstandingMonths";
 import AttendanceSummary from "./AttendanceSummary";
-
 const money = (value) => `${Number(value).toFixed(2)} €`;
 const statuses = {
-  PAID: "Paguar",
-  PARTIAL: "Pjesërisht paguar",
-  UNPAID: "Papaguar",
-  VOID: "Anuluar",
+  get PAID() {
+    return t("Paguar");
+  },
+  get PARTIAL() {
+    return t("Pjesërisht paguar");
+  },
+  get UNPAID() {
+    return t("Papaguar");
+  },
+  get VOID() {
+    return t("Anuluar");
+  },
 };
 function PaymentForm({ invoice, close, saved, onBusyChange }) {
   const [amount, setAmount] = useState(invoice.balance),
@@ -39,7 +47,12 @@ function PaymentForm({ invoice, close, saved, onBusyChange }) {
           paidAt,
           notes: "",
           idempotencyKey: key,
-          allocations: [{ invoiceId: invoice.id, amount }],
+          allocations: [
+            {
+              invoiceId: invoice.id,
+              amount,
+            },
+          ],
         }),
       });
       window.dispatchEvent(new Event("billing-updated"));
@@ -53,10 +66,10 @@ function PaymentForm({ invoice, close, saved, onBusyChange }) {
   }
   return (
     <form className="invoice-payment-form" onSubmit={submit}>
-      <h3>Regjistro pagesën</h3>
+      <h3>{t("Regjistro pagesën")}</h3>
       <p>
-        {invoice.studentName} · {invoice.number} · Mbetja:{" "}
-        {money(invoice.balance)}
+        {invoice.studentName} · {invoice.number}
+        {t(" · Mbetja:")} {money(invoice.balance)}
       </p>
       <fieldset disabled={busy}>
         <AttendanceSummary
@@ -67,19 +80,19 @@ function PaymentForm({ invoice, close, saved, onBusyChange }) {
         />
         <div className="form-grid">
           <label>
-            Shuma e pagesës (€)
+            {t("Shuma e pagesës (€)")}
             <input
               autoFocus
               required
               inputMode="decimal"
               pattern="[0-9]+([.][0-9]{1,2})?"
-              aria-label="Shuma e pagesës EUR"
+              aria-label={t("Shuma e pagesës EUR")}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
           </label>
           <label>
-            Data e pagesës
+            {t("Data e pagesës")}
             <input
               type="date"
               required
@@ -89,17 +102,17 @@ function PaymentForm({ invoice, close, saved, onBusyChange }) {
             />
           </label>
           <label>
-            Mënyra e pagesës
+            {t("Mënyra e pagesës")}
             <select value={method} onChange={(e) => setMethod(e.target.value)}>
-              <option value="CASH">Të gatshme (Cash)</option>
-              <option value="BANK">Bankë</option>
+              <option value="CASH">{t("Të gatshme (Cash)")}</option>
+              <option value="BANK">{t("Bankë")}</option>
             </select>
           </label>
         </div>
       </fieldset>
       {error && (
         <div className="error" role="alert">
-          {error}
+          {tm(error)}
         </div>
       )}
       <div className="modal-actions">
@@ -109,10 +122,10 @@ function PaymentForm({ invoice, close, saved, onBusyChange }) {
           disabled={busy}
           onClick={close}
         >
-          Mbyll
+          {t("Mbyll")}
         </button>
         <button className="primary" disabled={busy}>
-          {busy ? "Duke ruajtur…" : "Ruaj pagesën"}
+          {busy ? t("Duke ruajtur…") : t("Ruaj pagesën")}
         </button>
       </div>
     </form>
@@ -144,13 +157,17 @@ export function InvoiceDialog({
     const controller = new AbortController();
     setDebts(null);
     setError("");
-    api(`/invoices/${id}`, { signal: controller.signal })
+    api(`/invoices/${id}`, {
+      signal: controller.signal,
+    })
       .then(async (value) => {
         if (controller.signal.aborted) return;
         setInvoice(value);
         const result = await api(
           `/reports/debts?studentId=${value.studentId}`,
-          { signal: controller.signal },
+          {
+            signal: controller.signal,
+          },
         );
         if (!controller.signal.aborted)
           setDebts(
@@ -175,10 +192,12 @@ export function InvoiceDialog({
     setCorrecting(true);
     setError("");
     try {
-      await api(`/invoices/${id}/registration-deadline`, { method: "POST" });
+      await api(`/invoices/${id}/registration-deadline`, {
+        method: "POST",
+      });
       window.dispatchEvent(new Event("billing-updated"));
       setRevision((value) => value + 1);
-      setNotice("Afati u përditësua sipas regjistrimit në kurs.");
+      setNotice(t("Afati u përditësua sipas regjistrimit në kurs."));
     } catch (e) {
       setError(e.message);
     } finally {
@@ -200,11 +219,14 @@ export function InvoiceDialog({
         className="modal wide invoice-dialog"
         role="dialog"
         aria-modal="true"
-        aria-label="Fatura"
+        aria-label={t("Fatura")}
       >
         <div className="modal-heading">
           <div>
-            <h2>Fatura {invoice?.number ?? ""}</h2>
+            <h2>
+              {t("Fatura ")}
+              {invoice?.number ?? ""}
+            </h2>
             {invoice && (
               <p>
                 {invoice.studentName} · {invoice.period}
@@ -212,7 +234,7 @@ export function InvoiceDialog({
             )}
           </div>
           <button
-            aria-label="Mbyll faturën"
+            aria-label={t("Mbyll faturën")}
             disabled={correcting || paymentBusy}
             onClick={close}
           >
@@ -221,33 +243,33 @@ export function InvoiceDialog({
         </div>
         {error && (
           <div className="error" role="alert">
-            {error}
+            {tm(error)}
           </div>
         )}
         {notice && (
           <div className="success" role="status">
-            {notice}
+            {tm(notice)}
           </div>
         )}
         {!invoice ? (
-          <p>Duke ngarkuar faturën…</p>
+          <p>{t("Duke ngarkuar faturën…")}</p>
         ) : (
           <>
             <div className="invoice-dialog-toolbar">
               <button className="secondary" onClick={() => preview()}>
                 <Eye size={16} />
-                Shiko PDF
+                {t("Shiko PDF")}
               </button>
               <button className="secondary" onClick={() => preview(true)}>
                 <Printer size={16} />
-                Printo faturën
+                {t("Printo faturën")}
               </button>
               {invoice.status !== "VOID" &&
                 Number(invoice.balance) > 0 &&
                 !payment && (
                   <button className="primary" onClick={() => setPayment(true)}>
                     <Wallet size={16} />
-                    Regjistro pagesën
+                    {t("Regjistro pagesën")}
                   </button>
                 )}
               <span className={`invoice-state ${invoice.status.toLowerCase()}`}>
@@ -256,7 +278,7 @@ export function InvoiceDialog({
             </div>
             <dl className="invoice-facts">
               <div>
-                <dt>Nxënësi</dt>
+                <dt>{t("Nxënësi")}</dt>
                 <dd>
                   <StudentLink id={invoice.studentId}>
                     {invoice.studentName}
@@ -264,15 +286,15 @@ export function InvoiceDialog({
                 </dd>
               </div>
               <div>
-                <dt>Data e faturës</dt>
+                <dt>{t("Data e faturës")}</dt>
                 <dd>{date(invoice.issuedAt)}</dd>
               </div>
               <div>
-                <dt>Muaji</dt>
+                <dt>{t("Muaji")}</dt>
                 <dd>{invoice.period}</dd>
               </div>
               <div>
-                <dt>Afati i pagesës</dt>
+                <dt>{t("Afati i pagesës")}</dt>
                 <dd>
                   {date(invoice.dueDate)}{" "}
                   <PaymentDeadline invoice={invoice} day={day} />
@@ -285,8 +307,10 @@ export function InvoiceDialog({
                         onClick={correctDeadline}
                       >
                         {correcting
-                          ? "Duke përditësuar…"
-                          : `Vendos afatin sipas regjistrimit: ${date(invoice.registrationDueDate)}`}
+                          ? t("Duke përditësuar…")
+                          : t("Vendos afatin sipas regjistrimit: {0}", [
+                              date(invoice.registrationDueDate),
+                            ])}
                       </button>
                     )}
                 </dd>
@@ -296,11 +320,11 @@ export function InvoiceDialog({
               <table>
                 <thead>
                   <tr>
-                    <th>Përshkrimi</th>
-                    <th>Sasia</th>
-                    <th>Çmimi</th>
-                    <th>Zbritja</th>
-                    <th>Total</th>
+                    <th>{t("Përshkrimi")}</th>
+                    <th>{t("Sasia")}</th>
+                    <th>{t("Çmimi")}</th>
+                    <th>{t("Zbritja")}</th>
+                    <th>{t("Total")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -321,13 +345,16 @@ export function InvoiceDialog({
             </div>
             <div className="invoice-balance">
               <span>
-                Total <strong>{money(invoice.amount)}</strong>
+                {t("Total ")}
+                <strong>{money(invoice.amount)}</strong>
               </span>
               <span>
-                Paguar <strong>{money(invoice.paidAmount)}</strong>
+                {t("Paguar ")}
+                <strong>{money(invoice.paidAmount)}</strong>
               </span>
               <span>
-                Mbetja <strong>{money(invoice.balance)}</strong>
+                {t("Mbetja ")}
+                <strong>{money(invoice.balance)}</strong>
               </span>
             </div>
             {debts && (
@@ -338,12 +365,13 @@ export function InvoiceDialog({
               />
             )}
             {payment && !debts && (
-              <p role="status">Duke kontrolluar muajt e papaguar…</p>
+              <p role="status">{t("Duke kontrolluar muajt e papaguar…")}</p>
             )}
             {payment && older && (
               <p className="error" role="alert">
-                Ky nxënës ka muaj të mëparshëm të papaguar. Zgjidhni “Paguaj
-                këtë muaj” te borxhi më i vjetër më sipër.
+                {t(
+                  "Ky nxënës ka muaj të mëparshëm të papaguar. Zgjidhni “Paguaj këtë muaj” te borxhi më i vjetër më sipër.",
+                )}
               </p>
             )}
             {payment &&
@@ -359,7 +387,9 @@ export function InvoiceDialog({
                 saved={() => {
                   setPayment(false);
                   setNotice(
-                    "Pagesa u ruajt. Fatura për printim përmban edhe pagesën.",
+                    t(
+                      "Pagesa u ruajt. Fatura për printim përmban edhe pagesën.",
+                    ),
                   );
                   setRevision((v) => v + 1);
                   saved?.();
@@ -367,16 +397,16 @@ export function InvoiceDialog({
               />
             ) : (
               <>
-                <h3 className="section-label">Pagesat e kësaj fature</h3>
+                <h3 className="section-label">{t("Pagesat e kësaj fature")}</h3>
                 {allocations.length ? (
                   <div className="table-scroll">
                     <table>
                       <thead>
                         <tr>
-                          <th>Data</th>
-                          <th>Lloji i pagesës</th>
-                          <th>Paguar në</th>
-                          <th>Shuma</th>
+                          <th>{t("Data")}</th>
+                          <th>{t("Lloji i pagesës")}</th>
+                          <th>{t("Paguar në")}</th>
+                          <th>{t("Shuma")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -385,13 +415,13 @@ export function InvoiceDialog({
                             <td>{date(a.payment.paidAt)}</td>
                             <td>
                               {a.payment.method === "CASH"
-                                ? "Të gatshme (Cash)"
-                                : "Bankë"}
+                                ? t("Të gatshme (Cash)")
+                                : t("Bankë")}
                             </td>
                             <td>
                               {a.payment.method === "CASH"
-                                ? "Arka zyre"
-                                : "Bankë"}
+                                ? t("Arka zyre")
+                                : t("Bankë")}
                             </td>
                             <td>{money(a.amount)}</td>
                           </tr>
@@ -401,7 +431,7 @@ export function InvoiceDialog({
                   </div>
                 ) : (
                   <p className="invoice-empty">
-                    Ende nuk është regjistruar pagesë.
+                    {t("Ende nuk është regjistruar pagesë.")}
                   </p>
                 )}
               </>
@@ -412,7 +442,7 @@ export function InvoiceDialog({
                 disabled={correcting || paymentBusy}
                 onClick={close}
               >
-                Mbyll
+                {t("Mbyll")}
               </button>
             </div>
           </>
@@ -421,8 +451,15 @@ export function InvoiceDialog({
     </div>
   );
 }
-export function NewInvoiceDialog({ candidate, close, created }) {
-  const [studentId, setStudentId] = useState(candidate?.studentId ?? ""),
+export function NewInvoiceDialog({
+  candidate,
+  initialStudent,
+  close,
+  created,
+}) {
+  const [studentId, setStudentId] = useState(
+      candidate?.studentId ?? initialStudent?.id ?? "",
+    ),
     [period, setPeriod] = useState(
       candidate?.period ?? calendarDay().slice(0, 7),
     ),
@@ -444,7 +481,9 @@ export function NewInvoiceDialog({ candidate, close, created }) {
     setError("");
     api(
       `/invoice-review/pending?studentId=${studentId}&period=${period}&limit=200`,
-      { signal: controller.signal },
+      {
+        signal: controller.signal,
+      },
     )
       .then((data) => {
         if (controller.signal.aborted) return;
@@ -498,17 +537,22 @@ export function NewInvoiceDialog({ candidate, close, created }) {
         className="modal wide invoice-dialog"
         role="dialog"
         aria-modal="true"
-        aria-label="Regjistro faturën"
+        aria-label={t("Regjistro faturën")}
       >
         <div className="modal-heading">
           <div>
-            <h2>Regjistro faturën</h2>
+            <h2>{t("Regjistro faturën")}</h2>
             <p>
-              Zgjidh nxënësin, muajin dhe shumën. Numri i faturës caktohet
-              automatikisht.
+              {t(
+                "Zgjidh nxënësin, muajin dhe shumën. Numri i faturës caktohet automatikisht.",
+              )}
             </p>
           </div>
-          <button disabled={busy} aria-label="Mbyll faturën" onClick={close}>
+          <button
+            disabled={busy}
+            aria-label={t("Mbyll faturën")}
+            onClick={close}
+          >
             ×
           </button>
         </div>
@@ -517,13 +561,18 @@ export function NewInvoiceDialog({ candidate, close, created }) {
             <div className="form-grid">
               <Lookup
                 endpoint="/students"
-                label="Nxënësi"
+                label={t("Nxënësi")}
                 value={studentId}
-                initialLabel={candidate?.studentName ?? ""}
+                initialLabel={
+                  candidate?.studentName ??
+                  (initialStudent
+                    ? `${initialStudent.firstName} ${initialStudent.lastName}`
+                    : "")
+                }
                 onChange={setStudentId}
               />
               <label>
-                Muaji i faturës
+                {t("Muaji i faturës")}
                 <input
                   type="month"
                   required
@@ -532,34 +581,40 @@ export function NewInvoiceDialog({ candidate, close, created }) {
                 />
               </label>
               <label>
-                Data e faturës
+                {t("Data e faturës")}
                 <input type="date" readOnly value={calendarDay()} />
               </label>
               {row && (
                 <label>
-                  Afati i pagesës
+                  {t("Afati i pagesës")}
                   <input type="date" readOnly value={row.dueDate} />
-                  <small>Sipas ditës së regjistrimit në kurs.</small>
+                  <small>
+                    {t(
+                      "Pagesa e radhës: një muaj kalendarik, sipas ditës së regjistrimit.",
+                    )}
+                  </small>
                 </label>
               )}
               <label>
-                Valuta
+                {t("Valuta")}
                 <input readOnly value="EUR" />
               </label>
             </div>
             {loading ? (
-              <p className="invoice-empty">Duke kontrolluar regjistrimin…</p>
+              <p className="invoice-empty">
+                {t("Duke kontrolluar regjistrimin…")}
+              </p>
             ) : studentId && !row ? (
               <p className="invoice-empty">
-                Nuk ka faturë të re për këtë nxënës në këtë muaj. Kontrollo nëse
-                fatura ekziston, regjistrimin në kurs ose pagesën e muajit
-                paraprak.
+                {t(
+                  "Nuk ka faturë të re për këtë nxënës në këtë muaj. Kontrollo nëse fatura ekziston, regjistrimin në kurs ose pagesën e muajit paraprak.",
+                )}
               </p>
             ) : (
               row && (
                 <>
                   <label className="spaced">
-                    Kursi / Grupi
+                    {t("Kursi / Grupi")}
                     <select
                       value={enrollmentId}
                       onChange={(e) => {
@@ -580,15 +635,15 @@ export function NewInvoiceDialog({ candidate, close, created }) {
                   </label>
                   <div className="form-grid spaced">
                     <label>
-                      Çmimi i kursit (€)
+                      {t("Çmimi i kursit (€)")}
                       <input readOnly value={row.monthlyPrice} />
                     </label>
                     <label>
-                      Shuma për pagesë (€)
+                      {t("Shuma për pagesë (€)")}
                       <input
                         autoFocus
                         required
-                        aria-label="Shuma e faturës EUR"
+                        aria-label={t("Shuma e faturës EUR")}
                         inputMode="decimal"
                         pattern="[0-9]+([.][0-9]{1,2})?"
                         value={amount}
@@ -598,33 +653,47 @@ export function NewInvoiceDialog({ candidate, close, created }) {
                   </div>
                   {Number(amount) !== Number(row.suggestedAmount) && (
                     <label className="spaced">
-                      Arsyeja e ndryshimit
+                      {t("Arsyeja e ndryshimit")}
                       <textarea
                         required
                         maxLength={500}
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        placeholder="P.sh. zbritje për mungesat"
+                        placeholder={t("P.sh. zbritje për mungesat")}
                       />
                     </label>
                   )}
                   <details className="invoice-attendance" open>
-                    <summary>Mungesat për kontroll</summary>
+                    <summary>{t("Mungesat për kontroll")}</summary>
                     {[
                       [
-                        "Muaji paraprak",
+                        t("Muaji paraprak"),
                         row.previousPeriod,
                         row.attendance.previous,
                       ],
-                      ["Muaji i faturës", row.period, row.attendance.current],
+                      [
+                        t("Muaji i faturës"),
+                        row.period,
+                        row.attendance.current,
+                      ],
                     ].map(([label, month, a]) => (
                       <p key={label}>
                         <strong>
                           {label} ({month}):{" "}
                         </strong>
                         {a
-                          ? `${presentCount(a)} prezent (P) · ${a.absences} mungesa (A) · ${a.totalLessons} orë gjithsej${otherAttendance(a) ? ` · ${otherAttendance(a)}` : ""}`
-                          : "Pa të dhëna"}
+                          ? t(
+                              "{0} prezent (P) · {1} mungesa (A) · {2} orë gjithsej{3}",
+                              [
+                                presentCount(a),
+                                a.absences,
+                                a.totalLessons,
+                                otherAttendance(a)
+                                  ? ` · ${otherAttendance(a)}`
+                                  : "",
+                              ],
+                            )
+                          : t("Pa të dhëna")}
                       </p>
                     ))}
                   </details>
@@ -634,7 +703,7 @@ export function NewInvoiceDialog({ candidate, close, created }) {
           </fieldset>
           {error && (
             <div className="error" role="alert">
-              {error}
+              {tm(error)}
             </div>
           )}
           <div className="modal-actions">
@@ -644,10 +713,10 @@ export function NewInvoiceDialog({ candidate, close, created }) {
               disabled={busy}
               onClick={close}
             >
-              Anulo
+              {t("Anulo")}
             </button>
             <button className="primary" disabled={busy || loading || !row}>
-              {busy ? "Duke ruajtur…" : "Ruaj faturën"}
+              {busy ? t("Duke ruajtur…") : t("Ruaj faturën")}
             </button>
           </div>
         </form>

@@ -1,10 +1,10 @@
+import { t } from "../services/i18n.js";
 import { useState } from "react";
 import { Bell } from "lucide-react";
 import { date } from "../services/format";
 import PaymentDeadline, { useSchoolDay } from "./PaymentDeadline";
 import { InvoiceDialog } from "./InvoiceDialog";
 import StudentLink from "./StudentLink";
-
 export default function PaymentReminders({ reminders, refresh }) {
   const [tab, setTab] = useState(
     reminders.upcoming.total ? "upcoming" : "overdue",
@@ -16,33 +16,37 @@ export default function PaymentReminders({ reminders, refresh }) {
     <section
       id="payment-reminders"
       className="card payment-reminders"
-      aria-label="Njoftimet e pagesave"
+      aria-label={t("Njoftimet e pagesave")}
     >
       <div className="card-heading">
         <div>
           <h2>
-            <Bell size={18} aria-hidden="true" /> Njoftimet e pagesave
+            <Bell size={18} aria-hidden="true" />
+            {t(" Njoftimet e pagesave")}
           </h2>
           <p>
-            Faturat e papaguara ose pjesërisht të paguara, sipas afatit të
-            pagesës.
+            {t(
+              "Faturat e papaguara ose pjesërisht të paguara, sipas afatit të pagesës.",
+            )}
           </p>
         </div>
       </div>
-      <div className="reminder-filters" aria-label="Filtro afatet">
+      <div className="reminder-filters" aria-label={t("Filtro afatet")}>
         <button
           className="secondary"
           aria-pressed={tab === "upcoming"}
           onClick={() => setTab("upcoming")}
         >
-          Sot dhe 7 ditët e ardhshme ({reminders.upcoming.total})
+          {t("Sot dhe 7 ditët e ardhshme (")}
+          {reminders.upcoming.total})
         </button>
         <button
           className="secondary"
           aria-pressed={tab === "overdue"}
           onClick={() => setTab("overdue")}
         >
-          Me vonesë ({reminders.overdue.total})
+          {t("Me vonesë (")}
+          {reminders.overdue.total})
         </button>
       </div>
       {group.items.length ? (
@@ -50,12 +54,12 @@ export default function PaymentReminders({ reminders, refresh }) {
           <table>
             <thead>
               <tr>
-                <th>Nxënësi / Kursi</th>
-                <th>Afati</th>
-                <th>Ditët</th>
-                <th>Mbetja</th>
-                <th>Fatura</th>
-                <th>Veprime</th>
+                <th>{t("Nxënësi / Kursi")}</th>
+                <th>{t("Afati")}</th>
+                <th>{t("Ditët")}</th>
+                <th>{t("Mbetja")}</th>
+                <th>{t("Fatura")}</th>
+                <th>{t("Veprime")}</th>
               </tr>
             </thead>
             <tbody>
@@ -64,9 +68,12 @@ export default function PaymentReminders({ reminders, refresh }) {
                   <td>
                     <button
                       className="student-link"
-                      title="Hap pagesën e këtij nxënësi"
+                      title={t("Hap pagesën e këtij nxënësi")}
                       onClick={() =>
-                        setInvoiceAction({ id: invoice.id, pay: true })
+                        setInvoiceAction({
+                          id: invoice.id,
+                          pay: true,
+                        })
                       }
                     >
                       {invoice.studentName}
@@ -84,7 +91,10 @@ export default function PaymentReminders({ reminders, refresh }) {
                     <button
                       className="invoice-number"
                       onClick={() =>
-                        setInvoiceAction({ id: invoice.id, pay: false })
+                        setInvoiceAction({
+                          id: invoice.id,
+                          pay: false,
+                        })
                       }
                     >
                       {invoice.number}
@@ -95,12 +105,17 @@ export default function PaymentReminders({ reminders, refresh }) {
                       <button
                         className="primary"
                         onClick={() =>
-                          setInvoiceAction({ id: invoice.id, pay: true })
+                          setInvoiceAction({
+                            id: invoice.id,
+                            pay: true,
+                          })
                         }
                       >
-                        Paguaj
+                        {t("Paguaj")}
                       </button>
-                      <StudentLink id={invoice.studentId}>Profili</StudentLink>
+                      <StudentLink id={invoice.studentId}>
+                        {t("Profili")}
+                      </StudentLink>
                     </div>
                   </td>
                 </tr>
@@ -109,16 +124,21 @@ export default function PaymentReminders({ reminders, refresh }) {
           </table>
           {group.total > group.items.length && (
             <p className="reminder-limit">
-              Shfaqen {group.items.length} nga {group.total} fatura, me afatet
-              më të hershme. Listën e plotë e gjeni te Faturat.
+              {t("Shfaqen ")}
+              {group.items.length}
+              {t(" nga ")}
+              {group.total}
+              {t(
+                " fatura, me afatet më të hershme. Listën e plotë e gjeni te Faturat.",
+              )}
             </p>
           )}
         </div>
       ) : (
         <p className="empty">
           {tab === "upcoming"
-            ? "Nuk ka pagesa me afat brenda 7 ditëve."
-            : "Nuk ka pagesa me vonesë."}
+            ? t("Nuk ka pagesa me afat brenda 7 ditëve.")
+            : t("Nuk ka pagesa me vonesë.")}
         </p>
       )}
       {invoiceAction && (
