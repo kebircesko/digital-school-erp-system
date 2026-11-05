@@ -14,9 +14,9 @@ let DashboardController = class DashboardController {
   constructor(db) {
     this.db = db;
   }
-  reminders() {
+  reminders(query = {}) {
     return this.db.$transaction(
-      (tx) => paymentReminders(tx, (0, finance_1.today)()),
+      (tx) => paymentReminders(tx, (0, finance_1.today)(), query.sort),
       {
         isolationLevel:
           client_1.Prisma.TransactionIsolationLevel.RepeatableRead,
@@ -113,6 +113,8 @@ tslib_1.__decorate(
   [
     (0, common_1.Get)("payment-reminders"),
     (0, auth_1.Roles)("ADMIN", "FINANCE"),
+    tslib_1.__param(0, (0, common_1.Query)()),
+    tslib_1.__metadata("design:paramtypes", [Object]),
   ],
   DashboardController.prototype,
   "reminders",

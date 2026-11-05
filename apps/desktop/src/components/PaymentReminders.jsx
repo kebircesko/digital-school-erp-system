@@ -1,17 +1,46 @@
 import { t } from "../services/i18n.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { api } from "../services/api";
+import SortableHeader from "./SortableHeader";
 import { Bell } from "lucide-react";
 import { date } from "../services/format";
 import PaymentDeadline, { useSchoolDay } from "./PaymentDeadline";
 import { InvoiceDialog } from "./InvoiceDialog";
 import StudentLink from "./StudentLink";
+import WhatsAppReminder from "./WhatsAppReminder";
 export default function PaymentReminders({ reminders, refresh }) {
   const [tab, setTab] = useState(
     reminders.upcoming.total ? "upcoming" : "overdue",
   );
   const [invoiceAction, setInvoiceAction] = useState(null);
+  const [sort, setSort] = useState(null);
+  const [sorted, setSorted] = useState(null);
+  const [error, setError] = useState("");
   const day = useSchoolDay();
-  const group = reminders[tab];
+  useEffect(() => {
+    if (!sort) return;
+    const controller = new AbortController();
+    setSorted(null);
+    setError("");
+    api(`/dashboard/payment-reminders?sort=${sort.key}:${sort.direction}`, {
+      signal: controller.signal,
+    })
+      .then((result) => {
+        if (!controller.signal.aborted) setSorted(result);
+      })
+      .catch((e) => {
+        if (!controller.signal.aborted) setError(e.message);
+      });
+    return () => controller.abort();
+  }, [sort, reminders, day]);
+  function sortColumn(key) {
+    setSort((previous) => ({
+      key,
+      direction:
+        previous?.key === key && previous.direction === "asc" ? "desc" : "asc",
+    }));
+  }
+  const group = (sorted ?? reminders)[tab];
   return (
     <section
       id="payment-reminders"
@@ -49,16 +78,35 @@ export default function PaymentReminders({ reminders, refresh }) {
           {reminders.overdue.total})
         </button>
       </div>
-      {group.items.length ? (
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      {sort && !sorted && !error ? (
+        <p className="empty" role="status">
+          {t("Duke ngarkuar…")}
+        </p>
+      ) : group.items.length ? (
         <div className="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>{t("Nxënësi / Kursi")}</th>
-                <th>{t("Afati")}</th>
-                <th>{t("Ditët")}</th>
-                <th>{t("Mbetja")}</th>
-                <th>{t("Fatura")}</th>
+                {[
+                  ["studentName", "Nxënësi / Kursi"],
+                  ["dueDate", "Afati"],
+                  ["days", "Ditët"],
+                  ["balance", "Mbetja"],
+                  ["number", "Fatura"],
+                ].map(([key, label]) => (
+                  <SortableHeader
+                    key={key}
+                    column={key}
+                    label={t(label)}
+                    sort={sort ?? { key: "dueDate", direction: "asc" }}
+                    onSort={sortColumn}
+                  />
+                ))}
                 <th>{t("Veprime")}</th>
               </tr>
             </thead>
@@ -116,6 +164,7 @@ export default function PaymentReminders({ reminders, refresh }) {
                       <StudentLink id={invoice.studentId}>
                         {t("Profili")}
                       </StudentLink>
+                      <WhatsAppReminder invoice={invoice} />
                     </div>
                   </td>
                 </tr>
@@ -128,9 +177,7 @@ export default function PaymentReminders({ reminders, refresh }) {
               {group.items.length}
               {t(" nga ")}
               {group.total}
-              {t(
-                " fatura, me afatet më të hershme. Listën e plotë e gjeni te Faturat.",
-              )}
+              {t(" fatura. Listën e plotë e gjeni te Faturat.")}
             </p>
           )}
         </div>

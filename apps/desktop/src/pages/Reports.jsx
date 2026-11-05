@@ -1,3 +1,4 @@
+import DateInput from "../components/DateInput";
 import { t, tm } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import { api, download } from "../services/api";
@@ -5,7 +6,7 @@ import { InvoiceDialog } from "../components/InvoiceDialog";
 import Lookup from "../components/Lookup";
 import StudentLink from "../components/StudentLink";
 import { useSchoolUpdates } from "../hooks/useSchoolUpdates";
-import { calendarDay } from "../services/format";
+import { calendarDay, date } from "../services/format";
 export default function Reports({ kind, initialPreset = "month" }) {
   const updates = useSchoolUpdates();
   const [invoice, setInvoice] = useState(null);
@@ -88,7 +89,7 @@ export default function Reports({ kind, initialPreset = "month" }) {
     );
   }
   return (
-    <>
+    <div className="reports-page">
       <div className="page-heading">
         <div>
           <span className="eyebrow">{t("FINANCAT · EUR")}</span>
@@ -119,47 +120,77 @@ export default function Reports({ kind, initialPreset = "month" }) {
           {tm(error)}
         </div>
       )}
-      <section className="card report-filters">
+      <section
+        className="card report-filters"
+        aria-label={t("Filtrat e raportit")}
+      >
+        <div className="report-filter-toolbar">
+          <h2>{t("Filtrat e raportit")}</h2>
+          <button
+            className="text-button"
+            onClick={() => {
+              setCourseId("");
+              setGroupId("");
+              setPeriod("");
+              setMethod("");
+            }}
+          >
+            {t("Pastro filtrat")}
+          </button>
+        </div>
         {kind === "financial" ? (
           <>
-            <div className="button-row">
-              <button className="secondary" onClick={() => preset("day")}>
-                {t("Sot")}
-              </button>
-              <button className="secondary" onClick={() => preset("month")}>
-                {t("Ky muaj")}
-              </button>
-              <button className="secondary" onClick={() => preset("year")}>
-                {t("Ky vit")}
-              </button>
+            <div
+              className="button-row report-presets"
+              aria-label={t("Periudha")}
+            >
+              {[
+                ["day", "Sot"],
+                ["month", "Ky muaj"],
+                ["year", "Ky vit"],
+              ].map(([mode, label]) => (
+                <button
+                  key={mode}
+                  className="secondary"
+                  aria-pressed={
+                    to === calendarDay() &&
+                    from ===
+                      (mode === "day"
+                        ? calendarDay()
+                        : mode === "month"
+                          ? calendarDay().slice(0, 7) + "-01"
+                          : calendarDay().slice(0, 4) + "-01-01")
+                  }
+                  onClick={() => preset(mode)}
+                >
+                  {t(label)}
+                </button>
+              ))}
             </div>
-            <label>
-              {t("Nga data")}
-              <input
-                type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-              />
-            </label>
-            <label>
-              {t("Deri më")}
-              <input
-                type="date"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-              />
-            </label>
-            <label>
-              {t("Metoda")}
-              <select
-                value={method}
-                onChange={(e) => setMethod(e.target.value)}
-              >
-                <option value="">{t("Të gjitha metodat")}</option>
-                <option value="CASH">{t("Para të gatshme")}</option>
-                <option value="BANK">{t("Bankë")}</option>
-              </select>
-            </label>
+            <div className="report-filter-grid">
+              <label>
+                {t("Nga data")}
+                <DateInput
+                  value={from}
+                  onChange={(e) => setFrom(e.target.value)}
+                />
+              </label>
+              <label>
+                {t("Deri më")}
+                <DateInput value={to} onChange={(e) => setTo(e.target.value)} />
+              </label>
+              <label>
+                {t("Metoda")}
+                <select
+                  value={method}
+                  onChange={(e) => setMethod(e.target.value)}
+                >
+                  <option value="">{t("Të gjitha metodat")}</option>
+                  <option value="CASH">{t("Para të gatshme")}</option>
+                  <option value="BANK">{t("Bankë")}</option>
+                </select>
+              </label>
+            </div>
           </>
         ) : (
           <label>
@@ -171,37 +202,35 @@ export default function Reports({ kind, initialPreset = "month" }) {
             />
           </label>
         )}
-        <Lookup
-          endpoint="/courses"
-          label={t("Kursi")}
-          value={courseId}
-          onChange={(id) => {
-            setCourseId(id);
-            setGroupId("");
-          }}
-        />
-        <Lookup
-          endpoint={"/groups" + (courseId ? "?courseId=" + courseId : "")}
-          label={t("Grupi")}
-          value={groupId}
-          onChange={setGroupId}
-        />
-        <button
-          className="text-button"
-          onClick={() => {
-            setCourseId("");
-            setGroupId("");
-            setPeriod("");
-            setMethod("");
-          }}
-        >
-          {t("Pastro filtrat")}
-        </button>
+        <div className="report-filter-grid report-course-filters">
+          <Lookup
+            endpoint="/courses"
+            label={t("Kursi")}
+            value={courseId}
+            onChange={(id) => {
+              setCourseId(id);
+              setGroupId("");
+            }}
+          />
+          <Lookup
+            endpoint={"/groups" + (courseId ? "?courseId=" + courseId : "")}
+            label={t("Grupi")}
+            value={groupId}
+            onChange={setGroupId}
+          />
+        </div>
       </section>
       <div className="payment-total card report-total">
-        <span>
-          {kind === "debts" ? t("Borxhi total") : t("Totali i arkëtuar")}
-        </span>
+        <div>
+          <span>
+            {kind === "debts" ? t("Borxhi total") : t("Totali i arkëtuar")}
+          </span>
+          {kind === "financial" && (
+            <small>
+              {date(from)} – {date(to)}
+            </small>
+          )}
+        </div>
         <strong>{data?.total ?? "0.00"} €</strong>
       </div>
       {kind === "debts" ? (
@@ -257,18 +286,23 @@ export default function Reports({ kind, initialPreset = "month" }) {
                     ]
                   }
                 </h2>
-                {data?.[key]?.map((r) => (
-                  <div className="legend" key={r.name}>
-                    <span>
-                      {r.name === "CASH"
-                        ? t("Para të gatshme")
-                        : r.name === "BANK"
-                          ? t("Bankë")
-                          : r.name}
-                    </span>
-                    <strong>{r.amount} €</strong>
-                  </div>
-                ))}
+                <div className="report-breakdown-list">
+                  {data?.[key]?.map((r) => (
+                    <div className="legend" key={r.name}>
+                      <span>
+                        {r.name === "CASH"
+                          ? t("Para të gatshme")
+                          : r.name === "BANK"
+                            ? t("Bankë")
+                            : r.name}
+                      </span>
+                      <strong>{r.amount} €</strong>
+                    </div>
+                  ))}
+                  {data && !data[key]?.length && (
+                    <p className="muted">{t("Pa të dhëna")}</p>
+                  )}
+                </div>
               </section>
             ))}
           </div>
@@ -319,6 +353,6 @@ export default function Reports({ kind, initialPreset = "month" }) {
         </>
       )}
       {invoice && <InvoiceDialog id={invoice} close={() => setInvoice(null)} />}
-    </>
+    </div>
   );
 }

@@ -6,6 +6,9 @@ import ResourcePage from "./pages/ResourcePage";
 import InvoiceWorkspace from "./pages/InvoiceWorkspace";
 import Reports from "./pages/Reports";
 import Admin from "./pages/Admin";
+import AdminTasks from "./components/AdminTasks";
+import DataQuality from "./pages/DataQuality";
+import CashClose from "./pages/CashClose";
 import {
   BookOpen,
   CalendarDays,
@@ -24,7 +27,7 @@ import DashboardPage from "./pages/Dashboard";
 import StudentsPage from "./pages/Students";
 import Brand from "./components/Brand";
 import StudentWorkspace from "./components/StudentWorkspace";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { LayoutDashboard, Users, LogOut, Moon, Sun } from "lucide-react";
 import { api, setToken, hasSession } from "./services/api";
 const roleLabel = {
@@ -133,6 +136,9 @@ export default function App() {
   }, [user]);
   const route = routes.at(-1);
   const page = route.page;
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [route]);
   function navigate(nextPage, options = {}) {
     setRoutes((previous) => [
       ...previous,
@@ -238,6 +244,12 @@ export default function App() {
             label: t("Raportet"),
             icon: ChartNoAxesCombined,
           },
+          {
+            id: "data-quality",
+            label: t("Kontrolli i të dhënave"),
+            icon: ClipboardList,
+          },
+          { id: "cash-close", label: t("Mbyllja e arkës"), icon: HandCoins },
         ]
       : []),
     ...(user.role === "ADMIN"
@@ -257,6 +269,7 @@ export default function App() {
             label: t("Backup"),
             icon: Database,
           },
+          { id: "tasks", label: t("Detyrat"), icon: Bell },
         ]
       : []),
   ];
@@ -305,6 +318,8 @@ export default function App() {
                             "groups",
                             "enrollments",
                             "debts",
+                            "data-quality",
+                            "cash-close",
                           ].includes(page) || undefined
                         }
                       >
@@ -316,6 +331,8 @@ export default function App() {
                               "groups",
                               "enrollments",
                               "debts",
+                              "data-quality",
+                              "cash-close",
                             ].includes(item.id),
                           )
                           .map(button)}
@@ -325,14 +342,17 @@ export default function App() {
                       <details
                         className="nav-group"
                         open={
-                          ["users", "audit", "backups"].includes(page) ||
-                          undefined
+                          ["users", "audit", "backups", "tasks"].includes(
+                            page,
+                          ) || undefined
                         }
                       >
                         <summary>{t("Administrimi")}</summary>
                         {navigation
                           .filter((item) =>
-                            ["users", "audit", "backups"].includes(item.id),
+                            ["users", "audit", "backups", "tasks"].includes(
+                              item.id,
+                            ),
                           )
                           .map(button)}
                       </details>
@@ -478,6 +498,7 @@ export default function App() {
                   key={routes.length}
                   user={user}
                   initialStatus={route.status}
+                  initialFilter={route.filter}
                   initialSearch={route.search}
                 />
               ) : ["courses", "groups", "enrollments", "users"].includes(
@@ -491,6 +512,12 @@ export default function App() {
                   context={route.context}
                   initialStatus={route.status}
                 />
+              ) : page === "tasks" && user.role === "ADMIN" ? (
+                <AdminTasks />
+              ) : page === "data-quality" && user.role !== "INSTRUCTOR" ? (
+                <DataQuality navigate={navigate} />
+              ) : page === "cash-close" && user.role !== "INSTRUCTOR" ? (
+                <CashClose />
               ) : page === "invoices" ? (
                 <InvoiceWorkspace
                   key={routes.length}

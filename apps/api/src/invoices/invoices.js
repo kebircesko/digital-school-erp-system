@@ -19,6 +19,7 @@ const auth_1 = require("../auth/auth");
 const query_1 = require("../common/query");
 const { registrationDeadline } = require("../common/billing");
 const { invoicePdf } = require("../reports/invoice");
+const { missingInvoiceList } = require("../common/invoice-gaps");
 class InvoiceGenerate {
   period;
 }
@@ -126,14 +127,32 @@ let InvoicesController = class InvoicesController {
     this.service = service;
   }
   async list(q) {
+    if (q.status === "MISSING") return missingInvoiceList(this.db, q);
     const where = invoiceWhere(q);
-    const [total, items, sums] = await this.db.$transaction([
+    const [key, direction] = (q.sort ?? "").split(":");
+    if (
+      q.sort &&
+      !/^(number|studentName|courseName|issuedAt|dueDate|amount|paidAmount|balance|status|createdAt):(asc|desc)$/.test(
+        q.sort,
+      )
+    )
+      throw new common_1.BadRequestException("Renditja është e pavlefshme.");
+    const balanceSort = key === "balance";
+    const [total, items, sums, statuses] = await this.db.$transaction([
       this.db.invoice.count({ where }),
       this.db.invoice.findMany({
         where,
-        skip: (q.page - 1) * q.limit,
-        take: q.limit,
-        orderBy: [{ period: "desc" }, { number: "desc" }],
+        ...(!balanceSort
+          ? { skip: (q.page - 1) * q.limit, take: q.limit }
+          : {}),
+        orderBy:
+          key && !balanceSort
+            ? [
+                { [key]: direction },
+                ...(key === "courseName" ? [{ period: direction }] : []),
+                { id: "asc" },
+              ]
+            : [{ period: "desc" }, { number: "desc" }],
         include: {
           allocations: {
             select: { payment: { select: { paidAt: true, reversedAt: true } } },
@@ -144,12 +163,29 @@ let InvoicesController = class InvoicesController {
         where: { AND: [where, { status: { not: "VOID" } }] },
         _sum: { amount: true, paidAmount: true },
       }),
+      this.db.invoice.groupBy({
+        by: ["status"],
+        where,
+        _count: { _all: true },
+      }),
     ]);
+    if (balanceSort) {
+      items.sort(
+        (a, b) =>
+          a.amount
+            .minus(a.paidAmount)
+            .comparedTo(b.amount.minus(b.paidAmount)) *
+          (direction === "asc" ? 1 : -1),
+      );
+    }
+    const pageItems = balanceSort
+      ? items.slice((q.page - 1) * q.limit, q.page * q.limit)
+      : items;
     return {
       ...(0, query_1.pagination)(
         total,
         q,
-        items.map((i) => ({
+        pageItems.map((i) => ({
           ...i,
           lastPaidAt:
             i.allocations
@@ -159,6 +195,15 @@ let InvoicesController = class InvoicesController {
           allocations: undefined,
           balance: i.amount.minus(i.paidAmount).toFixed(2),
         })),
+      ),
+      totalAmount: new client_1.Prisma.Decimal(sums._sum.amount ?? 0).toFixed(
+        2,
+      ),
+      totalPaid: new client_1.Prisma.Decimal(sums._sum.paidAmount ?? 0).toFixed(
+        2,
+      ),
+      statusCounts: Object.fromEntries(
+        statuses.map((row) => [row.status, row._count._all]),
       ),
       totalBalance: new client_1.Prisma.Decimal(sums._sum.amount ?? 0)
         .minus(sums._sum.paidAmount ?? 0)
@@ -192,7 +237,9 @@ let InvoicesController = class InvoicesController {
     const invoice = await this.db.invoice.findUnique({
       where: { id },
       include: {
-        student: { select: { address: true } },
+        student: {
+          select: { address: true, parentName: true, parentPhone: true },
+        },
         enrollment: { select: { startDate: true } },
         allocations: {
           include: {

@@ -15,6 +15,7 @@ function controller(period) {
     totalLessons: 8,
     absences,
     excusedAbsences: 0,
+    sourceFile: i < 2 ? "demo.xlsx" : "other.xlsx",
     updatedAt: new Date(),
   });
   return new InvoiceReviewController({
@@ -111,4 +112,86 @@ test("future month review uses previous attendance, matching the invoice table",
     absent.items.map((r) => r.studentName),
     ["Dora Test"],
   );
+});
+
+test("monthly invoice sorting applies to all candidates before pagination", async () => {
+  const api = controller(current);
+  const original = api.db.enrollment.findMany;
+  api.db.enrollment.findMany = async () =>
+    (await original()).map((row, i) => ({
+      ...row,
+      createdAt: new Date(Date.UTC(2026, 9, i + 1)),
+      monthlyPrice: new Prisma.Decimal([100, 2, 40, 10][i]),
+    }));
+  const query = { period: current, page: 2, limit: 1 };
+  assert.equal(
+    (await api.pending({ ...query, sort: "createdAt:desc" })).items[0]
+      .studentName,
+    "Cora Test",
+  );
+  assert.equal(
+    (await api.pending({ ...query, sort: "createdAt:asc" })).items[0]
+      .studentName,
+    "Besa Test",
+  );
+  assert.equal(
+    (await api.pending({ ...query, sort: "suggestedAmount:asc" })).items[0]
+      .suggestedAmount,
+    "10.00",
+  );
+  assert.equal(
+    (await api.pending({ ...query, sort: "suggestedAmount:desc" })).items[0]
+      .suggestedAmount,
+    "40.00",
+  );
+  assert.equal(
+    (await api.pending({ ...query, page: 1, sort: "absences:desc" })).items[0]
+      .studentName,
+    "Ana Test",
+  );
+  assert.equal(
+    (await api.pending({ ...query, page: 4, sort: "absences:asc" })).items[0]
+      .studentName,
+    "Cora Test",
+  );
+  assert.equal(
+    (await api.pending({ ...query, page: 1, sort: "studentName:desc" }))
+      .items[0].studentName,
+    "Dora Test",
+  );
+  await assert.rejects(() => api.pending({ ...query, sort: "userName:asc" }));
+});
+
+test("import file filtering applies before pagination and attendance summaries", async () => {
+  const api = controller(current);
+  const result = await api.pending({
+    period: current,
+    sourceFile: "demo.xlsx",
+    page: 2,
+    limit: 1,
+  });
+  assert.equal(result.total, 2);
+  assert.equal(result.items[0].studentName, "Besa Test");
+  assert.deepEqual(result.summary, {
+    all: 2,
+    absences: 1,
+    regular: 1,
+    missing: 0,
+  });
+  const empty = await api.pending({
+    period: current,
+    sourceFile: "unknown.xlsx",
+    page: 1,
+    limit: 20,
+  });
+  assert.equal(empty.total, 0);
+  const future = shiftPeriod(current, 1);
+  const previous = await controller(future).pending({
+    period: future,
+    sourceFile: "other.xlsx",
+    page: 1,
+    limit: 20,
+  });
+  assert.equal(previous.total, 1);
+  assert.equal(previous.items[0].studentName, "Dora Test");
 });

@@ -15,10 +15,46 @@ class ListQuery {
   from;
   to;
   method;
+  sort;
+  sourceFile;
+  billingPeriod;
   page = 1;
   limit = 20;
 }
 exports.ListQuery = ListQuery;
+tslib_1.__decorate(
+  [
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Matches)(/^\d{4}-(0[1-9]|1[0-2])$/),
+    tslib_1.__metadata("design:type", String),
+  ],
+  ListQuery.prototype,
+  "billingPeriod",
+  void 0,
+);
+tslib_1.__decorate(
+  [
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(200),
+    tslib_1.__metadata("design:type", String),
+  ],
+  ListQuery.prototype,
+  "sourceFile",
+  void 0,
+);
+tslib_1.__decorate(
+  [
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.Matches)(
+      /^(number|studentName|courseName|issuedAt|dueDate|amount|paidAmount|balance|status|createdAt|paidAt|userName|totalLessons|absences|present|monthlyPrice|suggestedAmount|period):(asc|desc)$/,
+    ),
+    tslib_1.__metadata("design:type", String),
+  ],
+  ListQuery.prototype,
+  "sort",
+  void 0,
+);
 tslib_1.__decorate(
   [
     (0, class_validator_1.IsOptional)(),

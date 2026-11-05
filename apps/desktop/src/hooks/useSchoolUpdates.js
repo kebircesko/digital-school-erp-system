@@ -6,9 +6,11 @@ export function useSchoolUpdates() {
     const refresh = () => setRevision((value) => value + 1);
     window.addEventListener("student-updated", refresh);
     window.addEventListener("billing-updated", refresh);
+    window.addEventListener("admin-tasks-updated", refresh);
     return () => {
       window.removeEventListener("student-updated", refresh);
       window.removeEventListener("billing-updated", refresh);
+      window.removeEventListener("admin-tasks-updated", refresh);
     };
   }, []);
   return revision;

@@ -1,3 +1,4 @@
+import DateInput, { FormInput } from "../components/DateInput";
 import { t, tm } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import {
@@ -166,7 +167,7 @@ export function ResourceEditor({
             }
           />
         ) : (
-          <input
+          <FormInput
             aria-label={f.label}
             required={f.required !== false}
             type={f.type === "money" ? "text" : (f.type ?? "text")}
@@ -560,8 +561,7 @@ export default function ResourcePage({
                 <>
                   <label>
                     {t("Data")}
-                    <input
-                      type="date"
+                    <DateInput
                       required
                       value={actionDate}
                       onChange={(e) => setActionDate(e.target.value)}

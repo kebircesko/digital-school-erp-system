@@ -2,6 +2,15 @@ import { t, tm, getLocale } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import { api, download } from "../services/api";
 const actions = {
+  get TASK_CREATE() {
+    return t("Krijim detyre");
+  },
+  get TASK_UPDATE() {
+    return t("Ndryshim detyre");
+  },
+  get CASH_CLOSE() {
+    return t("Mbyllje arke");
+  },
   get INVOICE_PRICE_UPDATE() {
     return t("Ndryshim çmimi për muajin");
   },

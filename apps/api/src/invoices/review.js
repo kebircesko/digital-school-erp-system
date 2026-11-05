@@ -1,5 +1,6 @@
 "use strict";
 const { registrationDeadline } = require("../common/billing");
+const { issueInvoice } = require("./issue");
 const { createHash } = require("node:crypto");
 const {
   Controller,
@@ -47,9 +48,29 @@ function attendanceData(row) {
         absences: row.absences,
         excusedAbsences: row.excusedAbsences,
         sourceCounts: row.sourceCounts ?? null,
+        sourceFile: row.sourceFile ?? null,
         updatedAt: row.updatedAt.toISOString(),
       }
     : null;
+}
+function billingStatus({
+  enrollment,
+  invoice,
+  previousInvoice,
+  period,
+  studentStatus = "ACTIVE",
+}) {
+  if (invoice) return "INVOICED";
+  if (!enrollment) return "NO_ENROLLMENT";
+  if (studentStatus !== "ACTIVE") return "INACTIVE";
+  const firstMonth = enrollment.startDate.toISOString().slice(0, 7) === period;
+  if (
+    period > today().slice(0, 7) &&
+    !firstMonth &&
+    previousInvoice?.status !== "PAID"
+  )
+    return previousInvoice ? "PREVIOUS_UNPAID" : "PREVIOUS_MISSING";
+  return "READY";
 }
 async function pendingFor(db, period) {
   const { first, last } = checkPeriod(period);
@@ -99,11 +120,19 @@ async function pendingFor(db, period) {
     const key = `${e.studentId}:${e.courseId}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    if (invoiceMap.has(`${key}:${period}`)) continue; // Includes void invoices: period numbers cannot be reused.
     const previous = invoiceMap.get(`${key}:${previousPeriod}`);
+    if (
+      billingStatus({
+        enrollment: e,
+        invoice: invoiceMap.get(`${key}:${period}`),
+        previousInvoice: previous,
+        period,
+        studentStatus: e.student.status,
+      }) !== "READY"
+    )
+      continue;
     const previousPaid = previous?.status === "PAID";
     const firstMonth = e.startDate.toISOString().slice(0, 7) === period;
-    if (period > today().slice(0, 7) && !previousPaid && !firstMonth) continue;
     const currentAttendance = attendanceData(
       attendanceMap.get(`${key}:${period}`),
     );
@@ -140,6 +169,7 @@ async function pendingFor(db, period) {
       .digest("hex");
     result.push({
       enrollmentId: e.id,
+      createdAt: (e.createdAt ?? e.startDate).toISOString(),
       studentId: e.studentId,
       courseId: e.courseId,
       studentName: `${e.student.firstName} ${e.student.lastName}`,
@@ -208,6 +238,13 @@ class InvoiceReviewController {
     this.db = db;
   }
   async pending(q) {
+    if (
+      q.sort &&
+      !/^(studentName|courseName|period|dueDate|createdAt|totalLessons|absences|present|monthlyPrice|suggestedAmount):(asc|desc)$/.test(
+        q.sort,
+      )
+    )
+      throw new BadRequestException("Renditja është e pavlefshme.");
     const period = q.period ?? today().slice(0, 7);
     let rows = await pendingFor(this.db, period);
     if (q.search)
@@ -217,18 +254,59 @@ class InvoiceReviewController {
           .includes(q.search.toLocaleLowerCase()),
       );
     if (q.studentId) rows = rows.filter((r) => r.studentId === q.studentId);
+    const attendanceFor = (row) =>
+      period > today().slice(0, 7)
+        ? row.attendance.previous
+        : (row.attendance.current ?? row.attendance.previous);
     const category = (row) => {
-      const attendance =
-        period > today().slice(0, 7)
-          ? row.attendance.previous
-          : (row.attendance.current ?? row.attendance.previous);
+      const attendance = attendanceFor(row);
       if (!attendance) return "missing";
       return attendance.absences > 0 ? "absences" : "regular";
     };
+    if (q.sourceFile)
+      rows = rows.filter(
+        (row) => attendanceFor(row)?.sourceFile === q.sourceFile,
+      );
     const summary = { all: rows.length, absences: 0, missing: 0, regular: 0 };
     for (const row of rows) summary[category(row)]++;
     if (["absences", "missing", "regular"].includes(q.status))
       rows = rows.filter((row) => category(row) === q.status);
+    if (q.sort) {
+      const [key, direction] = q.sort.split(":");
+      const value = (row) => {
+        if (["totalLessons", "absences", "present"].includes(key)) {
+          const attendance = attendanceFor(row);
+          if (!attendance) return null;
+          return key === "present"
+            ? (attendance.sourceCounts?.present ??
+                attendance.totalLessons - attendance.absences)
+            : attendance[key];
+        }
+        return ["monthlyPrice", "suggestedAmount"].includes(key)
+          ? Number(row[key])
+          : row[key];
+      };
+      rows.sort((a, b) => {
+        const left = value(a),
+          right = value(b);
+        if (left == null || right == null)
+          return left == null && right == null
+            ? a.enrollmentId.localeCompare(b.enrollmentId)
+            : left == null
+              ? 1
+              : -1;
+        const compared =
+          typeof left === "number"
+            ? left - right
+            : String(left).localeCompare(String(right), "sq", {
+                numeric: true,
+              });
+        return (
+          compared * (direction === "asc" ? 1 : -1) ||
+          a.enrollmentId.localeCompare(b.enrollmentId)
+        );
+      });
+    }
     return {
       ...pagination(
         rows.length,
@@ -282,29 +360,7 @@ class InvoiceReviewController {
       const e = await tx.enrollment.findUniqueOrThrow({
         where: { id: dto.enrollmentId },
       });
-      const invoice = await tx.invoice.create({
-        data: {
-          number: await number(tx, "FAT", Number(dto.period.slice(0, 4))),
-          studentId: e.studentId,
-          enrollmentId: e.id,
-          courseId: e.courseId,
-          groupId: e.groupId,
-          period: dto.period,
-          issuedAt: calendarDate(today()),
-          dueDate: calendarDate(pending.dueDate),
-          subtotal: e.monthlyPrice,
-          discount: e.monthlyPrice.minus(amount),
-          amount,
-          status: amount.eq(0) ? "PAID" : "UNPAID",
-          studentName: pending.studentName,
-          courseName: pending.courseName,
-          groupName: pending.groupName,
-          approvalNotes: notes,
-          attendanceSnapshot: pending.attendance,
-        },
-      });
-      await audit(tx, req.user.id, "INVOICE_APPROVE", invoice.id);
-      return invoice;
+      return issueInvoice(tx, e, pending, amount, notes, req.user.id);
     });
   }
   async savePrice(dto, req) {
@@ -403,4 +459,10 @@ __decorate(
   ],
   InvoiceReviewController,
 );
-module.exports = { InvoiceReviewController, pendingFor, shiftPeriod };
+module.exports = {
+  InvoiceReviewController,
+  pendingFor,
+  shiftPeriod,
+  checkPeriod,
+  billingStatus,
+};

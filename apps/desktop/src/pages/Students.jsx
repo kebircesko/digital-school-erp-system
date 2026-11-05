@@ -20,10 +20,14 @@ import {
 import { api } from "../services/api";
 import { date } from "../services/format";
 import Badge from "../components/Badge";
+import SortableHeader from "../components/SortableHeader";
+import Lookup from "../components/Lookup";
+import EndEnrollmentDialog from "../components/EndEnrollmentDialog";
 export default function StudentsPage({
   user,
   initialStatus = "",
   initialSearch = "",
+  initialFilter = "",
 }) {
   const updates = useSchoolUpdates();
   const [data, setData] = useState(null),
@@ -31,9 +35,13 @@ export default function StudentsPage({
     [query, setQuery] = useState(initialSearch),
     [status, setStatus] = useState(initialStatus),
     [sort, setSort] = useState("newest"),
+    [filter, setFilter] = useState(initialFilter),
+    [courseId, setCourseId] = useState(""),
+    [groupId, setGroupId] = useState(""),
     [page, setPage] = useState(1),
     [editing, setEditing] = useState(null),
     [enrolling, setEnrolling] = useState(null),
+    [ending, setEnding] = useState(null),
     [history, setHistory] = useState(null),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
@@ -57,6 +65,9 @@ export default function StudentsPage({
         search: query,
         status,
         sort,
+        ...(filter ? { filter } : {}),
+        ...(courseId ? { courseId } : {}),
+        ...(groupId ? { groupId } : {}),
         page: String(page),
       })}`.replace("status=&", ""),
       {
@@ -70,7 +81,7 @@ export default function StudentsPage({
         if (!controller.signal.aborted) setError(e.message);
       });
     return () => controller.abort();
-  }, [query, status, sort, page, revision, updates]);
+  }, [query, status, sort, page, revision, updates, filter, courseId, groupId]);
   async function remove() {
     if (!deleting) return;
     setBusy(true);
@@ -90,6 +101,21 @@ export default function StudentsPage({
     }
   }
   const canWrite = user.role !== "INSTRUCTOR";
+  const columns = [
+    ["firstName", "Nxënësi"],
+    ["birthDate", "Datëlindja"],
+    ["parentName", "Prindi / Kujdestari"],
+    ["parentPhone", "Telefoni"],
+    ["group", "Grupi"],
+    ["status", "Statusi"],
+  ];
+  const [sortKey, sortDirection] = sort.split(":");
+  function sortColumn(key) {
+    setSort(
+      `${key}:${sortKey === key && sortDirection === "asc" ? "desc" : "asc"}`,
+    );
+    setPage(1);
+  }
   return (
     <>
       <div className="page-heading">
@@ -123,6 +149,72 @@ export default function StudentsPage({
         </div>
       )}
       <section className="card student-table">
+        <div className="student-filters">
+          <div className="button-row">
+            {[
+              ["", "Të gjithë"],
+              ["recent", "Nxënës të rinj (30 ditë)"],
+              ["noGroup", "Pa grup"],
+              ...(canWrite ? [["debt", "Me borxh"]] : []),
+              ["incompletePhone", "Telefon i paplotë"],
+              ["endingSoon", "Regjistrime që përfundojnë"],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                className="secondary"
+                aria-pressed={filter === value}
+                onClick={() => {
+                  setFilter(value);
+                  setPage(1);
+                }}
+              >
+                {t(label)}
+              </button>
+            ))}
+          </div>
+          {filter === "endingSoon" && (
+            <p className="muted">
+              {t(
+                "Ky filtër shfaq vetëm regjistrimet që përfundojnë brenda 30 ditëve. Nxënësit pa datë përfundimi gjenden te “Të gjithë” ose “Nxënës të rinj (30 ditë)”.",
+              )}
+            </p>
+          )}
+          <div className="form-grid">
+            <Lookup
+              endpoint="/courses"
+              label={t("Sipas kursit")}
+              value={courseId}
+              onChange={(id) => {
+                setCourseId(id);
+                setGroupId("");
+                setPage(1);
+              }}
+            />
+            <Lookup
+              key={courseId}
+              endpoint={`/groups${courseId ? `?courseId=${courseId}` : ""}`}
+              label={t("Sipas grupit")}
+              value={groupId}
+              onChange={(id) => {
+                setGroupId(id);
+                setPage(1);
+              }}
+            />
+          </div>
+          {(filter || courseId || groupId) && (
+            <button
+              className="text-button"
+              onClick={() => {
+                setFilter("");
+                setCourseId("");
+                setGroupId("");
+                setPage(1);
+              }}
+            >
+              {t("Pastro filtrat")}
+            </button>
+          )}
+        </div>
         <div className="table-toolbar">
           <div className="search">
             <Search size={18} />
@@ -154,20 +246,28 @@ export default function StudentsPage({
             }}
           >
             <option value="newest">{t("Më të rinjtë")}</option>
-            <option value="name">{t("Sipas mbiemrit")}</option>
             <option value="oldest">{t("Më të vjetrit")}</option>
+            {sort.includes(":") && (
+              <option value={sort}>
+                {t(columns.find(([key]) => key === sortKey)?.[1])}{" "}
+                {sortDirection === "asc" ? "↑" : "↓"}
+              </option>
+            )}
           </select>
         </div>
         <div className="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>{t("Nxënësi")}</th>
-                <th>{t("Datëlindja")}</th>
-                <th>{t("Prindi / Kujdestari")}</th>
-                <th>{t("Telefoni")}</th>
-                <th>{t("Grupi")}</th>
-                <th>{t("Statusi")}</th>
+                {columns.map(([key, label]) => (
+                  <SortableHeader
+                    key={key}
+                    column={key}
+                    label={t(label)}
+                    sort={{ key: sortKey, direction: sortDirection }}
+                    onSort={sortColumn}
+                  />
+                ))}
                 <th>{t("Veprime")}</th>
               </tr>
             </thead>
@@ -195,6 +295,23 @@ export default function StudentsPage({
                       s.enrollments.map((e) => (
                         <div key={e.id} title={e.group.name}>
                           {e.group.name}
+                          {canWrite && (
+                            <button
+                              className="secondary"
+                              aria-label={t("Largo {0} nga {1}", [
+                                `${s.firstName} ${s.lastName}`,
+                                e.group.name,
+                              ])}
+                              onClick={() =>
+                                setEnding({
+                                  enrollment: e,
+                                  name: `${s.firstName} ${s.lastName}`,
+                                })
+                              }
+                            >
+                              {t("Largo nga grupi")}
+                            </button>
+                          )}
                         </div>
                       ))
                     ) : (
@@ -292,6 +409,8 @@ export default function StudentsPage({
       </section>
       {history && (
         <StudentHistory
+          canManageEnrollments={canWrite}
+          canManageTasks={user.role === "ADMIN"}
           id={history.id}
           name={`${history.firstName} ${history.lastName}`}
           close={() => setHistory(null)}
@@ -313,14 +432,42 @@ export default function StudentsPage({
           }}
         />
       )}
+      {ending && (
+        <EndEnrollmentDialog
+          {...ending}
+          close={() => setEnding(null)}
+          saved={() => {
+            setEnding(null);
+            setRevision((v) => v + 1);
+          }}
+        />
+      )}
       {editing && (
         <StudentModal
+          user={user}
           student={editing}
           readOnly={!canWrite}
           close={() => setEditing(null)}
-          saved={() => {
+          saved={(savedStudent) => {
+            const isNew = editing === "new";
             setEditing(null);
-            setNotice(t("Të dhënat u ruajtën me sukses."));
+            if (isNew) {
+              setFilter("");
+              setStatus("");
+              setSearch("");
+              setQuery("");
+              setCourseId("");
+              setGroupId("");
+              setSort("newest");
+              setPage(1);
+            }
+            setNotice(
+              isNew
+                ? t("Nxënësi {0} u regjistrua. Shfaqen nxënësit më të rinj.", [
+                    `${savedStudent.firstName} ${savedStudent.lastName}`,
+                  ])
+                : t("Të dhënat u ruajtën me sukses."),
+            );
             setRevision((v) => v + 1);
           }}
         />

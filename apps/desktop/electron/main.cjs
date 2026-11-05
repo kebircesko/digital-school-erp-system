@@ -7,6 +7,7 @@ const {
   session,
   ipcMain,
   dialog,
+  shell,
 } = require("electron");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
@@ -37,7 +38,21 @@ function createWindow() {
       preload: path.join(__dirname, "preload.cjs"),
     },
   });
-  win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    try {
+      const target = new URL(url);
+      if (
+        target.protocol === "https:" &&
+        target.hostname === "wa.me" &&
+        !target.username &&
+        !target.password &&
+        !target.port &&
+        /^\/[1-9]\d{7,14}$/.test(target.pathname)
+      )
+        shell.openExternal(target.href).catch(() => {});
+    } catch {}
+    return { action: "deny" };
+  });
   win.webContents.on("will-navigate", (event, url) => {
     if (
       !url.startsWith("app://erp/") &&

@@ -9,6 +9,7 @@ const enrollments_1 = require("./enrollments/enrollments");
 const invoices_1 = require("./invoices/invoices");
 const { InvoiceReviewController } = require("./invoices/review");
 const { AttendanceController } = require("./attendance/attendance");
+const { AdminToolsController } = require("./admin-tools/admin-tools");
 const payments_1 = require("./payments/payments");
 const reports_1 = require("./reports/reports");
 const users_1 = require("./users/users");
@@ -49,6 +50,7 @@ exports.AppModule = AppModule = tslib_1.__decorate(
         invoices_1.InvoicesController,
         InvoiceReviewController,
         AttendanceController,
+        AdminToolsController,
         payments_1.PaymentsController,
         reports_1.ReportsController,
         users_1.UsersController,

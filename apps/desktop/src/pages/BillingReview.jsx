@@ -8,13 +8,14 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { api, download } from "../services/api";
-import { calendarDay } from "../services/format";
+import { calendarDay, monthLabel } from "../services/format";
 import { InvoiceDialog, NewInvoiceDialog } from "../components/InvoiceDialog";
 import StudentLink from "../components/StudentLink";
 import { useSchoolUpdates } from "../hooks/useSchoolUpdates";
 import PdfAttendanceImport from "../components/PdfAttendanceImport";
 import { presentCount, otherAttendance } from "../services/attendance";
 import BatchInvoices from "../components/BatchInvoices";
+import SortableHeader from "../components/SortableHeader";
 export function calendarMonth(offset = 0) {
   const [year, month] = calendarDay().slice(0, 7).split("-").map(Number);
   return new Date(Date.UTC(year, month - 1 + offset, 1))
@@ -88,7 +89,7 @@ function AttendanceImport({ refresh }) {
       );
       setUpload(null);
       setPreview(null);
-      refresh();
+      refresh(preview.items[0]?.period, upload.filename);
     } catch (e) {
       setError(e.message);
       setPreview(null);
@@ -259,13 +260,17 @@ export default function BillingReview({ user, initialPeriod }) {
   const updates = useSchoolUpdates();
   const batchActive = useRef(false);
   const draftCache = useRef({});
+  const importPanel = useRef(null);
   const [period, setPeriod] = useState(initialPeriod || calendarMonth()),
     [data, setData] = useState(null),
+    [imports, setImports] = useState([]),
+    [sourceFile, setSourceFile] = useState(""),
     [batchBusy, setBatchBusy] = useState(false),
     [page, setPage] = useState(1),
     [search, setSearch] = useState(""),
     [query, setQuery] = useState(""),
     [status, setStatus] = useState(""),
+    [sort, setSort] = useState("createdAt:desc"),
     [revision, setRevision] = useState(0),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
@@ -283,6 +288,22 @@ export default function BillingReview({ user, initialPeriod }) {
     setPage(1);
   }, [initialPeriod]);
   useEffect(() => {
+    if (user.role !== "ADMIN") return;
+    const controller = new AbortController();
+    setImports([]);
+    api(
+      `/attendance/imports?period=${period > calendarMonth() ? calendarMonth() : period}&billingPeriod=${period}`,
+      { signal: controller.signal },
+    )
+      .then((result) => {
+        if (!controller.signal.aborted) setImports(result.items);
+      })
+      .catch((e) => {
+        if (!controller.signal.aborted) setError(e.message);
+      });
+    return () => controller.abort();
+  }, [period, revision, updates, user.role]);
+  useEffect(() => {
     if (batchActive.current) return;
     const controller = new AbortController();
     setData(null);
@@ -293,6 +314,8 @@ export default function BillingReview({ user, initialPeriod }) {
         page: String(page),
         search: query,
         status,
+        sort,
+        ...(sourceFile ? { sourceFile } : {}),
       })}`,
       {
         signal: controller.signal,
@@ -305,7 +328,40 @@ export default function BillingReview({ user, initialPeriod }) {
         if (!controller.signal.aborted) setError(e.message);
       });
     return () => controller.abort();
-  }, [period, page, query, status, revision, updates]);
+  }, [period, page, query, status, sort, sourceFile, revision, updates]);
+  const selectedImport = imports.find((file) => file.filename === sourceFile);
+  function selectImport(filename) {
+    setSourceFile(filename);
+    setSearch("");
+    setQuery("");
+    setStatus("");
+    setPage(1);
+  }
+  function imported(month, filename) {
+    if (month) setPeriod(month);
+    selectImport(filename);
+    if (importPanel.current) importPanel.current.open = false;
+    reload();
+  }
+  const [sortKey, sortDirection] = sort.split(":");
+  const columns = [
+    ["studentName", "Nxënësi"],
+    ["courseName", "Kursi / Grupi"],
+    ["period", "Muaji"],
+    ["totalLessons", "Orë gjithsej"],
+    ["absences", "Mungesa (A)"],
+    ["present", "Prezent (P)"],
+    ["suggestedAmount", "Shuma e faturës"],
+  ];
+  function changeSort(value) {
+    setSort(value);
+    setPage(1);
+  }
+  function sortColumn(key) {
+    changeSort(
+      `${key}:${sortKey === key && sortDirection === "asc" ? "desc" : "asc"}`,
+    );
+  }
   function reload() {
     setRevision((v) => v + 1);
     window.dispatchEvent(new Event("billing-updated"));
@@ -316,7 +372,9 @@ export default function BillingReview({ user, initialPeriod }) {
         <div>
           <h1>{t("Faturat e muajit")}</h1>
           <p>
-            {t("Zgjidh muajin → kontrollo zbritjet → konfirmo faturat bashkë.")}
+            {t(
+              "Ngarko Excel-in → kontrollo pjesëmarrjet → shëno shumat → krijo faturat bashkë.",
+            )}
           </p>
         </div>
         <button className="secondary" disabled={batchBusy} onClick={reload}>
@@ -335,18 +393,12 @@ export default function BillingReview({ user, initialPeriod }) {
         </div>
       )}
       {user.role === "ADMIN" && (
-        <details className="attendance-disclosure">
+        <details className="attendance-disclosure" ref={importPanel}>
           <summary>{t("Ngarko vijueshmërinë nga PDF ose Excel")}</summary>
-          <PdfAttendanceImport
-            imported={(month) => {
-              setPeriod(month);
-              setPage(1);
-              reload();
-            }}
-          />
+          <AttendanceImport refresh={imported} />
           <details className="attendance-excel-alternative">
-            <summary>{t("Alternativë: modeli ynë Excel")}</summary>
-            <AttendanceImport refresh={reload} />
+            <summary>{t("Import nga PDF")}</summary>
+            <PdfAttendanceImport imported={imported} />
           </details>
         </details>
       )}
@@ -358,6 +410,145 @@ export default function BillingReview({ user, initialPeriod }) {
           )}
         </p>
       </details>
+      {user.role === "ADMIN" && imports.length > 0 && (
+        <section className="card attendance-import">
+          <div className="table-toolbar">
+            <label>
+              {t("Nxënësit nga importi")}
+              <select
+                aria-label={t("Zgjidh importin e vijueshmërisë")}
+                value={sourceFile}
+                disabled={batchBusy}
+                onChange={(e) => selectImport(e.target.value)}
+              >
+                <option value="">{t("Shfaq të gjithë")}</option>
+                {imports.map((file) => (
+                  <option key={file.filename} value={file.filename}>
+                    {file.filename} ({file.items.length})
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              className="secondary"
+              disabled={batchBusy}
+              onClick={() => selectImport(imports[0].filename)}
+            >
+              {t("Shfaq importin e fundit")}
+            </button>
+            {sourceFile && (
+              <button
+                className="secondary"
+                disabled={batchBusy}
+                onClick={() => selectImport("")}
+              >
+                {t("Shfaq të gjithë")}
+              </button>
+            )}
+          </div>
+          {selectedImport && (
+            <>
+              <p role="status">
+                {t(
+                  "{0} nxënës nga importi. Vijueshmëria: {1}. Faturimi: {2}.",
+                  [
+                    selectedImport.items.length,
+                    monthLabel(selectedImport.items[0].period),
+                    monthLabel(period),
+                  ],
+                )}
+              </p>
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{t("Nxënësi")}</th>
+                      <th>{t("Kursi")}</th>
+                      <th>{t("Muaji i vijueshmërisë")}</th>
+                      <th>{t("Prezent (P)")}</th>
+                      <th>{t("Mungesa (A)")}</th>
+                      <th>{t("Faturimi për {0}", [monthLabel(period)])}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedImport.items.map((row) => (
+                      <tr key={`${row.studentId}:${row.courseId}`}>
+                        <td>
+                          <StudentLink id={row.studentId}>
+                            {row.studentName}
+                          </StudentLink>
+                        </td>
+                        <td>{row.courseName}</td>
+                        <td>{row.period}</td>
+                        <td>{presentCount(row)}</td>
+                        <td>{row.absences}</td>
+                        <td>
+                          {row.invoice ? (
+                            <button
+                              className="secondary"
+                              disabled={batchBusy}
+                              onClick={() => setInvoice(row.invoice.id)}
+                            >
+                              {row.invoice.number} ·{" "}
+                              {t("Hap faturën ekzistuese")}
+                            </button>
+                          ) : (
+                            <>
+                              <span>
+                                {t(
+                                  {
+                                    READY: "Gati për faturim",
+                                    NO_ENROLLMENT:
+                                      "Pa regjistrim në këtë kurs për muajin e zgjedhur.",
+                                    INACTIVE: "Nxënësi është joaktiv.",
+                                    PREVIOUS_UNPAID:
+                                      "Muaji paraprak nuk është paguar plotësisht.",
+                                    PREVIOUS_MISSING:
+                                      "Mungon fatura e muajit paraprak.",
+                                  }[row.billingStatus] ?? "Pa faturë",
+                                )}
+                              </span>
+                              {row.billingStatus === "PREVIOUS_UNPAID" &&
+                                row.previousInvoice && (
+                                  <button
+                                    className="secondary"
+                                    disabled={batchBusy}
+                                    onClick={() =>
+                                      setInvoice(row.previousInvoice.id)
+                                    }
+                                  >
+                                    {t("Hap faturën e {0}", [
+                                      monthLabel(row.previousPeriod),
+                                    ])}
+                                  </button>
+                                )}
+                              {row.billingStatus === "PREVIOUS_MISSING" && (
+                                <button
+                                  className="secondary"
+                                  disabled={batchBusy}
+                                  onClick={() => {
+                                    setPeriod(row.previousPeriod);
+                                    setPage(1);
+                                    setStatus("");
+                                  }}
+                                >
+                                  {t("Shfaq {0}", [
+                                    monthLabel(row.previousPeriod),
+                                  ])}
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </section>
+      )}
       <section className="card monthly-invoices">
         <div className="table-toolbar">
           <label>
@@ -379,6 +570,7 @@ export default function BillingReview({ user, initialPeriod }) {
           </label>
           <button
             className="secondary"
+            aria-pressed={period === calendarMonth()}
             disabled={batchBusy}
             onClick={() => {
               setPeriod(calendarMonth());
@@ -389,6 +581,7 @@ export default function BillingReview({ user, initialPeriod }) {
           </button>
           <button
             className="secondary"
+            aria-pressed={period === calendarMonth(1)}
             disabled={batchBusy}
             onClick={() => {
               setPeriod(calendarMonth(1));
@@ -402,6 +595,21 @@ export default function BillingReview({ user, initialPeriod }) {
           </span>
         </div>
         <div className="billing-review-filters">
+          <select
+            aria-label={t("Rendit faturat")}
+            disabled={batchBusy}
+            value={sort}
+            onChange={(e) => changeSort(e.target.value)}
+          >
+            <option value="createdAt:desc">{t("Më të rejat")}</option>
+            <option value="createdAt:asc">{t("Më të vjetrat")}</option>
+            {sortKey !== "createdAt" && (
+              <option value={sort}>
+                {t(columns.find(([key]) => key === sortKey)?.[1])}{" "}
+                {sortDirection === "asc" ? "↑" : "↓"}
+              </option>
+            )}
+          </select>
           <input
             aria-label={t("Kërko nxënës, kurs ose grup për faturim")}
             placeholder={t("Kërko nxënës, kurs ose grup…")}
@@ -439,9 +647,12 @@ export default function BillingReview({ user, initialPeriod }) {
         {user.role === "ADMIN" ? (
           data && (
             <BatchInvoices
+              key={period}
               period={period}
               draftCache={draftCache}
               rows={data.items}
+              sort={{ key: sortKey, direction: sortDirection }}
+              onSort={sortColumn}
               priceSaved={(updated) =>
                 setData((previous) =>
                   previous
@@ -456,7 +667,6 @@ export default function BillingReview({ user, initialPeriod }) {
                     : previous,
                 )
               }
-              openSingle={setCandidate}
               activeChanged={(value) => {
                 batchActive.current = value;
                 setBatchBusy(value);
@@ -484,13 +694,15 @@ export default function BillingReview({ user, initialPeriod }) {
             <table>
               <thead>
                 <tr>
-                  <th>{t("Nxënësi")}</th>
-                  <th>{t("Kursi / Grupi")}</th>
-                  <th>{t("Muaji")}</th>
-                  <th>{t("Orë gjithsej")}</th>
-                  <th>{t("Mungesa (A)")}</th>
-                  <th>{t("Prezent (P)")}</th>
-                  <th>{t("Çmimi mujor")}</th>
+                  {columns.map(([key, label]) => (
+                    <SortableHeader
+                      key={key}
+                      column={key}
+                      label={t(label)}
+                      sort={{ key: sortKey, direction: sortDirection }}
+                      onSort={sortColumn}
+                    />
+                  ))}
                   <th></th>
                 </tr>
               </thead>

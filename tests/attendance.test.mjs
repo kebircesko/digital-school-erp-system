@@ -69,3 +69,84 @@ test("calendar month rollover handles years and leap years", () => {
   assert.equal(review.shiftPeriod("2024-03", -1), "2024-02");
   assert.throws(() => review.shiftPeriod("2026-13", 1));
 });
+
+test("saved imports retain every student, including students whose invoice already exists", async () => {
+  const rows = [
+    {
+      id: "3",
+      sourceFile: "latest.xlsx",
+      studentId: "s1",
+      courseId: "c1",
+      student: { firstName: "Besa", lastName: "Test" },
+      course: { name: "Code" },
+      totalLessons: 8,
+      absences: 2,
+      excusedAbsences: 0,
+    },
+    {
+      id: "2",
+      sourceFile: "latest.xlsx",
+      studentId: "s2",
+      courseId: "c1",
+      student: { firstName: "Ana", lastName: "Test" },
+      course: { name: "Code" },
+      totalLessons: 8,
+      absences: 0,
+      excusedAbsences: 0,
+    },
+    {
+      id: "1",
+      sourceFile: "older.xlsx",
+      studentId: "s3",
+      courseId: "c2",
+      student: { firstName: "Dora", lastName: "Test" },
+      course: { name: "Other" },
+      totalLessons: 4,
+      absences: 1,
+      excusedAbsences: 0,
+    },
+  ];
+  const db = {
+    monthlyAttendance: {
+      findMany: async (args) => {
+        assert.deepEqual(args.where, { period: "2026-11" });
+        assert.deepEqual(args.orderBy, [{ updatedAt: "desc" }, { id: "asc" }]);
+        return rows;
+      },
+    },
+    invoice: {
+      findMany: async () => [
+        {
+          id: "invoice",
+          studentId: "s1",
+          courseId: "c1",
+          number: "FAT-1",
+          status: "UNPAID",
+          period: "2026-11",
+        },
+        {
+          id: "other-course",
+          studentId: "s2",
+          courseId: "c2",
+          period: "2026-11",
+        },
+      ],
+    },
+    enrollment: { findMany: async () => [] },
+  };
+  const result = await new attendance.AttendanceController(db).imports({
+    period: "2026-11",
+  });
+  assert.deepEqual(
+    result.items.map((file) => file.filename),
+    ["latest.xlsx", "older.xlsx"],
+  );
+  assert.deepEqual(
+    result.items[0].items.map((row) => row.studentName),
+    ["Ana Test", "Besa Test"],
+  );
+  assert.equal(result.items[0].items[0].invoice, null);
+  assert.equal(result.items[0].items[1].invoice.id, "invoice");
+  assert.equal(result.items[0].items[1].absences, 2);
+  assert.equal(result.items[0].items[1].period, "2026-11");
+});

@@ -140,6 +140,7 @@ let GroupsController = class GroupsController {
         : {}),
     };
     const active = {
+      status: "ACTIVE",
       startDate: { lte: (0, finance_1.calendarDate)((0, finance_1.today)()) },
       OR: [
         { endDate: null },
@@ -156,7 +157,13 @@ let GroupsController = class GroupsController {
         take: q.limit,
         orderBy: { name: "asc" },
         include: {
-          course: { select: { id: true, name: true } },
+          course: {
+            select: {
+              id: true,
+              name: true,
+              monthlyPrice: req.user.role !== "INSTRUCTOR",
+            },
+          },
           instructor: { select: { id: true, name: true } },
           _count: { select: { enrollments: { where: active } } },
         },

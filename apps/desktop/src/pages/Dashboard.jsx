@@ -13,6 +13,7 @@ import { date } from "../services/format";
 import Badge from "../components/Badge";
 import StudentLink from "../components/StudentLink";
 import PaymentReminders from "../components/PaymentReminders";
+import AdminTasks from "../components/AdminTasks";
 export default function DashboardPage({
   user,
   openStudents,
@@ -104,6 +105,26 @@ export default function DashboardPage({
               text={t("Regjistrime me status joaktiv")}
             />
           </div>
+
+          {user.role === "ADMIN" && (
+            <AdminTasks compact openAll={() => navigate("tasks")} />
+          )}
+          {user.role !== "INSTRUCTOR" && (
+            <div className="button-row admin-shortcuts">
+              <button
+                className="secondary"
+                onClick={() => navigate("data-quality")}
+              >
+                {t("Kontrolli i të dhënave")}
+              </button>
+              <button
+                className="secondary"
+                onClick={() => navigate("cash-close")}
+              >
+                {t("Mbyllja ditore e arkës")}
+              </button>
+            </div>
+          )}
 
           <div className="stats">
             <Stat

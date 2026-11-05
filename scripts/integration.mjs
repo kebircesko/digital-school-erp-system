@@ -250,6 +250,46 @@ try {
     1,
   );
   passed += 3;
+  if (process.env.ADMIN_TOOLS_TEST === "1") {
+    const { adminToolsChecks } = await import("./admin-tools-checks.mjs");
+    const teacherToken = (
+      await request(
+        "/auth/login",
+        "POST",
+        { email: "instructor@test.invalid", password: loginPassword },
+        undefined,
+        201,
+      )
+    ).token;
+    const fixtures = await adminToolsChecks({
+      request,
+      admin,
+      finance,
+      instructor: teacherToken,
+      db,
+    });
+    if (process.env.ADMIN_TOOLS_UI === "1") {
+      const { adminToolsUi } = await import("./admin-tools-ui.mjs");
+      const uiGroup = await db.group.create({
+        data: {
+          name: "UI workflow group",
+          courseId: fixtures.courseId,
+          instructorId: fixtures.teacherId,
+          days: [1, 3],
+          startTime: "12:00",
+          durationMinutes: 80,
+          capacity: 10,
+        },
+      });
+      await adminToolsUi({
+        email: "admin@test.invalid",
+        password: loginPassword,
+        base,
+        groupId: uiGroup.id,
+        invoiceNumber: fixtures.invoiceNumber,
+      });
+    }
+  }
   if (process.env.ERP_TEST === "1") {
     const erpExtra = await erpChecks({
       request,

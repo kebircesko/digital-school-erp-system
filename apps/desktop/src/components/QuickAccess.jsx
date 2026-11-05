@@ -208,6 +208,7 @@ export default function QuickAccess({ user, navigate, showSearch = true }) {
       )}
       {action === "student" && (
         <StudentModal
+          user={user}
           student="new"
           close={() => setAction(null)}
           saved={(student) => {

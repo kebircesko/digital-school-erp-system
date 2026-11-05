@@ -92,11 +92,14 @@ export async function api(path, options = {}) {
       throw new Error(
         t("Shumë kërkesa. Prisni një minutë dhe provoni përsëri."),
       );
-    throw new Error(
+    const error = new Error(
       Array.isArray(body.message)
         ? body.message.join(" • ")
         : (body.message ?? t("Veprimi dështoi.")),
     );
+    error.status = response.status;
+    error.details = body;
+    throw error;
   }
   return body;
 }

@@ -78,6 +78,7 @@ function StudentProfile({ id, user, close }) {
   if (editing && student)
     return (
       <StudentModal
+        user={user}
         student={student}
         close={() => setEditing(false)}
         saved={() => {
@@ -109,6 +110,8 @@ function StudentProfile({ id, user, close }) {
     );
   return (
     <StudentHistory
+      canManageTasks={user.role === "ADMIN"}
+      canManageEnrollments={user.role !== "INSTRUCTOR"}
       key={`${id}:${revision}`}
       id={id}
       name={`${student.firstName} ${student.lastName}`}

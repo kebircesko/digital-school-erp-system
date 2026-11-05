@@ -1,3 +1,4 @@
+import DateInput from "../components/DateInput";
 import { t, tm } from "../services/i18n.js";
 import { useState, useEffect } from "react";
 import { Plus, FileText, ChevronLeft, ChevronRight } from "lucide-react";
@@ -5,6 +6,7 @@ import { useDialog } from "../hooks/useDialog";
 import { api, download } from "../services/api";
 import Lookup from "../components/Lookup";
 import StudentLink from "../components/StudentLink";
+import SortableHeader from "../components/SortableHeader";
 import AttendanceSummary from "../components/AttendanceSummary";
 import { useSchoolUpdates } from "../hooks/useSchoolUpdates";
 import PaymentDeadline, { useSchoolDay } from "../components/PaymentDeadline";
@@ -180,8 +182,7 @@ export function PaymentEditor({ close, saved }) {
               </label>
               <label>
                 {t("Data e pagesës")}
-                <input
-                  type="date"
+                <DateInput
                   required
                   value={paidAt}
                   onChange={(e) => setPaidAt(e.target.value)}
@@ -300,6 +301,7 @@ export default function Finance({ kind, user, openReview }) {
     [search, setSearch] = useState(""),
     [period, setPeriod] = useState(""),
     [status, setStatus] = useState(""),
+    [sort, setSort] = useState({ key: "createdAt", direction: "desc" }),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [revision, setRevision] = useState(0),
@@ -309,20 +311,24 @@ export default function Finance({ kind, user, openReview }) {
     [busy, setBusy] = useState(false),
     [action, setAction] = useState(null),
     [reason, setReason] = useState("");
+  const missingMode = kind === "invoices" && status === "MISSING";
   useDialog(() => setAction(null), busy, Boolean(action));
   useEffect(() => {
     setPage(1);
     setSearch("");
     setStatus("");
     setPeriod("");
+    setSort({ key: "createdAt", direction: "desc" });
   }, [kind]);
   useEffect(() => {
     const controller = new AbortController();
     setData(null);
+    setError("");
     const timer = setTimeout(() => {
       const params = new URLSearchParams({
         page: String(page),
         search,
+        sort: `${sort.key}:${sort.direction}`,
         ...(kind === "invoices" && period
           ? {
               period,
@@ -348,7 +354,41 @@ export default function Finance({ kind, user, openReview }) {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [kind, page, search, period, status, revision, updates]);
+  }, [kind, page, search, period, status, sort, revision, updates]);
+  function sortColumn(key) {
+    setSort((previous) => ({
+      key,
+      direction:
+        previous?.key === key && previous.direction === "asc" ? "desc" : "asc",
+    }));
+    setPage(1);
+  }
+  const columns = missingMode
+    ? [
+        ["studentName", "Nxënësi"],
+        ["courseName", "Kursi / Grupi"],
+        ["period", "Muaji"],
+      ]
+    : kind === "invoices"
+      ? [
+          ["number", "Numri"],
+          ["studentName", "Nxënësi"],
+          ["courseName", "Kursi / Periudha"],
+          ["issuedAt", "Datat"],
+          ["dueDate", "Afati i pagesës"],
+          ["amount", "Shuma"],
+          ["paidAmount", "Paguar"],
+          ["balance", "Mbetja"],
+          ["status", "Statusi"],
+        ]
+      : [
+          ["number", "Numri"],
+          ["studentName", "Nxënësi"],
+          ["paidAt", "Data / Metoda"],
+          ["amount", "Shuma"],
+          ["userName", "Regjistruar nga"],
+          ["status", "Statusi"],
+        ];
   async function doc(id, number) {
     try {
       await download(`/${kind}/${id}/pdf`, number + ".pdf", true);
@@ -422,7 +462,9 @@ export default function Finance({ kind, user, openReview }) {
           <button onClick={() => setNotice("")}>×</button>
         </div>
       )}
-      <section className={`card ${kind === "invoices" ? "invoice-list" : ""}`}>
+      <section
+        className={`card ${kind === "invoices" ? (missingMode ? "missing-invoice-list" : "invoice-list") : ""}`}
+      >
         <div className="table-toolbar">
           <input
             aria-label={t("Kërko faturë ose pagesë")}
@@ -433,6 +475,26 @@ export default function Finance({ kind, user, openReview }) {
               setPage(1);
             }}
           />
+          <select
+            aria-label={t(
+              kind === "invoices" ? "Rendit faturat" : "Rendit pagesat",
+            )}
+            value={`${sort.key}:${sort.direction}`}
+            onChange={(e) => {
+              const [key, direction] = e.target.value.split(":");
+              setSort({ key, direction });
+              setPage(1);
+            }}
+          >
+            <option value="createdAt:desc">{t("Më të rejat")}</option>
+            <option value="createdAt:asc">{t("Më të vjetrat")}</option>
+            {sort.key !== "createdAt" && (
+              <option value={`${sort.key}:${sort.direction}`}>
+                {t(columns.find(([key]) => key === sort.key)?.[1])}{" "}
+                {sort.direction === "asc" ? "↑" : "↓"}
+              </option>
+            )}
+          </select>
           {kind === "invoices" && (
             <>
               <input
@@ -448,11 +510,15 @@ export default function Finance({ kind, user, openReview }) {
                 aria-label={t("Statusi i faturave")}
                 value={status}
                 onChange={(e) => {
+                  setData(null);
+                  if (e.target.value === "MISSING" || status === "MISSING")
+                    setSort({ key: "createdAt", direction: "desc" });
                   setStatus(e.target.value);
                   setPage(1);
                 }}
               >
                 <option value="">{t("Të gjitha statuset")}</option>
+                <option value="MISSING">{t("Muaj pa faturë")}</option>
                 {Object.entries(labelStatus).map(([key, value]) => (
                   <option key={key} value={key}>
                     {value}
@@ -466,149 +532,182 @@ export default function Finance({ kind, user, openReview }) {
           <table>
             <thead>
               <tr>
-                <th>{t("Numri")}</th>
-                <th>{t("Nxënësi")}</th>
-                <th>
-                  {kind === "invoices" ? "Kursi / Periudha" : "Data / Metoda"}
-                </th>
-                {kind === "invoices" && <th>{t("Datat")}</th>}
-                {kind === "invoices" && <th>{t("Afati i pagesës")}</th>}
-                <th>{t("Shuma")}</th>
-                {kind === "invoices" && <th>{t("Paguar")}</th>}
-                <th>
-                  {kind === "invoices" ? t("Mbetja") : t("Regjistruar nga")}
-                </th>
-                <th>{t("Statusi")}</th>
+                {columns.map(([key, label]) => (
+                  <SortableHeader
+                    key={key}
+                    column={key}
+                    label={t(label)}
+                    sort={sort}
+                    onSort={sortColumn}
+                  />
+                ))}
+                {missingMode && <th>{t("Statusi")}</th>}
                 <th>{t("Veprimet")}</th>
               </tr>
             </thead>
             <tbody>
-              {data?.items.map((r) => (
-                <tr
-                  key={r.id}
-                  onDoubleClick={() => {
-                    if (kind === "invoices")
-                      setInvoiceDialog({
-                        id: r.id,
-                      });
-                  }}
-                >
-                  <td>
-                    {kind === "invoices" ? (
-                      <button
-                        className="invoice-number"
-                        onClick={() =>
+              {missingMode
+                ? data?.items.map((row) => (
+                    <tr key={row.id}>
+                      <td>
+                        <StudentLink id={row.studentId}>
+                          {row.studentName}
+                        </StudentLink>
+                      </td>
+                      <td>
+                        {row.courseName}
+                        <small>{row.groupName}</small>
+                      </td>
+                      <td>{monthLabel(row.period)}</td>
+                      <td>
+                        <span className="invoice-state">{t("Pa faturë")}</span>
+                      </td>
+                      <td>
+                        {user.role === "ADMIN" ? (
+                          <button
+                            className="secondary"
+                            onClick={() => setNewInvoice(row)}
+                          >
+                            {t("Hap")}
+                          </button>
+                        ) : (
+                          t("Në pritje të adminit")
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                : data?.items.map((r) => (
+                    <tr
+                      key={r.id}
+                      onDoubleClick={() => {
+                        if (kind === "invoices")
                           setInvoiceDialog({
                             id: r.id,
-                          })
-                        }
-                      >
-                        {r.number}
-                      </button>
-                    ) : (
-                      r.number
-                    )}
-                  </td>
-                  <td>
-                    <StudentLink id={r.studentId ?? r.student?.id}>
-                      {r.studentName ??
-                        `${r.student.firstName} ${r.student.lastName}`}
-                    </StudentLink>
-                  </td>
-                  <td>
-                    {kind === "invoices"
-                      ? r.courseName + " · " + r.period
-                      : r.paidAt.slice(0, 10) +
-                        " · " +
-                        (r.method === "CASH"
-                          ? t("Para të gatshme")
-                          : t("Bankë"))}
-                  </td>
-                  {kind === "invoices" && (
-                    <td>
-                      <span title={t("Data e lëshimit të faturës")}>
-                        {date(r.issuedAt)}
-                      </span>
-                      <small>
-                        {t("Pagesa: ")}
-                        {r.lastPaidAt ? date(r.lastPaidAt) : "-"}
-                      </small>
-                    </td>
-                  )}
-                  {kind === "invoices" && (
-                    <td>
-                      {date(r.dueDate)}
-                      <small>
-                        <PaymentDeadline invoice={r} day={day} />
-                      </small>
-                    </td>
-                  )}
-                  <td>{money(r.amount)}</td>
-                  {kind === "invoices" && <td>{money(r.paidAmount)}</td>}
-                  <td>
-                    {kind === "invoices" ? money(r.balance) : r.user.name}
-                  </td>
-                  <td>
-                    {kind === "invoices"
-                      ? labelStatus[r.status]
-                      : r.reversedAt
-                        ? t("Anuluar")
-                        : t("Regjistruar")}
-                  </td>
-                  <td>
-                    <div className="row-actions">
-                      {kind === "invoices" && (
-                        <>
+                          });
+                      }}
+                    >
+                      <td>
+                        {kind === "invoices" ? (
                           <button
+                            className="invoice-number"
                             onClick={() =>
                               setInvoiceDialog({
                                 id: r.id,
                               })
                             }
                           >
-                            {t("Hap")}
+                            {r.number}
                           </button>
-                          {r.status !== "VOID" && Number(r.balance) > 0 && (
+                        ) : (
+                          r.number
+                        )}
+                      </td>
+                      <td>
+                        <StudentLink id={r.studentId ?? r.student?.id}>
+                          {r.studentName ??
+                            `${r.student.firstName} ${r.student.lastName}`}
+                        </StudentLink>
+                      </td>
+                      <td>
+                        {kind === "invoices"
+                          ? r.courseName + " · " + r.period
+                          : r.paidAt.slice(0, 10) +
+                            " · " +
+                            (r.method === "CASH"
+                              ? t("Para të gatshme")
+                              : t("Bankë"))}
+                      </td>
+                      {kind === "invoices" && (
+                        <td>
+                          <span title={t("Data e lëshimit të faturës")}>
+                            {date(r.issuedAt)}
+                          </span>
+                          <small>
+                            {t("Pagesa: ")}
+                            {r.lastPaidAt ? date(r.lastPaidAt) : "-"}
+                          </small>
+                        </td>
+                      )}
+                      {kind === "invoices" && (
+                        <td>
+                          {date(r.dueDate)}
+                          <small>
+                            <PaymentDeadline invoice={r} day={day} />
+                          </small>
+                        </td>
+                      )}
+                      <td>{money(r.amount)}</td>
+                      {kind === "invoices" && <td>{money(r.paidAmount)}</td>}
+                      <td>
+                        {kind === "invoices" ? money(r.balance) : r.user.name}
+                      </td>
+                      <td>
+                        {kind === "invoices" ? (
+                          <span
+                            className={`invoice-state ${r.status.toLowerCase()}`}
+                          >
+                            {labelStatus[r.status]}
+                          </span>
+                        ) : r.reversedAt ? (
+                          t("Anuluar")
+                        ) : (
+                          t("Regjistruar")
+                        )}
+                      </td>
+                      <td>
+                        <div className="row-actions">
+                          {kind === "invoices" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  setInvoiceDialog({
+                                    id: r.id,
+                                  })
+                                }
+                              >
+                                {t("Hap")}
+                              </button>
+                              {r.status !== "VOID" && Number(r.balance) > 0 && (
+                                <button
+                                  className="pay-invoice"
+                                  onClick={() =>
+                                    setInvoiceDialog({
+                                      id: r.id,
+                                      pay: true,
+                                    })
+                                  }
+                                >
+                                  {t("Paguaj")}
+                                </button>
+                              )}
+                            </>
+                          )}
+                          <button
+                            title={t("PDF / Printo")}
+                            aria-label={t("Printo faturën ") + r.number}
+                            onClick={() => doc(r.id, r.number)}
+                          >
+                            <FileText size={17} />
+                          </button>
+                          {((kind === "invoices" &&
+                            user.role === "ADMIN" &&
+                            ["UNPAID"].includes(r.status)) ||
+                            (kind === "payments" &&
+                              user.role === "ADMIN" &&
+                              !r.reversedAt)) && (
                             <button
-                              className="pay-invoice"
-                              onClick={() =>
-                                setInvoiceDialog({
-                                  id: r.id,
-                                  pay: true,
-                                })
-                              }
+                              onClick={() => {
+                                setAction(r);
+                                setReason("");
+                              }}
                             >
-                              {t("Paguaj")}
+                              {t("Anulo")}
                             </button>
                           )}
-                        </>
-                      )}
-                      <button
-                        title={t("PDF / Printo")}
-                        aria-label={t("Printo faturën ") + r.number}
-                        onClick={() => doc(r.id, r.number)}
-                      >
-                        <FileText size={17} />
-                      </button>
-                      {((kind === "invoices" &&
-                        user.role === "ADMIN" &&
-                        ["UNPAID"].includes(r.status)) ||
-                        (kind === "payments" &&
-                          user.role === "ADMIN" &&
-                          !r.reversedAt)) && (
-                        <button
-                          onClick={() => {
-                            setAction(r);
-                            setReason("");
-                          }}
-                        >
-                          {t("Anulo")}
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>
@@ -617,11 +716,48 @@ export default function Finance({ kind, user, openReview }) {
             {t("Nuk ka regjistrime për këto filtra.")}
           </div>
         )}
-        {kind === "invoices" && period && data && (
-          <div className="payment-total" role="status">
-            {t("Totali i borxhit për {0}", [monthLabel(period)])}
-            <strong>{money(data.totalBalance)}</strong>
+        {missingMode && data && (
+          <div className="invoice-summary" role="status">
+            <strong>{t("{0} muaj pa faturë", [data.total])}</strong>
+            <p>
+              {t(
+                "Për verifikim, pa u llogaritur si borxh. Kontrolloni datat e regjistrimit dhe pagesat jashtë sistemit para faturimit.",
+              )}
+            </p>
           </div>
+        )}
+        {kind === "invoices" && !missingMode && data && (
+          <section
+            className="invoice-summary"
+            aria-label={t("Përmbledhja e faturave")}
+          >
+            <h2>{t("Përmbledhja e faturave")}</h2>
+            <p>
+              {t(
+                "Sipas kërkimit dhe filtrave aktualë. Shumat përfshijnë të gjitha faqet dhe përjashtojnë faturat e anuluara.",
+              )}
+            </p>
+            <div className="finance-summary">
+              {[
+                ["Totali i faturuar", data.totalAmount],
+                ["Totali i paguar", data.totalPaid],
+                ["Borxhi i mbetur", data.totalBalance],
+              ].map(([label, value]) => (
+                <div className="card" key={label}>
+                  <span>{t(label)}</span>
+                  <strong>{money(value)}</strong>
+                </div>
+              ))}
+            </div>
+            <dl className="invoice-status-summary">
+              {Object.entries(labelStatus).map(([key, label]) => (
+                <div key={key}>
+                  <dt>{label}</dt>
+                  <dd>{data.statusCounts?.[key] ?? 0}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
         )}
         <div className="pagination">
           <span>
@@ -644,6 +780,9 @@ export default function Finance({ kind, user, openReview }) {
       </section>
       {newInvoice && (
         <NewInvoiceDialog
+          initialStudent={newInvoice.student}
+          initialPeriod={newInvoice.period}
+          initialCourseId={newInvoice.courseId}
           close={() => setNewInvoice(false)}
           created={(invoice) => {
             setNewInvoice(false);

@@ -60,7 +60,12 @@ function ClassicLookup({
         aria-label={label}
         required
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) =>
+          onChange(
+            e.target.value,
+            rows.find((row) => row.id === e.target.value),
+          )
+        }
       >
         <option value="">{t("Zgjidhni…")}</option>
         {value && !rows.some((r) => r.id === value) && (

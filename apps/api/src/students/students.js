@@ -12,6 +12,12 @@ const class_transformer_1 = require("class-transformer");
 const client_1 = require("@prisma/client");
 const prisma_service_1 = require("../common/prisma.service");
 const auth_1 = require("../auth/auth");
+const { invoiceGaps } = require("../common/invoice-gaps");
+const {
+  activeEnrollment,
+  studentFilters,
+  checkDuplicate,
+} = require("./helpers");
 class StudentDto {
   firstName;
   lastName;
@@ -21,8 +27,19 @@ class StudentDto {
   address;
   notes;
   status;
+  allowDuplicate;
 }
 exports.StudentDto = StudentDto;
+tslib_1.__decorate(
+  [
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    tslib_1.__metadata("design:type", Boolean),
+  ],
+  StudentDto.prototype,
+  "allowDuplicate",
+  void 0,
+);
 tslib_1.__decorate(
   [
     (0, class_transformer_1.Transform)(({ value }) =>
@@ -141,7 +158,37 @@ class StudentQuery {
   page = 1;
   limit = 12;
   sort = "name";
+  filter;
+  courseId;
+  groupId;
 }
+for (const field of ["courseId", "groupId"])
+  tslib_1.__decorate(
+    [
+      (0, class_validator_1.IsOptional)(),
+      (0, class_validator_1.IsUUID)(),
+      tslib_1.__metadata("design:type", String),
+    ],
+    StudentQuery.prototype,
+    field,
+    void 0,
+  );
+tslib_1.__decorate(
+  [
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsIn)([
+      "noGroup",
+      "debt",
+      "incompletePhone",
+      "endingSoon",
+      "recent",
+    ]),
+    tslib_1.__metadata("design:type", String),
+  ],
+  StudentQuery.prototype,
+  "filter",
+  void 0,
+);
 tslib_1.__decorate(
   [
     (0, class_validator_1.IsOptional)(),
@@ -200,6 +247,21 @@ tslib_1.__decorate(
       name: "name",
       newest: "newest",
       oldest: "oldest",
+      ...Object.fromEntries(
+        [
+          "firstName",
+          "birthDate",
+          "parentName",
+          "parentPhone",
+          "group",
+          "status",
+        ].flatMap((key) =>
+          ["asc", "desc"].map((direction) => [
+            `${key}:${direction}`,
+            `${key}:${direction}`,
+          ]),
+        ),
+      ),
     }),
     tslib_1.__metadata("design:type", String),
   ],
@@ -229,26 +291,51 @@ function data(dto) {
     status: dto.status,
   };
 }
+exports.studentData = data;
 let StudentsController = class StudentsController {
   db;
   constructor(db) {
     this.db = db;
   }
-  async list(query) {
+  async list(query, req) {
+    if (query.filter === "debt" && req?.user?.role === "INSTRUCTOR")
+      throw new common_1.ForbiddenException();
+    const filters = await studentFilters(this.db, query);
+    const [sortKey, direction] = query.sort.split(":");
+    const groupSort = sortKey === "group";
+    const orderBy =
+      direction && !groupSort
+        ? [
+            { [sortKey]: direction },
+            ...(sortKey === "firstName" ? [{ lastName: direction }] : []),
+            { id: "asc" },
+          ]
+        : query.sort === "newest"
+          ? [{ createdAt: "desc" }, { id: "asc" }]
+          : query.sort === "oldest"
+            ? [{ createdAt: "asc" }, { id: "asc" }]
+            : [{ lastName: "asc" }, { firstName: "asc" }, { id: "asc" }];
     const where = {
+      ...(filters.length ? { AND: filters } : {}),
       status: query.status,
       ...(query.search?.trim()
         ? {
-            AND: query.search
-              .trim()
-              .split(/\s+/)
-              .map((term) => ({
-                OR: ["firstName", "lastName", "parentName", "parentPhone"].map(
-                  (key) => ({
+            AND: [
+              ...filters,
+              ...query.search
+                .trim()
+                .split(/\s+/)
+                .map((term) => ({
+                  OR: [
+                    "firstName",
+                    "lastName",
+                    "parentName",
+                    "parentPhone",
+                  ].map((key) => ({
                     [key]: { contains: term, mode: "insensitive" },
-                  }),
-                ),
-              })),
+                  })),
+                })),
+            ],
           }
         : {}),
     };
@@ -259,19 +346,20 @@ let StudentsController = class StudentsController {
           where,
           include: {
             enrollments: {
-              where: { status: "ACTIVE" },
-              select: { id: true, group: { select: { id: true, name: true } } },
+              where: activeEnrollment(),
+              select: {
+                id: true,
+                version: true,
+                startDate: true,
+                group: { select: { id: true, name: true } },
+              },
               orderBy: { createdAt: "asc" },
             },
           },
-          orderBy:
-            query.sort === "newest"
-              ? [{ createdAt: "desc" }, { id: "asc" }]
-              : query.sort === "oldest"
-                ? [{ createdAt: "asc" }, { id: "asc" }]
-                : [{ lastName: "asc" }, { firstName: "asc" }, { id: "asc" }],
-          skip: (query.page - 1) * query.limit,
-          take: query.limit,
+          orderBy,
+          ...(!groupSort
+            ? { skip: (query.page - 1) * query.limit, take: query.limit }
+            : {}),
         }),
       ],
       {
@@ -279,8 +367,26 @@ let StudentsController = class StudentsController {
           client_1.Prisma.TransactionIsolationLevel.RepeatableRead,
       },
     );
+    if (groupSort) {
+      const collator = new Intl.Collator("sq", {
+        numeric: true,
+        sensitivity: "base",
+      });
+      const groupName = (student) =>
+        student.enrollments
+          .map((e) => e.group.name)
+          .sort(collator.compare)
+          .join(" · ");
+      items.sort(
+        (a, b) =>
+          collator.compare(groupName(a), groupName(b)) *
+          (direction === "desc" ? -1 : 1),
+      );
+    }
     return {
-      items,
+      items: groupSort
+        ? items.slice((query.page - 1) * query.limit, query.page * query.limit)
+        : items,
       total,
       page: query.page,
       pages: Math.max(1, Math.ceil(total / query.limit)),
@@ -299,6 +405,12 @@ let StudentsController = class StudentsController {
       },
       orderBy: { startDate: "desc" },
     });
+    const invoices = financial
+      ? await this.db.invoice.findMany({
+          where: { studentId: id },
+          orderBy: { period: "desc" },
+        })
+      : [];
     return {
       enrollments: enrollments.map((e) =>
         financial
@@ -312,10 +424,8 @@ let StudentsController = class StudentsController {
       ),
       ...(financial
         ? {
-            invoices: await this.db.invoice.findMany({
-              where: { studentId: id },
-              orderBy: { period: "desc" },
-            }),
+            invoices,
+            missingInvoices: invoiceGaps(enrollments, invoices),
             payments: await this.db.payment.findMany({
               where: { studentId: id },
               orderBy: { paidAt: "desc" },
@@ -332,6 +442,7 @@ let StudentsController = class StudentsController {
   }
   async create(dto, req) {
     return this.db.$transaction(async (tx) => {
+      await checkDuplicate(tx, dto);
       const student = await tx.student.create({ data: data(dto) });
       await tx.auditLog.create({
         data: {
@@ -345,6 +456,7 @@ let StudentsController = class StudentsController {
   }
   async update(id, dto, req) {
     return this.db.$transaction(async (tx) => {
+      await checkDuplicate(tx, dto, id);
       const result = await tx.student.updateMany({
         where: { id, version: dto.version },
         data: { ...data(dto), version: { increment: 1 } },
@@ -387,8 +499,9 @@ tslib_1.__decorate(
   [
     (0, common_1.Get)(),
     tslib_1.__param(0, (0, common_1.Query)()),
+    tslib_1.__param(1, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [StudentQuery]),
+    tslib_1.__metadata("design:paramtypes", [StudentQuery, Object]),
     tslib_1.__metadata("design:returntype", Promise),
   ],
   StudentsController.prototype,

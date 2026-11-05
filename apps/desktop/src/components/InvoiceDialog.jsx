@@ -1,4 +1,6 @@
+import DateInput from "./DateInput";
 import { t, tm } from "../services/i18n.js";
+import WhatsAppReminder from "./WhatsAppReminder";
 import { useEffect, useState } from "react";
 import { Eye, Printer, Wallet } from "lucide-react";
 import { useDialog } from "../hooks/useDialog";
@@ -10,6 +12,7 @@ import { presentCount, otherAttendance } from "../services/attendance";
 import PaymentDeadline, { useSchoolDay } from "./PaymentDeadline";
 import OutstandingMonths from "./OutstandingMonths";
 import AttendanceSummary from "./AttendanceSummary";
+import MissingInvoiceMonths from "./MissingInvoiceMonths";
 const money = (value) => `${Number(value).toFixed(2)} €`;
 const statuses = {
   get PAID() {
@@ -93,8 +96,7 @@ function PaymentForm({ invoice, close, saved, onBusyChange }) {
           </label>
           <label>
             {t("Data e pagesës")}
-            <input
-              type="date"
+            <DateInput
               required
               max={calendarDay()}
               value={paidAt}
@@ -272,6 +274,7 @@ export function InvoiceDialog({
                     {t("Regjistro pagesën")}
                   </button>
                 )}
+              <WhatsAppReminder invoice={invoice} />
               <span className={`invoice-state ${invoice.status.toLowerCase()}`}>
                 {statuses[invoice.status]}
               </span>
@@ -454,6 +457,8 @@ export function InvoiceDialog({
 export function NewInvoiceDialog({
   candidate,
   initialStudent,
+  initialPeriod,
+  initialCourseId,
   close,
   created,
 }) {
@@ -461,9 +466,11 @@ export function NewInvoiceDialog({
       candidate?.studentId ?? initialStudent?.id ?? "",
     ),
     [period, setPeriod] = useState(
-      candidate?.period ?? calendarDay().slice(0, 7),
+      candidate?.period ?? initialPeriod ?? calendarDay().slice(0, 7),
     ),
     [rows, setRows] = useState(candidate ? [candidate] : []),
+    [existingInvoices, setExistingInvoices] = useState([]),
+    [gapState, setGapState] = useState(null),
     [enrollmentId, setEnrollmentId] = useState(candidate?.enrollmentId ?? ""),
     [amount, setAmount] = useState(candidate?.suggestedAmount ?? ""),
     [notes, setNotes] = useState(candidate?.suggestedNotes ?? ""),
@@ -472,8 +479,26 @@ export function NewInvoiceDialog({
     [error, setError] = useState("");
   useDialog(close, busy);
   useEffect(() => {
+    setGapState(null);
+    if (!studentId) return;
+    const controller = new AbortController();
+    api(`/students/${studentId}/history`, { signal: controller.signal })
+      .then((result) => {
+        if (!controller.signal.aborted)
+          setGapState({ studentId, data: result.missingInvoices });
+      })
+      .catch((e) => {
+        if (!controller.signal.aborted)
+          setGapState({ studentId, error: e.message });
+      });
+    return () => controller.abort();
+  }, [studentId]);
+  const gaps = gapState?.studentId === studentId ? gapState : null;
+  useEffect(() => {
+    setExistingInvoices([]);
     if (!studentId || !period) {
       setRows([]);
+      setLoading(false);
       return;
     }
     const controller = new AbortController();
@@ -485,12 +510,24 @@ export function NewInvoiceDialog({
         signal: controller.signal,
       },
     )
-      .then((data) => {
+      .then(async (data) => {
+        const items = initialCourseId
+          ? data.items.filter((item) => item.courseId === initialCourseId)
+          : data.items;
+        const existing = items.length
+          ? []
+          : (
+              await api(
+                `/invoices?studentId=${studentId}&period=${period}&limit=200${initialCourseId ? `&courseId=${initialCourseId}` : ""}`,
+                { signal: controller.signal },
+              )
+            ).items;
         if (controller.signal.aborted) return;
-        setRows(data.items);
+        setExistingInvoices(existing);
+        setRows(items);
         const row =
-          data.items.find((r) => r.enrollmentId === candidate?.enrollmentId) ??
-          data.items[0];
+          items.find((r) => r.enrollmentId === candidate?.enrollmentId) ??
+          items[0];
         setEnrollmentId(row?.enrollmentId ?? "");
         setAmount(row?.suggestedAmount ?? "");
         setNotes(row?.suggestedNotes ?? "");
@@ -505,7 +542,7 @@ export function NewInvoiceDialog({
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [studentId, period, candidate?.enrollmentId]);
+  }, [studentId, period, candidate?.enrollmentId, initialCourseId]);
   const row = rows.find((r) => r.enrollmentId === enrollmentId);
   async function submit(event) {
     event.preventDefault();
@@ -582,12 +619,12 @@ export function NewInvoiceDialog({
               </label>
               <label>
                 {t("Data e faturës")}
-                <input type="date" readOnly value={calendarDay()} />
+                <DateInput readOnly value={calendarDay()} />
               </label>
               {row && (
                 <label>
                   {t("Afati i pagesës")}
-                  <input type="date" readOnly value={row.dueDate} />
+                  <DateInput readOnly value={row.dueDate} />
                   <small>
                     {t(
                       "Pagesa e radhës: një muaj kalendarik, sipas ditës së regjistrimit.",
@@ -600,14 +637,53 @@ export function NewInvoiceDialog({
                 <input readOnly value="EUR" />
               </label>
             </div>
+            {studentId && (
+              <section
+                className="card missing-invoice-warning"
+                aria-label={t("Muaj pa faturë")}
+              >
+                <h3>{t("Muaj pa faturë")}</h3>
+                {!gaps ? (
+                  <p role="status">{t("Duke kontrolluar muajt pa faturë…")}</p>
+                ) : gaps.error ? (
+                  <p className="error" role="alert">
+                    {tm(gaps.error)}
+                  </p>
+                ) : gaps.data?.total ? (
+                  <MissingInvoiceMonths data={gaps.data} open />
+                ) : (
+                  <p>{t("Nuk u gjetën muaj pa faturë.")}</p>
+                )}
+              </section>
+            )}
             {loading ? (
               <p className="invoice-empty">
                 {t("Duke kontrolluar regjistrimin…")}
               </p>
-            ) : studentId && !row ? (
+            ) : studentId && !row && existingInvoices.length ? (
+              <div className="invoice-empty" role="status">
+                <p>{t("Ky nxënës ka faturë për këtë muaj.")}</p>
+                {existingInvoices.map((invoice) => (
+                  <div key={invoice.id} className="table-toolbar">
+                    <span>
+                      <strong>{invoice.number}</strong> · {invoice.courseName}
+                      {" · "}
+                      {money(invoice.amount)} · {statuses[invoice.status]}
+                    </span>
+                    <button
+                      type="button"
+                      className="secondary"
+                      onClick={() => created(invoice)}
+                    >
+                      {t("Hap faturën ekzistuese")}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : studentId && !row && !error ? (
               <p className="invoice-empty">
                 {t(
-                  "Nuk ka faturë të re për këtë nxënës në këtë muaj. Kontrollo nëse fatura ekziston, regjistrimin në kurs ose pagesën e muajit paraprak.",
+                  "Nuk ka regjistrim për faturim në këtë muaj. Kontrollo regjistrimin në kurs ose pagesën e muajit paraprak.",
                 )}
               </p>
             ) : (

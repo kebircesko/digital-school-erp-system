@@ -143,6 +143,32 @@ let PaymentsController = class PaymentsController {
     this.db = db;
   }
   async list(q) {
+    if (
+      q.sort &&
+      !/^(number|studentName|paidAt|amount|userName|status|createdAt):(asc|desc)$/.test(
+        q.sort,
+      )
+    )
+      throw new common_1.BadRequestException("Renditja është e pavlefshme.");
+    const [key = "createdAt", direction = "desc"] = q.sort?.split(":") ?? [];
+    const orderBy =
+      key === "studentName"
+        ? [
+            { student: { firstName: direction } },
+            { student: { lastName: direction } },
+          ]
+        : key === "userName"
+          ? [{ user: { name: direction } }]
+          : key === "status"
+            ? [
+                {
+                  reversedAt: {
+                    sort: direction,
+                    nulls: direction === "asc" ? "first" : "last",
+                  },
+                },
+              ]
+            : [{ [key]: direction }];
     const where = {
       ...(q.studentId
         ? {
@@ -190,9 +216,7 @@ let PaymentsController = class PaymentsController {
       this.db.payment.findMany({
         where,
         include,
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy: [...orderBy, { id: "asc" }],
         skip: (q.page - 1) * q.limit,
         take: q.limit,
       }),

@@ -19,6 +19,8 @@ exports.tables = [
   "monthlyAttendance",
   "payment",
   "paymentAllocation",
+  "adminTask",
+  "cashClosure",
   "auditLog",
   "counter",
 ];
@@ -74,6 +76,13 @@ function decrypt(data, key) {
       maxOutputLength: 512 * 1024 * 1024,
     }).toString(),
   );
+  for (const table of ["adminTask", "cashClosure"])
+    if (
+      result.format === 1 &&
+      result.records &&
+      result.records[table] === undefined
+    )
+      result.records[table] = [];
   if (
     result.format === 1 &&
     result.records &&

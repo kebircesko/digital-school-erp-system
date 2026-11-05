@@ -107,7 +107,7 @@ export default function PdfAttendanceImport({ imported }) {
       setPreview(null);
       setUpload(null);
       setMatches({});
-      imported(period);
+      imported(period, upload.filename);
     } catch (e) {
       setError(e.message);
       setChanged(true);

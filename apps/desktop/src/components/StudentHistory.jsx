@@ -4,7 +4,10 @@ import { useDialog } from "../hooks/useDialog";
 import { api, download } from "../services/api";
 import { InvoiceDialog } from "./InvoiceDialog";
 import OutstandingMonths from "./OutstandingMonths";
-import { date } from "../services/format";
+import AdminTasks from "./AdminTasks";
+import { calendarDay, date } from "../services/format";
+import EndEnrollmentDialog from "./EndEnrollmentDialog";
+import MissingInvoiceMonths from "./MissingInvoiceMonths";
 export default function StudentHistory({
   id,
   name,
@@ -13,10 +16,13 @@ export default function StudentHistory({
   edit,
   enroll,
   createInvoice,
+  canManageTasks = false,
+  canManageEnrollments = false,
 }) {
   const [invoice, setInvoice] = useState(null);
   const [revision, setRevision] = useState(0);
-  useDialog(close, false, !invoice);
+  const [ending, setEnding] = useState(null);
+  useDialog(close, false, !invoice && !ending);
   const [data, setData] = useState(null),
     [error, setError] = useState("");
   useEffect(() => {
@@ -39,6 +45,18 @@ export default function StudentHistory({
       setError(e.message);
     }
   }
+  if (ending)
+    return (
+      <EndEnrollmentDialog
+        enrollment={ending}
+        name={name}
+        close={() => setEnding(null)}
+        saved={() => {
+          setEnding(null);
+          setRevision((v) => v + 1);
+        }}
+      />
+    );
   if (invoice)
     return (
       <InvoiceDialog
@@ -124,6 +142,16 @@ export default function StudentHistory({
             }
           />
         )}
+        {data?.missingInvoices?.total > 0 && (
+          <section
+            className="card missing-invoice-warning"
+            aria-label={t("Muaj pa faturë")}
+          >
+            <h3>{t("Muaj pa faturë")}</h3>
+            <MissingInvoiceMonths data={data.missingInvoices} />
+          </section>
+        )}
+        {canManageTasks && <AdminTasks studentId={id} />}
         <h3 className="section-label">{t("Kurset dhe regjistrimet")}</h3>
         {data?.enrollments.map((e) => (
           <div className="history-row" key={e.id}>
@@ -141,6 +169,18 @@ export default function StudentHistory({
                 {e.discount} €
               </span>
             )}
+            {canManageEnrollments &&
+              e.status === "ACTIVE" &&
+              e.startDate.slice(0, 10) <= calendarDay() &&
+              (!e.endDate || e.endDate.slice(0, 10) >= calendarDay()) && (
+                <button
+                  className="secondary"
+                  aria-label={t("Largo {0} nga {1}", [name, e.group.name])}
+                  onClick={() => setEnding(e)}
+                >
+                  {t("Largo nga grupi")}
+                </button>
+              )}
           </div>
         ))}
         {data?.invoices && (

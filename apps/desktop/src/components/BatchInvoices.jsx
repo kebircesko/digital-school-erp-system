@@ -5,6 +5,7 @@ import { calendarDay, date, monthLabel } from "../services/format";
 import { presentCount } from "../services/attendance";
 import { useDialog } from "../hooks/useDialog";
 import StudentLink from "./StudentLink";
+import SortableHeader from "./SortableHeader";
 const cents = (value) =>
   /^\d+(\.\d{1,2})?$/.test(String(value))
     ? Math.round(Number(value) * 100)
@@ -153,7 +154,8 @@ export default function BatchInvoices({
   period,
   draftCache,
   rows,
-  openSingle,
+  sort,
+  onSort,
   activeChanged,
   priceSaved,
   finished,
@@ -170,9 +172,19 @@ export default function BatchInvoices({
   );
   const allSelected =
     rows.length > 0 && rows.every((r) => selected.includes(r.enrollmentId));
+  function priceBasis(row) {
+    return JSON.stringify([
+      row.monthlyPrice,
+      row.defaultAmount,
+      row.suggestedAmount,
+      row.suggestedNotes ?? "",
+      row.priceDraft?.version ?? null,
+    ]);
+  }
   function draft(row) {
+    const cached = drafts[row.enrollmentId];
     return (
-      drafts[row.enrollmentId] ?? {
+      (cached?.priceBasis === priceBasis(row) ? cached : null) ?? {
         amount: row.suggestedAmount,
         discount: (
           (cents(row.monthlyPrice) - cents(row.suggestedAmount)) /
@@ -184,7 +196,7 @@ export default function BatchInvoices({
   }
   function change(row, field, value) {
     setError("");
-    const edit = { ...draft(row), [field]: value };
+    const edit = { ...draft(row), [field]: value, priceBasis: priceBasis(row) };
     if (field === "amount")
       edit.discount = Number.isSafeInteger(cents(value))
         ? ((cents(row.monthlyPrice) - cents(value)) / 100).toFixed(2)
@@ -204,6 +216,20 @@ export default function BatchInvoices({
     const edit = draft(row),
       discount = cents(edit.discount),
       price = cents(row.monthlyPrice);
+    const enteredAmount = cents(edit.amount);
+    if (
+      !Number.isSafeInteger(enteredAmount) ||
+      enteredAmount < 0 ||
+      enteredAmount > price
+    ) {
+      setError(
+        t(
+          "{0}: shuma e faturës duhet të jetë nga 0 deri në {1} €, me deri dy shifra pas pikës.",
+          [row.studentName, row.monthlyPrice],
+        ),
+      );
+      return null;
+    }
     if (!Number.isSafeInteger(discount) || discount < 0 || discount > price) {
       setError(
         t(
@@ -261,11 +287,9 @@ export default function BatchInvoices({
       activeChanged(false);
     }
   }
-  function prepare() {
+  function prepare(rowsToPrepare = selectedRows) {
     setError("");
-    const batch = rows
-      .filter((r) => selected.includes(r.enrollmentId))
-      .map(validate);
+    const batch = rowsToPrepare.map(validate);
     if (batch.some((row) => !row)) return;
     if (!batch.length) return;
     setConfirm(batch);
@@ -301,7 +325,7 @@ export default function BatchInvoices({
         <button
           className="primary"
           disabled={!selectedRows.length || Boolean(saving)}
-          onClick={prepare}
+          onClick={() => prepare()}
         >
           {t("Regjistro faturat e zgjedhura")}
         </button>
@@ -323,9 +347,19 @@ export default function BatchInvoices({
           <thead>
             <tr>
               <th aria-label={t("Zgjidh")}></th>
-              <th>{t("Nxënësi dhe grupi")}</th>
-              <th>{t("Mungesat për kontroll")}</th>
-              <th>{t("Shuma e faturës")}</th>
+              {[
+                ["studentName", "Nxënësi dhe grupi"],
+                ["absences", "Mungesat për kontroll"],
+                ["suggestedAmount", "Shuma e faturës"],
+              ].map(([key, label]) => (
+                <SortableHeader
+                  key={key}
+                  column={key}
+                  label={t(label)}
+                  sort={sort}
+                  onSort={onSort}
+                />
+              ))}
               <th>{t("Veprime")}</th>
             </tr>
           </thead>
@@ -371,13 +405,13 @@ export default function BatchInvoices({
                           {t(" mungesa (A)")}
                         </strong>
                         <small>{monthLabel(attendance.period)}</small>
+                        <small>
+                          <strong>{presentCount(attendance)}</strong>
+                          {t(" prezent (P) ·")} {attendance.totalLessons}
+                          {t(" orë")}
+                        </small>
                         <details className="batch-row-details">
                           <summary>{t("Shiko vijueshmërinë")}</summary>
-                          <small>
-                            {presentCount(attendance)}
-                            {t(" prezent (P) ·")} {attendance.totalLessons}
-                            {t(" orë")}
-                          </small>
                           <small>
                             {attendance.excusedAbsences}
                             {t(" mungesa me arsye")}
@@ -391,63 +425,29 @@ export default function BatchInvoices({
                     )}
                   </td>
                   <td className="batch-pricing-cell">
-                    <strong className="batch-compact-amount">
-                      {Number.isFinite(amount) && amount >= 0
-                        ? euro(amount)
-                        : t("Kontrolloni zbritjen")}
-                    </strong>
+                    <div className="batch-base-price">
+                      {t("Çmimi mujor ")}
+                      <strong>{row.monthlyPrice} €</strong>
+                    </div>
+                    <label>
+                      {t("Çmimi për këtë muaj (€)")}
+                      <input
+                        aria-label={t("Çmimi për {0}", [row.studentName])}
+                        inputMode="decimal"
+                        value={edit.amount}
+                        disabled={Boolean(saving)}
+                        onChange={(e) => change(row, "amount", e.target.value)}
+                      />
+                    </label>
                     {cents(edit.discount) > 0 && (
                       <small>
                         {t("Zbritje: ")}
                         {euro(cents(edit.discount))}
                       </small>
                     )}
-                    <details className="batch-row-details">
-                      <summary
-                        aria-label={t("Ndrysho çmimin për {0}", [
-                          row.studentName,
-                        ])}
-                      >
-                        {t("Ndrysho çmimin")}
-                      </summary>
-                      <div className="batch-base-price">
-                        {t("Çmimi mujor ")}
-                        <strong>{row.monthlyPrice} €</strong>
-                      </div>
-                      <div className="batch-price-editor">
-                        <label>
-                          {t("Çmimi për këtë muaj (€)")}
-                          <input
-                            aria-label={t("Çmimi për {0}", [row.studentName])}
-                            inputMode="decimal"
-                            value={edit.amount}
-                            disabled={Boolean(saving)}
-                            onChange={(e) =>
-                              change(row, "amount", e.target.value)
-                            }
-                          />
-                        </label>
-                        <label>
-                          {t("Zbritja (€)")}
-                          <input
-                            aria-label={t("Zbritja për {0}", [row.studentName])}
-                            inputMode="decimal"
-                            disabled={Boolean(saving)}
-                            value={edit.discount}
-                            onChange={(e) =>
-                              change(row, "discount", e.target.value)
-                            }
-                          />
-                        </label>
-                        <div className="batch-final-price">
-                          <span>{t("Për faturim")}</span>
-                          <strong>
-                            {Number.isFinite(amount) && amount >= 0
-                              ? euro(amount)
-                              : t("Kontrolloni zbritjen")}
-                          </strong>
-                        </div>
-                      </div>
+                    {(amount !==
+                      cents(row.defaultAmount ?? row.suggestedAmount) ||
+                      edit.notes) && (
                       <label className="batch-notes">
                         {t("Arsyeja / Shënime")}
                         <input
@@ -457,6 +457,27 @@ export default function BatchInvoices({
                           value={edit.notes}
                           placeholder={t("P.sh. zbritje për mungesat")}
                           onChange={(e) => change(row, "notes", e.target.value)}
+                        />
+                      </label>
+                    )}
+                    <details className="batch-row-details">
+                      <summary
+                        aria-label={t("Ndrysho çmimin për {0}", [
+                          row.studentName,
+                        ])}
+                      >
+                        {t("Zbritja (€)")}
+                      </summary>
+                      <label>
+                        {t("Zbritja (€)")}
+                        <input
+                          aria-label={t("Zbritja për {0}", [row.studentName])}
+                          inputMode="decimal"
+                          disabled={Boolean(saving)}
+                          value={edit.discount}
+                          onChange={(e) =>
+                            change(row, "discount", e.target.value)
+                          }
                         />
                       </label>
                       <p className="batch-price-scope">
@@ -504,13 +525,14 @@ export default function BatchInvoices({
                         {t("Afati: ")}
                         {date(row.dueDate)}
                       </small>
-                      <button
-                        className="secondary"
-                        onClick={() => openSingle(row)}
-                      >
-                        {t("Regjistro veçmas")}
-                      </button>
                     </details>
+                    <button
+                      className="primary batch-register-single"
+                      disabled={Boolean(saving)}
+                      onClick={() => prepare([row])}
+                    >
+                      {t("Regjistro faturën")}
+                    </button>
                   </td>
                 </tr>
               );

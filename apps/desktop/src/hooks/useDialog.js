@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+let openDialogs = 0;
+let previousOverflow = "";
 
 export function useDialog(close, busy = false, active = true) {
   const closeRef = useRef(close),
@@ -10,6 +12,10 @@ export function useDialog(close, busy = false, active = true) {
     const previous = document.activeElement;
     const dialog = [...document.querySelectorAll('[role="dialog"]')].at(-1);
     if (!dialog) return;
+    if (openDialogs++ === 0) {
+      previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+    }
     const selector =
       "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex='-1'])";
     if (!dialog.contains(document.activeElement))
@@ -44,6 +50,7 @@ export function useDialog(close, busy = false, active = true) {
     document.addEventListener("keydown", handler);
     return () => {
       document.removeEventListener("keydown", handler);
+      if (--openDialogs === 0) document.body.style.overflow = previousOverflow;
       if (previous?.isConnected) previous.focus({ preventScroll: true });
     };
   }, [active]);

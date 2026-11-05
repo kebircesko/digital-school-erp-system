@@ -31,6 +31,8 @@ model User {
   groups        Group[]
   payments      Payment[]
   invoicePrices InvoicePriceDraft[]
+  tasks         AdminTask[]
+  cashClosures  CashClosure[]
 }
 
 model Session {
@@ -45,21 +47,23 @@ model Session {
 }
 
 model Student {
-  id          String        @id @default(uuid()) @db.Uuid
-  firstName   String
-  lastName    String
-  birthDate   DateTime      @db.Date
-  parentName  String
-  parentPhone String
-  address     String?
-  notes       String?
-  status      StudentStatus @default(ACTIVE)
-  version     Int           @default(1)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  enrollments Enrollment[]
-  invoices    Invoice[]
-  payments    Payment[]
+  id              String        @id @default(uuid()) @db.Uuid
+  firstName       String
+  lastName        String
+  birthDate       DateTime      @db.Date
+  parentName      String
+  parentPhone     String
+  address         String?
+  notes           String?
+  status          StudentStatus @default(ACTIVE)
+  version         Int           @default(1)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  enrollments     Enrollment[]
+  invoices        Invoice[]
+  payments        Payment[]
+  registrationKey String?       @unique @db.Uuid
+  tasks           AdminTask[]
 
   attendance MonthlyAttendance[]
 
@@ -255,4 +259,41 @@ model PaymentAllocation {
 model Counter {
   key   String @id
   value Int    @default(0)
+}
+
+model AdminTask {
+  id          String    @id @default(uuid()) @db.Uuid
+  studentId   String?   @db.Uuid
+  student     Student?  @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  userId      String    @db.Uuid
+  user        User      @relation(fields: [userId], references: [id])
+  title       String
+  notes       String    @default("")
+  dueDate     DateTime  @db.Date
+  completedAt DateTime?
+  version     Int       @default(1)
+  createdAt   DateTime  @default(now())
+
+  @@index([completedAt, dueDate])
+  @@index([studentId])
+}
+
+model CashClosure {
+  id           String   @id @default(uuid()) @db.Uuid
+  day          DateTime @db.Date
+  revision     Int
+  userId       String   @db.Uuid
+  user         User     @relation(fields: [userId], references: [id])
+  openingCash  Decimal  @db.Decimal(12, 2)
+  cashTotal    Decimal  @db.Decimal(12, 2)
+  bankTotal    Decimal  @db.Decimal(12, 2)
+  expectedCash Decimal  @db.Decimal(12, 2)
+  countedCash  Decimal  @db.Decimal(12, 2)
+  difference   Decimal  @db.Decimal(12, 2)
+  paymentCount Int
+  fingerprint  String
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+
+  @@unique([day, revision])
 }

@@ -6,6 +6,7 @@ const { Prisma } = require("@prisma/client");
 const { Type } = require("class-transformer");
 const { parseClassReport, previewClassReport } = require("./class-report");
 const { attendanceSummary } = require("./summary");
+const { billingStatus, shiftPeriod } = require("../invoices/review");
 const { createHash } = require("node:crypto");
 const {
   Controller,
@@ -283,6 +284,103 @@ class AttendanceController {
   summary(query) {
     return attendanceSummary(this.db, query);
   }
+  async imports(query) {
+    const period = query.period ?? today().slice(0, 7);
+    periodDates(period);
+    const billingPeriod = query.billingPeriod ?? period;
+    const { first, last } = periodDates(billingPeriod);
+    const previousPeriod = shiftPeriod(billingPeriod, -1);
+    const rows = await this.db.monthlyAttendance.findMany({
+      where: { period },
+      include: {
+        student: { select: { firstName: true, lastName: true, status: true } },
+        course: { select: { name: true } },
+      },
+      orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
+    });
+    const studentIds = [...new Set(rows.map((row) => row.studentId))];
+    const [invoices, enrollments] = rows.length
+      ? await Promise.all([
+          this.db.invoice.findMany({
+            where: {
+              period: { in: [billingPeriod, previousPeriod] },
+              studentId: { in: studentIds },
+            },
+            select: {
+              id: true,
+              studentId: true,
+              courseId: true,
+              number: true,
+              status: true,
+              period: true,
+            },
+          }),
+          this.db.enrollment.findMany({
+            where: {
+              studentId: { in: studentIds },
+              courseId: { in: [...new Set(rows.map((row) => row.courseId))] },
+              startDate: { lte: last },
+              OR: [{ endDate: null }, { endDate: { gte: first } }],
+            },
+            select: {
+              id: true,
+              studentId: true,
+              courseId: true,
+              startDate: true,
+            },
+            orderBy: [{ startDate: "asc" }, { id: "asc" }],
+          }),
+        ])
+      : [[], []];
+    const invoiceMap = new Map(
+      invoices.map((invoice) => [
+        `${invoice.studentId}:${invoice.courseId}:${invoice.period}`,
+        invoice,
+      ]),
+    );
+    const enrollmentMap = new Map();
+    for (const enrollment of enrollments) {
+      const key = `${enrollment.studentId}:${enrollment.courseId}`;
+      if (!enrollmentMap.has(key)) enrollmentMap.set(key, enrollment);
+    }
+    const files = new Map();
+    for (const row of rows) {
+      if (!row.sourceFile) continue;
+      if (!files.has(row.sourceFile))
+        files.set(row.sourceFile, { filename: row.sourceFile, items: [] });
+      const key = `${row.studentId}:${row.courseId}`;
+      const invoice = invoiceMap.get(`${key}:${billingPeriod}`) ?? null;
+      const previousInvoice =
+        invoiceMap.get(`${key}:${previousPeriod}`) ?? null;
+      files.get(row.sourceFile).items.push({
+        studentId: row.studentId,
+        courseId: row.courseId,
+        period,
+        studentName: `${row.student.firstName} ${row.student.lastName}`,
+        courseName: row.course.name,
+        totalLessons: row.totalLessons,
+        absences: row.absences,
+        excusedAbsences: row.excusedAbsences,
+        sourceCounts: row.sourceCounts ?? null,
+        billingPeriod,
+        previousPeriod,
+        invoice,
+        previousInvoice,
+        billingStatus: billingStatus({
+          enrollment: enrollmentMap.get(key),
+          invoice,
+          previousInvoice,
+          period: billingPeriod,
+          studentStatus: row.student.status,
+        }),
+      });
+    }
+    for (const file of files.values())
+      file.items.sort((a, b) =>
+        a.studentName.localeCompare(b.studentName, "sq"),
+      );
+    return { items: [...files.values()] };
+  }
   async upload(dto, req) {
     const pdf = /\.pdf$/i.test(dto.filename);
     if (!/\.(xlsx|pdf)$/i.test(dto.filename))
@@ -386,6 +484,16 @@ class AttendanceController {
       .send(Buffer.from(await book.xlsx.writeBuffer()));
   }
 }
+__decorate(
+  [
+    Get("imports"),
+    __param(0, Query()),
+    __metadata("design:paramtypes", [ListQuery]),
+  ],
+  AttendanceController.prototype,
+  "imports",
+  null,
+);
 __decorate(
   [
     Get("summary"),
